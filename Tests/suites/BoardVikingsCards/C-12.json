@@ -1,0 +1,96 @@
+{
+  "name": "C-12 deck: a fresh deck holds 52, pulls any card, takes it back",
+  "steps": [
+    {
+      "do": "give",
+      "prefab": "Card_Deck",
+      "count": 1
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Deck.DeckApi.TestCount",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "expect": 52,
+      "label": "fresh deck has 52"
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Deck.DeckApi.TestPull",
+      "args": [
+        "S7"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "expect": true,
+      "label": "pulled the 7 of Spades"
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Deck.DeckApi.TestCount",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "expect": 51,
+      "label": "deck now 51"
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Deck.DeckApi.TestPull",
+      "args": [
+        "S7"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "expect": false,
+      "label": "cannot pull the same card twice"
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Deck.DeckApi.TestReturnAll",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "expect": 1,
+      "label": "one card went back"
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Deck.DeckApi.TestCount",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "expect": 52,
+      "label": "deck whole again"
+    }
+  ],
+  "asserts": [
+    {
+      "check": "noItem",
+      "prefab": "Card_S7",
+      "label": "no loose 7 left"
+    },
+    {
+      "check": "noErrors",
+      "source": "BoardVikings-CardGames",
+      "label": "no errors from the card mod"
+    },
+    {
+      "check": "noErrors",
+      "label": "no errors from anyone"
+    }
+  ]
+}

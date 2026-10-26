@@ -80,4 +80,51 @@ w('C-%02d' % n, {
     'asserts': [{'check': 'noItem', 'prefab': 'Card_SK', 'label': 'card left the inventory'},
                 {'check': 'objectNear', 'target': 'Card_SK', 'radius': 80, 'label': 'card landed as an item'}] + no_err,
 }); n += 1
+M = 'Cards.Deck.DeckApi.'
+def inv(method, *args):
+    return {'do': 'invoke', 'method': M + method, 'args': list(args)}
+
+w('C-%02d' % n, {
+    'name': 'C-%02d deck: a fresh deck holds 52, pulls any card, takes it back' % n,
+    'steps': [
+        {'do': 'give', 'prefab': 'Card_Deck', 'count': 1},
+        inv('TestCount'),
+        {'do': 'check', 'check': 'lastResult', 'expect': 52, 'label': 'fresh deck has 52'},
+        inv('TestPull', 'S7'),
+        {'do': 'check', 'check': 'lastResult', 'expect': True, 'label': 'pulled the 7 of Spades'},
+        inv('TestCount'),
+        {'do': 'check', 'check': 'lastResult', 'expect': 51, 'label': 'deck now 51'},
+        inv('TestPull', 'S7'),
+        {'do': 'check', 'check': 'lastResult', 'expect': False, 'label': 'cannot pull the same card twice'},
+        inv('TestReturnAll'),
+        {'do': 'check', 'check': 'lastResult', 'expect': 1, 'label': 'one card went back'},
+        inv('TestCount'),
+        {'do': 'check', 'check': 'lastResult', 'expect': 52, 'label': 'deck whole again'},
+    ],
+    'asserts': [{'check': 'noItem', 'prefab': 'Card_S7', 'label': 'no loose 7 left'}] + no_err,
+}); n += 1
+
+w('C-%02d' % n, {
+    'name': 'C-%02d deck: shuffle keeps 52 and changes the order' % n,
+    'steps': [
+        {'do': 'give', 'prefab': 'Card_Deck', 'count': 1},
+        inv('TestShuffleTop'),
+        {'do': 'check', 'check': 'lastResult', 'contains': ',', 'label': 'got a top-8 listing'},
+        inv('TestCount'),
+        {'do': 'check', 'check': 'lastResult', 'expect': 52, 'label': 'still 52'},
+    ],
+    'asserts': no_err,
+}); n += 1
+
+w('C-%02d' % n, {
+    'name': 'C-%02d deck: window opens' % n,
+    'steps': [
+        {'do': 'give', 'prefab': 'Card_Deck', 'count': 1},
+        inv('TestOpenWindow'),
+        {'do': 'wait', 'seconds': 1},
+        {'do': 'screenshot', 'name': 'deck-window'},
+        {'do': 'pressKey', 'key': 'Escape'},
+    ],
+    'asserts': no_err,
+}); n += 1
 print('wrote', n - 1, 'tests')

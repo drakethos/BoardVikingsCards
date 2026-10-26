@@ -127,7 +127,7 @@ internal static class CardItemSanitize
         return _sharedProjectile;
     }
 
-    internal static void SanitizeAndBuildItem(CustomItem customItem, CardInfo info, Sprite? face)
+    internal static void SanitizeAndBuildItem(CustomItem customItem, CardInfo info, Sprite? face, bool isDeck = false)
     {
         var prefab = customItem.ItemPrefab;
         var drop = customItem.ItemDrop;
@@ -143,8 +143,10 @@ internal static class CardItemSanitize
 
         var shared = drop.m_itemData.m_shared;
         shared.m_name = info.FullName;
-        shared.m_description = "A throwable playing card. The " + info.FullName;
-        shared.m_itemType = ItemDrop.ItemData.ItemType.OneHandedWeapon;
+        shared.m_description = isDeck
+            ? "A full deck of 52 cards in one item. Right-click it to pull out any card, put cards back, or shuffle."
+            : "A throwable playing card. The " + info.FullName;
+        shared.m_itemType = isDeck ? ItemDrop.ItemData.ItemType.Misc : ItemDrop.ItemData.ItemType.OneHandedWeapon;
         shared.m_maxStackSize = 1;
         shared.m_autoStack = false;
         shared.m_weight = 0.1f;
@@ -160,7 +162,7 @@ internal static class CardItemSanitize
         shared.m_equipDuration = 0.2f;
         shared.m_variants = 0;
         shared.m_attachOverride = ItemDrop.ItemData.ItemType.None;
-        shared.m_skillType = Skills.SkillType.Spears;
+        shared.m_skillType = isDeck ? Skills.SkillType.None : Skills.SkillType.Spears;
         shared.m_animationState = ItemDrop.ItemData.AnimationState.OneHanded;
         shared.m_armor = 0f;
         shared.m_armorPerLevel = 0f;
@@ -180,9 +182,12 @@ internal static class CardItemSanitize
         if (face != null)
             shared.m_icons = new[] { face };
 
-        var projectile = EnsureSharedProjectile();
-        shared.m_attack = BuildThrowAttack(projectile, stamina: 8f, vel: 25f);
-        shared.m_secondaryAttack = BuildThrowAttack(projectile, stamina: 10f, vel: 20f);
+        if (!isDeck)
+        {
+            var projectile = EnsureSharedProjectile();
+            shared.m_attack = BuildThrowAttack(projectile, stamina: 8f, vel: 25f);
+            shared.m_secondaryAttack = BuildThrowAttack(projectile, stamina: 10f, vel: 20f);
+        }
 
         drop.m_autoPickup = true;
         drop.m_autoDestroy = false;

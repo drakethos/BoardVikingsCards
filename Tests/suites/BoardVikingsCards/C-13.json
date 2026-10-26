@@ -1,0 +1,43 @@
+{
+  "name": "C-13 deck: shuffle keeps 52 and changes the order",
+  "steps": [
+    {
+      "do": "give",
+      "prefab": "Card_Deck",
+      "count": 1
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Deck.DeckApi.TestShuffleTop",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "contains": ",",
+      "label": "got a top-8 listing"
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Deck.DeckApi.TestCount",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "expect": 52,
+      "label": "still 52"
+    }
+  ],
+  "asserts": [
+    {
+      "check": "noErrors",
+      "source": "BoardVikings-CardGames",
+      "label": "no errors from the card mod"
+    },
+    {
+      "check": "noErrors",
+      "label": "no errors from anyone"
+    }
+  ]
+}

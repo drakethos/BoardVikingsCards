@@ -100,6 +100,7 @@
   <ItemGroup>
     <Compile Include="Cards.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Deck\*.cs" />
     <Compile Include="Util\CardLib.cs" />
     <Compile Include="Util\CardItemSanitize.cs" />
     <Compile Include="Util\Loader.cs" />

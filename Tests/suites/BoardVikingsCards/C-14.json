@@ -1,0 +1,38 @@
+{
+  "name": "C-14 deck: window opens",
+  "steps": [
+    {
+      "do": "give",
+      "prefab": "Card_Deck",
+      "count": 1
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Deck.DeckApi.TestOpenWindow",
+      "args": []
+    },
+    {
+      "do": "wait",
+      "seconds": 1
+    },
+    {
+      "do": "screenshot",
+      "name": "deck-window"
+    },
+    {
+      "do": "pressKey",
+      "key": "Escape"
+    }
+  ],
+  "asserts": [
+    {
+      "check": "noErrors",
+      "source": "BoardVikings-CardGames",
+      "label": "no errors from the card mod"
+    },
+    {
+      "check": "noErrors",
+      "label": "no errors from anyone"
+    }
+  ]
+}
