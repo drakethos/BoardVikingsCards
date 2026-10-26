@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
     <!-- Thunderstore / Hexium package id — do not rename after publish -->
-    <ThunderstoreName>BoardVikings-CardGames</ThunderstoreName>
+    <ThunderstoreName>BoardVikings_CardGames</ThunderstoreName>
     <ThunderstoreAuthor>DrakeMods</ThunderstoreAuthor>
     <RootNamespace>Cards</RootNamespace>
     <AssemblyName>BoardVikings-CardGames</AssemblyName>

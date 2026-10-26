@@ -115,7 +115,7 @@ _The dealer's visor_
 Install from **Hexium** with your mod manager (dependencies come with it), or import the zip with **Gale** or **r2modman**, or extract into:
 
 ```
-BepInEx/plugins/DrakeMods-BoardVikings-CardGames/
+BepInEx/plugins/DrakeMods-BoardVikings_CardGames/
 ```
 
 Everyone on a server needs the mod.

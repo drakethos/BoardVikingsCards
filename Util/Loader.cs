@@ -10,6 +10,7 @@ public static class Loader
     {
         string[] candidateFolders =
         {
+            "DrakeMods-BoardVikings_CardGames",
             "DrakeMods-BoardVikings-CardGames",
             "DrakeMod-BoardVikings-CardGames",
             "BoardVikings-CardGames"

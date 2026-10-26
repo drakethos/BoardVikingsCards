@@ -125,8 +125,8 @@ jobs:
         id: pkg
         run: |
           VERSION="${{ steps.ver.outputs.version }}"
-          PKG_DIR="DrakeMods-BoardVikings-CardGames-${VERSION}"
-          ZIP_NAME="DrakeMods-BoardVikings-CardGames-${VERSION}.zip"
+          PKG_DIR="DrakeMods-BoardVikings_CardGames-${VERSION}"
+          ZIP_NAME="DrakeMods-BoardVikings_CardGames-${VERSION}.zip"
 
           mkdir -p "$PKG_DIR/Assets"
           cp bin/Release/BoardVikings-CardGames.dll "$PKG_DIR/"
@@ -193,7 +193,7 @@ jobs:
             printf '%s\n' "$SECTION"
             echo
             echo "## Install"
-            echo "- **Hexium:** https://valheim.hexium.gg/mods/DrakeMods/BoardVikings-CardGames (dependencies install automatically)."
+            echo "- **Hexium:** https://valheim.hexium.gg/mods/DrakeMods/BoardVikings_CardGames (dependencies install automatically)."
             echo "- **Zip below:** use your mod manager's \"Import local mod\" (Gale, r2modman), or extract into \`BepInEx/plugins/DrakeMods-BoardVikings-CardGames/\`."
             echo "- Works best with the **Gizmo** mod for rotating giant cards."
             echo
