@@ -187,7 +187,7 @@ namespace Cards
                 Name = title,
                 Description = "A felt table for card games. Press E to sit; the table's builder is its dealer and sets how many " +
                               "seats it uses. Free play: no rules unless the dealer sets them.",
-                Icon = CardBacks.DeckIcon(CardBacks.DefaultBack),
+                Icon = CardIcons.TableIcon(prefabName.EndsWith("Long")) ?? CardBacks.DeckIcon(CardBacks.DefaultBack),
                 Requirements =
                 [
                     new RequirementConfig("Wood", wood, 0, true),

@@ -339,4 +339,16 @@ internal static class CardIcons
         sprite.name = name;
         return sprite;
     }
+
+    /// <summary>The hammer-menu icon of a card table (Assets/icons/table_small.png or table_long.png), or null if the file is missing.</summary>
+    internal static Sprite? TableIcon(bool isLong)
+    {
+        var path = Loader.FindAsset(System.IO.Path.Combine("icons", isLong ? "table_long.png" : "table_small.png"));
+        if (path == null)
+            return null;
+        var tex = new Texture2D(2, 2, TextureFormat.RGBA32, false) { name = "CardTableIcon", filterMode = FilterMode.Bilinear };
+        if (!CardBacks.LoadPng(tex, System.IO.File.ReadAllBytes(path)))
+            return null;
+        return Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100f);
+    }
 }

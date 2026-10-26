@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.0-beta.2
+
+- The right package icon.
+- The two card tables have their own hammer-menu icons (a felt table with cards and chips) instead of a deck of cards.
+- Everything from beta.1 still applies: this is an early preview, so back up your world and characters.
+
 ## 0.1.0-beta.1
 
 **Early preview. Brand new and not thoroughly tested: back up your world and characters.**

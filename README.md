@@ -1,6 +1,6 @@
 # Board Vikings: Cards
 
-> ## ⚠️ Early preview (0.1.0-beta.1): use at your own risk
+> ## ⚠️ Early preview (0.1.0-beta.2): use at your own risk
 > This is a **brand new mod, not thoroughly tested**. Expect bugs, rough edges and changes between versions.
 > **Back up your world and your characters before installing**, and do not use it on a world you cannot afford to lose. Items and pieces from this beta may change or disappear in later versions. Please report problems on the [GitHub issues page](https://github.com/drakethos/BoardVikingsCards/issues).
 
@@ -10,9 +10,9 @@ Ever just wanted to play card games inside of Valheim? Well, now you can.
 
 Throw cards like a boss. Build giant houses of cards (you can rotate them, but they are best with Gizmo). Sit at a card table. Play with rules set in, or free-style, and yes, you can cheat 😉 A table to play at, a cool poker hat, and much more.
 
-> **0.1.0-beta.1 is the debut.** The cards, the deck, the giant cards, the archery target and the card table (with seats) are all in. Dealing and playing at the table, the dealer's poker hat, rules and chips are the next releases: see [Coming next](#coming-next).
+> **0.1.0-beta.2 is the debut.** The cards, the deck, the giant cards, the archery target and the card table (with seats) are all in. Dealing and playing at the table, the dealer's poker hat, rules and chips are the next releases: see [Coming next](#coming-next).
 
-## What's in 0.1.0-beta.1
+## What's in 0.1.0-beta.2
 
 | Item | What it is | Cost |
 | --- | --- | --- |

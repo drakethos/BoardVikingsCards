@@ -5,7 +5,7 @@
     <ThunderstoreAuthor>DrakeMods</ThunderstoreAuthor>
     <RootNamespace>Cards</RootNamespace>
     <AssemblyName>BoardVikings-CardGames</AssemblyName>
-    <Version>0.1.0-beta.1</Version>
+    <Version>0.1.0-beta.2</Version>
     <BepInPluginName>BoardVikings-CardGames</BepInPluginName>
     <BepInGuid>com.DrakeMods.BoardVikings-CardGames</BepInGuid>
     <ModInfoClass>Cards</ModInfoClass>
