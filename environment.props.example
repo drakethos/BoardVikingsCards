@@ -1,0 +1,16 @@
+<Project>
+  <PropertyGroup>
+    <!-- Copy to environment.props (gitignored) and adjust paths. -->
+    <ValheimGamePath>C:\Program Files (x86)\Steam\steamapps\common\Valheim</ValheimGamePath>
+    <VALHEIM_INSTALL>$(ValheimGamePath)</VALHEIM_INSTALL>
+    <R2ModPath>C:\Users\YOUR_USER\AppData\Roaming\r2modmanPlus-local\Valheim\profiles</R2ModPath>
+    <GaleModPath>C:\Users\YOUR_USER\AppData\Roaming\com.kesomannen.gale\valheim\profiles</GaleModPath>
+    <ProfileName>drakeTest</ProfileName>
+    <BepInExPath>$(GaleModPath)\$(ProfileName)\BepInEx</BepInExPath>
+    <BEPINEX_PATH>$(BepInExPath)</BEPINEX_PATH>
+    <CorlibPath>$(ValheimGamePath)\valheim_Data\Managed</CorlibPath>
+    <PublicizedAssembliesPath>$(ValheimGamePath)\valheim_Data\Managed\publicized_assemblies</PublicizedAssembliesPath>
+    <ThunderstoreBasePath>C:\Modding\Thunderstore</ThunderstoreBasePath>
+    <AfterTargets>Build</AfterTargets>
+  </PropertyGroup>
+</Project>

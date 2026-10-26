@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <DrakeModBuildRoot>$(MSBuildThisFileDirectory)</DrakeModBuildRoot>
+  </PropertyGroup>
+  <Import Project="$(DrakeModBuildRoot)DrakeMod.Build.props" />
+</Project>

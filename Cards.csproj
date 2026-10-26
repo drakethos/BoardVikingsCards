@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="packages\JotunnLib.2.23.0\build\JotunnLib.props" Condition="Exists('packages\JotunnLib.2.23.0\build\JotunnLib.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{5DF97E86-BF46-46C5-894F-6B2D80EA6645}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="assembly_guiutils">
+      <HintPath>$(PublicizedAssembliesPath)\assembly_guiutils_publicized.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="assembly_utils">
+      <HintPath>$(PublicizedAssembliesPath)\assembly_utils_publicized.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="assembly_valheim">
+      <HintPath>$(PublicizedAssembliesPath)\assembly_valheim_publicized.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Jotunn, Version=2.23.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\JotunnLib.2.23.0\lib\net462\Jotunn.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="UnityEngine">
+      <HintPath>$(CorlibPath)\UnityEngine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.AssetBundleModule">
+      <HintPath>$(CorlibPath)\UnityEngine.AssetBundleModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(CorlibPath)\UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule">
+      <HintPath>$(CorlibPath)\UnityEngine.ImageConversionModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>$(CorlibPath)\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>$(CorlibPath)\UnityEngine.InputLegacyModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.AnimationModule">
+      <HintPath>$(CorlibPath)\UnityEngine.AnimationModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.JSONSerializeModule">
+      <HintPath>$(CorlibPath)\UnityEngine.JSONSerializeModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>$(CorlibPath)\Unity.TextMeshPro.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Pfhoenix.Valheim.ModProjectReferences.1.0.20\lib\net46\UnityEngine.UI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Cards.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\CardLib.cs" />
+    <Compile Include="Util\CardItemSanitize.cs" />
+    <Compile Include="Util\Loader.cs" />
+    <Compile Include="Util\SpriteTools.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ModAssets Include="Assets\**\*" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them. For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\JotunnLib.2.23.0\build\JotunnLib.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\JotunnLib.2.23.0\build\JotunnLib.props'))" />
+  </Target>
+
+  <Target Name="CopyModAssetsToOutput" AfterTargets="Build">
+    <MakeDir Directories="$(TargetDir)Assets" />
+    <Copy SourceFiles="@(ModAssets)" DestinationFolder="$(TargetDir)Assets\%(RecursiveDir)" SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="PackageMod" AfterTargets="CopyModAssetsToOutput" DependsOnTargets="ResolveThunderstorePaths;WriteThunderstoreManifest" Condition="'$(SkipPackageMod)' != 'true'">
+    <MakeDir Directories="$(ThunderstoreFolder)" />
+    <MakeDir Directories="$(ThunderstoreFolder)\Assets" />
+    <Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFolder="$(ThunderstoreFolder)" />
+    <Copy SourceFiles="@(ModAssets)" DestinationFolder="$(ThunderstoreFolder)\Assets\%(RecursiveDir)" SkipUnchangedFiles="true" Condition="'@(ModAssets)' != ''" />
+    <Copy SourceFiles="$(TargetDir)README.md" DestinationFiles="$(ThunderstoreFolder)\README.md" Condition="Exists('$(TargetDir)README.md')" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\README.md" DestinationFiles="$(ThunderstoreFolder)\README.md" Condition="!Exists('$(TargetDir)README.md') and Exists('$(MSBuildProjectDirectory)\README.md')" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\manifest.json" DestinationFiles="$(ThunderstoreFolder)\manifest.json" Condition="Exists('$(MSBuildProjectDirectory)\manifest.json')" />
+    <Copy SourceFiles="$(TargetDir)icon.png" DestinationFiles="$(ThunderstoreFolder)\icon.png" Condition="Exists('$(TargetDir)icon.png')" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\icon.png" DestinationFiles="$(ThunderstoreFolder)\icon.png" Condition="!Exists('$(TargetDir)icon.png') and Exists('$(MSBuildProjectDirectory)\icon.png')" />
+    <Copy SourceFiles="$(TargetDir)CHANGELOG.md" DestinationFiles="$(ThunderstoreFolder)\CHANGELOG.md" Condition="Exists('$(TargetDir)CHANGELOG.md')" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\CHANGELOG.md" DestinationFiles="$(ThunderstoreFolder)\CHANGELOG.md" Condition="!Exists('$(TargetDir)CHANGELOG.md') and Exists('$(MSBuildProjectDirectory)\CHANGELOG.md')" />
+    <Exec Command="powershell -Command Compress-Archive -Path '$(ThunderstoreFolder)\*' -DestinationPath '$(ZipOutput)' -Force" Condition="'$(CI_SKIP_POST_BUILD)' == ''" />
+    <Message Importance="high" Text="Packaged Thunderstore zip: $(ZipOutput)" />
+  </Target>
+
+  <ItemGroup>
+    <Content Include="CHANGELOG.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="icon.png" Condition="Exists('icon.png')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="README.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+</Project>

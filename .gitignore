@@ -426,3 +426,12 @@ FodyWeavers.xsd
 
 # Official VS Code C# Dev Kit Extension exclusion
 #*.lscache
+
+# DrakeMod local
+/bin/
+/obj/
+/packages/
+environment.props
+*.user
+.idea/
+/Tests/__pycache__/

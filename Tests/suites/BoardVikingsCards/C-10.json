@@ -1,0 +1,32 @@
+{
+  "name": "C-10 dropped card lies on the ground and can be picked up",
+  "steps": [
+    {
+      "do": "spawn",
+      "prefab": "Card_CA",
+      "dz": 1,
+      "as": "c"
+    },
+    {
+      "do": "wait",
+      "seconds": 3
+    }
+  ],
+  "asserts": [
+    {
+      "check": "hasItem",
+      "prefab": "Card_CA",
+      "count": 1,
+      "label": "auto-picked up"
+    },
+    {
+      "check": "noErrors",
+      "source": "BoardVikings-CardGames",
+      "label": "no errors from the card mod"
+    },
+    {
+      "check": "noErrors",
+      "label": "no errors from anyone"
+    }
+  ]
+}

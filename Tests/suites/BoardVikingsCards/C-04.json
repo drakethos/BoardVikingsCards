@@ -1,0 +1,159 @@
+{
+  "name": "C-04 all 13 Diamonds exist as items",
+  "steps": [
+    {
+      "do": "give",
+      "prefab": "Card_DA",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_D2",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_D3",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_D4",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_D5",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_D6",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_D7",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_D8",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_D9",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_D10",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_DJ",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_DQ",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_DK",
+      "count": 1
+    }
+  ],
+  "asserts": [
+    {
+      "check": "hasItem",
+      "prefab": "Card_DA",
+      "count": 1,
+      "label": "Card_DA"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_D2",
+      "count": 1,
+      "label": "Card_D2"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_D3",
+      "count": 1,
+      "label": "Card_D3"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_D4",
+      "count": 1,
+      "label": "Card_D4"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_D5",
+      "count": 1,
+      "label": "Card_D5"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_D6",
+      "count": 1,
+      "label": "Card_D6"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_D7",
+      "count": 1,
+      "label": "Card_D7"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_D8",
+      "count": 1,
+      "label": "Card_D8"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_D9",
+      "count": 1,
+      "label": "Card_D9"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_D10",
+      "count": 1,
+      "label": "Card_D10"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_DJ",
+      "count": 1,
+      "label": "Card_DJ"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_DQ",
+      "count": 1,
+      "label": "Card_DQ"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_DK",
+      "count": 1,
+      "label": "Card_DK"
+    },
+    {
+      "check": "noErrors",
+      "source": "BoardVikings-CardGames",
+      "label": "no errors from the card mod"
+    },
+    {
+      "check": "noErrors",
+      "label": "no errors from anyone"
+    }
+  ]
+}

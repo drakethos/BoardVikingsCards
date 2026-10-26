@@ -1,0 +1,163 @@
+{
+  "name": "C-09 giant card pieces 43-53 spawn",
+  "steps": [
+    {
+      "do": "spawn",
+      "prefab": "Card_D4_piece",
+      "dx": -6,
+      "dz": 4,
+      "as": "p0"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_D5_piece",
+      "dx": -4,
+      "dz": 4,
+      "as": "p1"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_D6_piece",
+      "dx": -2,
+      "dz": 4,
+      "as": "p2"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_D7_piece",
+      "dx": 0,
+      "dz": 4,
+      "as": "p3"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_D8_piece",
+      "dx": 2,
+      "dz": 4,
+      "as": "p4"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_D9_piece",
+      "dx": 4,
+      "dz": 4,
+      "as": "p5"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_D10_piece",
+      "dx": 6,
+      "dz": 4,
+      "as": "p6"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_DJ_piece",
+      "dx": -6,
+      "dz": 7,
+      "as": "p7"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_DQ_piece",
+      "dx": -4,
+      "dz": 7,
+      "as": "p8"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_DK_piece",
+      "dx": -2,
+      "dz": 7,
+      "as": "p9"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_Joker_piece",
+      "dx": 0,
+      "dz": 7,
+      "as": "p10"
+    },
+    {
+      "do": "wait",
+      "seconds": 1
+    }
+  ],
+  "asserts": [
+    {
+      "check": "objectNear",
+      "target": "Card_D4_piece",
+      "radius": 30,
+      "label": "Card_D4_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_D5_piece",
+      "radius": 30,
+      "label": "Card_D5_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_D6_piece",
+      "radius": 30,
+      "label": "Card_D6_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_D7_piece",
+      "radius": 30,
+      "label": "Card_D7_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_D8_piece",
+      "radius": 30,
+      "label": "Card_D8_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_D9_piece",
+      "radius": 30,
+      "label": "Card_D9_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_D10_piece",
+      "radius": 30,
+      "label": "Card_D10_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_DJ_piece",
+      "radius": 30,
+      "label": "Card_DJ_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_DQ_piece",
+      "radius": 30,
+      "label": "Card_DQ_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_DK_piece",
+      "radius": 30,
+      "label": "Card_DK_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_Joker_piece",
+      "radius": 30,
+      "label": "Card_Joker_piece placed"
+    },
+    {
+      "check": "noErrors",
+      "source": "BoardVikings-CardGames",
+      "label": "no errors from the card mod"
+    },
+    {
+      "check": "noErrors",
+      "label": "no errors from anyone"
+    }
+  ]
+}

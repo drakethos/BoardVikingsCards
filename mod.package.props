@@ -1,0 +1,21 @@
+<Project>
+  <PropertyGroup>
+    <!-- Thunderstore / Hexium package id — do not rename after publish -->
+    <ThunderstoreName>BoardVikings-CardGames</ThunderstoreName>
+    <ThunderstoreAuthor>DrakeMods</ThunderstoreAuthor>
+    <RootNamespace>Cards</RootNamespace>
+    <AssemblyName>BoardVikings-CardGames</AssemblyName>
+    <Version>0.0.1</Version>
+    <BepInPluginName>BoardVikings-CardGames</BepInPluginName>
+    <BepInGuid>com.DrakeMods.BoardVikings-CardGames</BepInGuid>
+    <ModInfoClass>Cards</ModInfoClass>
+    <Description>Playing cards and card games for Valheim. Craftable cards, buildable pieces, and a card holder.</Description>
+    <WebsiteUrl></WebsiteUrl>
+    <!-- Deploy DLL + Assets after PackageMod staging copies to output -->
+    <DeployAfterTargets>CopyModAssetsToOutput</DeployAfterTargets>
+  </PropertyGroup>
+  <ItemGroup>
+    <ThunderstoreDependency Include="denikson-BepInExPack_Valheim-5.4.2333" />
+    <ThunderstoreDependency Include="ValheimModding-Jotunn-2.23.0" />
+  </ItemGroup>
+</Project>

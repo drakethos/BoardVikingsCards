@@ -1,0 +1,38 @@
+{
+  "name": "C-11 throwing a card (spear throw, consumed, lands as an item)",
+  "steps": [
+    {
+      "do": "give",
+      "prefab": "Card_SK",
+      "count": 1,
+      "equip": true
+    },
+    {
+      "do": "wait",
+      "seconds": 0.5
+    },
+    {
+      "do": "pressKey",
+      "button": "Attack"
+    },
+    {
+      "do": "wait",
+      "seconds": 4
+    },
+    {
+      "do": "screenshot",
+      "name": "after-throw"
+    }
+  ],
+  "asserts": [
+    {
+      "check": "noErrors",
+      "source": "BoardVikings-CardGames",
+      "label": "no errors from the card mod"
+    },
+    {
+      "check": "noErrors",
+      "label": "no errors from anyone"
+    }
+  ]
+}

@@ -1,0 +1,202 @@
+{
+  "name": "C-06 giant card pieces 1-14 spawn",
+  "steps": [
+    {
+      "do": "spawn",
+      "prefab": "Card_CA_piece",
+      "dx": -6,
+      "dz": 4,
+      "as": "p0"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_C2_piece",
+      "dx": -4,
+      "dz": 4,
+      "as": "p1"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_C3_piece",
+      "dx": -2,
+      "dz": 4,
+      "as": "p2"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_C4_piece",
+      "dx": 0,
+      "dz": 4,
+      "as": "p3"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_C5_piece",
+      "dx": 2,
+      "dz": 4,
+      "as": "p4"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_C6_piece",
+      "dx": 4,
+      "dz": 4,
+      "as": "p5"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_C7_piece",
+      "dx": 6,
+      "dz": 4,
+      "as": "p6"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_C8_piece",
+      "dx": -6,
+      "dz": 7,
+      "as": "p7"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_C9_piece",
+      "dx": -4,
+      "dz": 7,
+      "as": "p8"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_C10_piece",
+      "dx": -2,
+      "dz": 7,
+      "as": "p9"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_CJ_piece",
+      "dx": 0,
+      "dz": 7,
+      "as": "p10"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_CQ_piece",
+      "dx": 2,
+      "dz": 7,
+      "as": "p11"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_CK_piece",
+      "dx": 4,
+      "dz": 7,
+      "as": "p12"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_HA_piece",
+      "dx": 6,
+      "dz": 7,
+      "as": "p13"
+    },
+    {
+      "do": "wait",
+      "seconds": 1
+    }
+  ],
+  "asserts": [
+    {
+      "check": "objectNear",
+      "target": "Card_CA_piece",
+      "radius": 30,
+      "label": "Card_CA_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_C2_piece",
+      "radius": 30,
+      "label": "Card_C2_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_C3_piece",
+      "radius": 30,
+      "label": "Card_C3_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_C4_piece",
+      "radius": 30,
+      "label": "Card_C4_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_C5_piece",
+      "radius": 30,
+      "label": "Card_C5_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_C6_piece",
+      "radius": 30,
+      "label": "Card_C6_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_C7_piece",
+      "radius": 30,
+      "label": "Card_C7_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_C8_piece",
+      "radius": 30,
+      "label": "Card_C8_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_C9_piece",
+      "radius": 30,
+      "label": "Card_C9_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_C10_piece",
+      "radius": 30,
+      "label": "Card_C10_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_CJ_piece",
+      "radius": 30,
+      "label": "Card_CJ_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_CQ_piece",
+      "radius": 30,
+      "label": "Card_CQ_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_CK_piece",
+      "radius": 30,
+      "label": "Card_CK_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_HA_piece",
+      "radius": 30,
+      "label": "Card_HA_piece placed"
+    },
+    {
+      "check": "noErrors",
+      "source": "BoardVikings-CardGames",
+      "label": "no errors from the card mod"
+    },
+    {
+      "check": "noErrors",
+      "label": "no errors from anyone"
+    }
+  ]
+}

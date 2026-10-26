@@ -1,0 +1,159 @@
+{
+  "name": "C-03 all 13 Spades exist as items",
+  "steps": [
+    {
+      "do": "give",
+      "prefab": "Card_SA",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_S2",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_S3",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_S4",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_S5",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_S6",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_S7",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_S8",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_S9",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_S10",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_SJ",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_SQ",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_SK",
+      "count": 1
+    }
+  ],
+  "asserts": [
+    {
+      "check": "hasItem",
+      "prefab": "Card_SA",
+      "count": 1,
+      "label": "Card_SA"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_S2",
+      "count": 1,
+      "label": "Card_S2"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_S3",
+      "count": 1,
+      "label": "Card_S3"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_S4",
+      "count": 1,
+      "label": "Card_S4"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_S5",
+      "count": 1,
+      "label": "Card_S5"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_S6",
+      "count": 1,
+      "label": "Card_S6"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_S7",
+      "count": 1,
+      "label": "Card_S7"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_S8",
+      "count": 1,
+      "label": "Card_S8"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_S9",
+      "count": 1,
+      "label": "Card_S9"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_S10",
+      "count": 1,
+      "label": "Card_S10"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_SJ",
+      "count": 1,
+      "label": "Card_SJ"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_SQ",
+      "count": 1,
+      "label": "Card_SQ"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_SK",
+      "count": 1,
+      "label": "Card_SK"
+    },
+    {
+      "check": "noErrors",
+      "source": "BoardVikings-CardGames",
+      "label": "no errors from the card mod"
+    },
+    {
+      "check": "noErrors",
+      "label": "no errors from anyone"
+    }
+  ]
+}

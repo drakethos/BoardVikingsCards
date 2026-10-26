@@ -1,0 +1,159 @@
+{
+  "name": "C-02 all 13 Hearts exist as items",
+  "steps": [
+    {
+      "do": "give",
+      "prefab": "Card_HA",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_H2",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_H3",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_H4",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_H5",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_H6",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_H7",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_H8",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_H9",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_H10",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_HJ",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_HQ",
+      "count": 1
+    },
+    {
+      "do": "give",
+      "prefab": "Card_HK",
+      "count": 1
+    }
+  ],
+  "asserts": [
+    {
+      "check": "hasItem",
+      "prefab": "Card_HA",
+      "count": 1,
+      "label": "Card_HA"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_H2",
+      "count": 1,
+      "label": "Card_H2"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_H3",
+      "count": 1,
+      "label": "Card_H3"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_H4",
+      "count": 1,
+      "label": "Card_H4"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_H5",
+      "count": 1,
+      "label": "Card_H5"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_H6",
+      "count": 1,
+      "label": "Card_H6"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_H7",
+      "count": 1,
+      "label": "Card_H7"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_H8",
+      "count": 1,
+      "label": "Card_H8"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_H9",
+      "count": 1,
+      "label": "Card_H9"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_H10",
+      "count": 1,
+      "label": "Card_H10"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_HJ",
+      "count": 1,
+      "label": "Card_HJ"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_HQ",
+      "count": 1,
+      "label": "Card_HQ"
+    },
+    {
+      "check": "hasItem",
+      "prefab": "Card_HK",
+      "count": 1,
+      "label": "Card_HK"
+    },
+    {
+      "check": "noErrors",
+      "source": "BoardVikings-CardGames",
+      "label": "no errors from the card mod"
+    },
+    {
+      "check": "noErrors",
+      "label": "no errors from anyone"
+    }
+  ]
+}

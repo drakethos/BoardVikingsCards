@@ -1,0 +1,16 @@
+{
+  "name": "BoardVikingsCards",
+  "description": "Card items, giant card pieces, throwing, pick-up, deck, and a clean log.",
+  "requireMods": [
+    {
+      "guid": "com.DrakeMods.BoardVikings-CardGames",
+      "minVersion": "0.0.1"
+    }
+  ],
+  "setup": {
+    "timeOfDay": 0.5,
+    "freezeTime": 1,
+    "god": 1
+  },
+  "resetBetweenTests": true
+}

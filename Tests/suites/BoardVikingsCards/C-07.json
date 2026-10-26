@@ -1,0 +1,202 @@
+{
+  "name": "C-07 giant card pieces 15-28 spawn",
+  "steps": [
+    {
+      "do": "spawn",
+      "prefab": "Card_H2_piece",
+      "dx": -6,
+      "dz": 4,
+      "as": "p0"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_H3_piece",
+      "dx": -4,
+      "dz": 4,
+      "as": "p1"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_H4_piece",
+      "dx": -2,
+      "dz": 4,
+      "as": "p2"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_H5_piece",
+      "dx": 0,
+      "dz": 4,
+      "as": "p3"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_H6_piece",
+      "dx": 2,
+      "dz": 4,
+      "as": "p4"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_H7_piece",
+      "dx": 4,
+      "dz": 4,
+      "as": "p5"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_H8_piece",
+      "dx": 6,
+      "dz": 4,
+      "as": "p6"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_H9_piece",
+      "dx": -6,
+      "dz": 7,
+      "as": "p7"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_H10_piece",
+      "dx": -4,
+      "dz": 7,
+      "as": "p8"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_HJ_piece",
+      "dx": -2,
+      "dz": 7,
+      "as": "p9"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_HQ_piece",
+      "dx": 0,
+      "dz": 7,
+      "as": "p10"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_HK_piece",
+      "dx": 2,
+      "dz": 7,
+      "as": "p11"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_SA_piece",
+      "dx": 4,
+      "dz": 7,
+      "as": "p12"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_S2_piece",
+      "dx": 6,
+      "dz": 7,
+      "as": "p13"
+    },
+    {
+      "do": "wait",
+      "seconds": 1
+    }
+  ],
+  "asserts": [
+    {
+      "check": "objectNear",
+      "target": "Card_H2_piece",
+      "radius": 30,
+      "label": "Card_H2_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_H3_piece",
+      "radius": 30,
+      "label": "Card_H3_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_H4_piece",
+      "radius": 30,
+      "label": "Card_H4_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_H5_piece",
+      "radius": 30,
+      "label": "Card_H5_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_H6_piece",
+      "radius": 30,
+      "label": "Card_H6_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_H7_piece",
+      "radius": 30,
+      "label": "Card_H7_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_H8_piece",
+      "radius": 30,
+      "label": "Card_H8_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_H9_piece",
+      "radius": 30,
+      "label": "Card_H9_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_H10_piece",
+      "radius": 30,
+      "label": "Card_H10_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_HJ_piece",
+      "radius": 30,
+      "label": "Card_HJ_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_HQ_piece",
+      "radius": 30,
+      "label": "Card_HQ_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_HK_piece",
+      "radius": 30,
+      "label": "Card_HK_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_SA_piece",
+      "radius": 30,
+      "label": "Card_SA_piece placed"
+    },
+    {
+      "check": "objectNear",
+      "target": "Card_S2_piece",
+      "radius": 30,
+      "label": "Card_S2_piece placed"
+    },
+    {
+      "check": "noErrors",
+      "source": "BoardVikings-CardGames",
+      "label": "no errors from the card mod"
+    },
+    {
+      "check": "noErrors",
+      "label": "no errors from anyone"
+    }
+  ]
+}

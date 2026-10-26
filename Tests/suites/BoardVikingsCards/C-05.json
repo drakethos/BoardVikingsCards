@@ -1,0 +1,26 @@
+{
+  "name": "C-05 joker item exists",
+  "steps": [
+    {
+      "do": "give",
+      "prefab": "Card_Joker",
+      "count": 1
+    }
+  ],
+  "asserts": [
+    {
+      "check": "hasItem",
+      "prefab": "Card_Joker",
+      "count": 1
+    },
+    {
+      "check": "noErrors",
+      "source": "BoardVikings-CardGames",
+      "label": "no errors from the card mod"
+    },
+    {
+      "check": "noErrors",
+      "label": "no errors from anyone"
+    }
+  ]
+}
