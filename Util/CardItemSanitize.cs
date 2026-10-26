@@ -27,13 +27,21 @@ internal static class CardItemSanitize
     private const int ItemLayer = 10;
     private const string SharedProjectileName = "Card_SharedProjectile";
 
-    private static readonly string[] ProjectileDonors =
+    private static readonly string[] SpearItems = { "SpearFlint", "SpearBronze", "SpearCarapace", "SpearChitin" };
+
+    /// <summary>Projectile prefab names read from the real spear items, so a renamed prefab can't break throwing.</summary>
+    private static IEnumerable<string> ProjectileDonorNames()
     {
-        "SpearFlint_projectile",
-        "SpearBronze_projectile",
-        "SpearCarapace_projectile",
-        "SpearChitin_projectile"
-    };
+        foreach (var item in SpearItems)
+        {
+            var go = PrefabManager.Instance.GetPrefab(item);
+            var attack = go != null ? go.GetComponent<ItemDrop>()?.m_itemData?.m_shared?.m_attack : null;
+            var secondary = go != null ? go.GetComponent<ItemDrop>()?.m_itemData?.m_shared?.m_secondaryAttack : null;
+            var proj = secondary?.m_attackProjectile != null ? secondary.m_attackProjectile : attack?.m_attackProjectile;
+            if (proj != null && proj.GetComponent<Projectile>() != null)
+                yield return proj.name;
+        }
+    }
 
     private static Sprite? _fallbackBack;
     private static GameObject? _sharedProjectile;
@@ -51,7 +59,7 @@ internal static class CardItemSanitize
 
         GameObject? clone = null;
         string? used = null;
-        foreach (var donor in ProjectileDonors)
+        foreach (var donor in ProjectileDonorNames())
         {
             clone = PrefabManager.Instance.CreateClonedPrefab(SharedProjectileName, donor);
             if (clone != null)
@@ -452,10 +460,16 @@ internal static class CardItemSanitize
 
     private static void StripVfx(GameObject prefab)
     {
+        // Never destroy a GameObject here: a particle system on the prefab root would take the whole prefab with it
+        // (and leave a destroyed prefab registered in ObjectDB, which breaks the game's own startup).
         foreach (var ps in prefab.GetComponentsInChildren<ParticleSystem>(true))
         {
-            if (ps != null)
-                Object.DestroyImmediate(ps.gameObject);
+            if (ps == null)
+                continue;
+            var psr = ps.GetComponent<ParticleSystemRenderer>();
+            if (psr != null)
+                Object.DestroyImmediate(psr);
+            Object.DestroyImmediate(ps);
         }
 
         foreach (var trail in prefab.GetComponentsInChildren<TrailRenderer>(true))

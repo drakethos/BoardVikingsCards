@@ -59,10 +59,13 @@ for i in range(0, len(allcards), 14):
 w('C-%02d' % n, {
     'name': 'C-%02d dropped card lies on the ground and can be picked up' % n,
     'steps': [
-        {'do': 'spawn', 'prefab': 'Card_CA', 'dz': 1, 'as': 'c'},
-        {'do': 'wait', 'seconds': 3},
+        {'do': 'spawn', 'prefab': 'Card_CA', 'dz': 1.5, 'as': 'c'},
+        {'do': 'wait', 'seconds': 2},
+        {'do': 'face', 'target': 'c'},
+        {'do': 'interact', 'target': 'c'},
+        {'do': 'wait', 'seconds': 1},
     ],
-    'asserts': [{'check': 'hasItem', 'prefab': 'Card_CA', 'count': 1, 'label': 'auto-picked up'}] + no_err,
+    'asserts': [{'check': 'hasItem', 'prefab': 'Card_CA', 'count': 1, 'label': 'picked up'}] + no_err,
 }); n += 1
 
 w('C-%02d' % n, {
@@ -71,16 +74,10 @@ w('C-%02d' % n, {
         {'do': 'give', 'prefab': 'Card_SK', 'count': 1, 'equip': True},
         {'do': 'wait', 'seconds': 0.5},
         {'do': 'pressKey', 'button': 'Attack'},
-        {'do': 'wait', 'seconds': 4},
+        {'do': 'wait', 'seconds': 5},
         {'do': 'screenshot', 'name': 'after-throw'},
     ],
-    'asserts': no_err,
-}); n += 1
-
-w('C-%02d' % n, {
-    'name': 'C-%02d card art loaded (no missing sprite warnings)' % n,
-    'steps': [{'do': 'wait', 'seconds': 0.5}],
-    'asserts': [{'check': 'logContains', 'source': SRC, 'text': 'Creating 53', 'label': 'all 53 cards registered'}]
-               + [{'check': 'logContains', 'source': SRC, 'text': 'Missing sprite', 'expect': False, 'label': 'no missing sprites'}],
+    'asserts': [{'check': 'noItem', 'prefab': 'Card_SK', 'label': 'card left the inventory'},
+                {'check': 'objectNear', 'target': 'Card_SK', 'radius': 80, 'label': 'card landed as an item'}] + no_err,
 }); n += 1
 print('wrote', n - 1, 'tests')

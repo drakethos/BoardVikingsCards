@@ -55,8 +55,11 @@ namespace Cards
                 if (sprite == null)
                     Logger.LogWarning($"Missing sprite '{info.SpriteName}' for {internalName}");
 
-                CreateCard(internalName, info, sprite);
-                CreateCardPiece(internalName + "_piece", info, sprite);
+                // One bad card must not stop the rest, and must never leave a half-built prefab in the game's databases.
+                try { CreateCard(internalName, info, sprite); }
+                catch (System.Exception ex) { Logger.LogError($"Card item {internalName} failed: {ex}"); }
+                try { CreateCardPiece(internalName + "_piece", info, sprite); }
+                catch (System.Exception ex) { Logger.LogError($"Card piece {internalName}_piece failed: {ex}"); }
             }
         }
 
@@ -79,8 +82,8 @@ namespace Cards
 
             // LeatherScraps donor = stable drop/pickup. Throw is added in SanitizeAndBuildItem.
             var customItem = new CustomItem(internalName, ItemDonor, config);
-            ItemManager.Instance.AddItem(customItem);
             CardItemSanitize.SanitizeAndBuildItem(customItem, info, sprite);
+            ItemManager.Instance.AddItem(customItem);
         }
 
         private void CreateCardPiece(string internalName, CardInfo info, Sprite? sprite)
