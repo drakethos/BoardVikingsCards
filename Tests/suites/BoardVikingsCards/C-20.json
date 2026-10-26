@@ -1,0 +1,33 @@
+{
+  "name": "C-20 card table: actions work on a bare state and survive saving",
+  "steps": [
+    {
+      "do": "teleport",
+      "x": -6,
+      "z": -8.5,
+      "yaw": 218
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestActionsSelfCheck",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "sit, save, reload, change seats",
+      "contains": "sat=True seat=1 roundtrip=1 seats=True/6"
+    }
+  ],
+  "asserts": [
+    {
+      "check": "noErrors",
+      "source": "BoardVikings-CardGames",
+      "label": "no errors from the card mod"
+    },
+    {
+      "check": "noErrors",
+      "label": "no errors from anyone"
+    }
+  ]
+}

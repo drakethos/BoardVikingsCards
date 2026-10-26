@@ -1,151 +1,196 @@
 {
-  "name": "C-02 all 13 Hearts exist as items",
+  "name": "C-02 throwing cards: all 13 Hearts can be made as variants of one item",
   "steps": [
     {
-      "do": "give",
-      "prefab": "Card_HA",
-      "count": 1
+      "do": "teleport",
+      "x": -6,
+      "z": -8.5,
+      "yaw": 218
     },
     {
-      "do": "give",
-      "prefab": "Card_H2",
-      "count": 1
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "HA",
+        "throw"
+      ]
     },
     {
-      "do": "give",
-      "prefab": "Card_H3",
-      "count": 1
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing HA",
+      "expect": true
     },
     {
-      "do": "give",
-      "prefab": "Card_H4",
-      "count": 1
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "H2",
+        "throw"
+      ]
     },
     {
-      "do": "give",
-      "prefab": "Card_H5",
-      "count": 1
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing H2",
+      "expect": true
     },
     {
-      "do": "give",
-      "prefab": "Card_H6",
-      "count": 1
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "H3",
+        "throw"
+      ]
     },
     {
-      "do": "give",
-      "prefab": "Card_H7",
-      "count": 1
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing H3",
+      "expect": true
     },
     {
-      "do": "give",
-      "prefab": "Card_H8",
-      "count": 1
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "H4",
+        "throw"
+      ]
     },
     {
-      "do": "give",
-      "prefab": "Card_H9",
-      "count": 1
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing H4",
+      "expect": true
     },
     {
-      "do": "give",
-      "prefab": "Card_H10",
-      "count": 1
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "H5",
+        "throw"
+      ]
     },
     {
-      "do": "give",
-      "prefab": "Card_HJ",
-      "count": 1
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing H5",
+      "expect": true
     },
     {
-      "do": "give",
-      "prefab": "Card_HQ",
-      "count": 1
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "H6",
+        "throw"
+      ]
     },
     {
-      "do": "give",
-      "prefab": "Card_HK",
-      "count": 1
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing H6",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "H7",
+        "throw"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing H7",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "H8",
+        "throw"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing H8",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "H9",
+        "throw"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing H9",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "H10",
+        "throw"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing H10",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "HJ",
+        "throw"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing HJ",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "HQ",
+        "throw"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing HQ",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "HK",
+        "throw"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing HK",
+      "expect": true
     }
   ],
   "asserts": [
-    {
-      "check": "hasItem",
-      "prefab": "Card_HA",
-      "count": 1,
-      "label": "Card_HA"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_H2",
-      "count": 1,
-      "label": "Card_H2"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_H3",
-      "count": 1,
-      "label": "Card_H3"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_H4",
-      "count": 1,
-      "label": "Card_H4"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_H5",
-      "count": 1,
-      "label": "Card_H5"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_H6",
-      "count": 1,
-      "label": "Card_H6"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_H7",
-      "count": 1,
-      "label": "Card_H7"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_H8",
-      "count": 1,
-      "label": "Card_H8"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_H9",
-      "count": 1,
-      "label": "Card_H9"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_H10",
-      "count": 1,
-      "label": "Card_H10"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_HJ",
-      "count": 1,
-      "label": "Card_HJ"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_HQ",
-      "count": 1,
-      "label": "Card_HQ"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_HK",
-      "count": 1,
-      "label": "Card_HK"
-    },
     {
       "check": "noErrors",
       "source": "BoardVikings-CardGames",

@@ -26,11 +26,10 @@ internal static class DeckData
     /// <summary>The card code of a loose card item (or null).</summary>
     internal static string? LooseCardCode(ItemDrop.ItemData? item)
     {
-        var name = item?.m_dropPrefab != null ? item.m_dropPrefab.name : null;
-        if (name == null || !name.StartsWith("Card_", StringComparison.Ordinal) || name == DeckPrefab)
+        // Only cards that came out of a deck go back into one; throwing cards stay throwing cards.
+        if (item?.m_dropPrefab == null || item.m_dropPrefab.name != CardLib.PlayingPrefab)
             return null;
-        var code = name.Substring(5);
-        return ValidCodes.Contains(code) ? code : null;
+        return CardLib.CodeOf(item.m_variant);
     }
 
     /// <summary>Fresh deck: 52 cards in suit order (no Joker; Jokers stay separate loose cards).</summary>
@@ -63,13 +62,13 @@ internal static class DeckData
     }
 
     /// <summary>Gives the player one loose card. False when the inventory has no room.</summary>
-    internal static bool GiveCard(Player player, string code)
+    internal static bool GiveCard(Player player, string code, int back)
     {
-        var prefab = ObjectDB.instance != null ? ObjectDB.instance.GetItemPrefab("Card_" + code) : null;
+        var prefab = ObjectDB.instance != null ? ObjectDB.instance.GetItemPrefab(CardLib.PlayingPrefab) : null;
         var drop = prefab != null ? prefab.GetComponent<ItemDrop>() : null;
         if (drop == null)
         {
-            Jotunn.Logger.LogWarning($"Card prefab Card_{code} missing; cannot pull it from the deck.");
+            Jotunn.Logger.LogWarning($"Playing card prefab missing; cannot pull {code} from the deck.");
             return false;
         }
 
@@ -77,6 +76,8 @@ internal static class DeckData
         data.m_dropPrefab = prefab;
         data.m_stack = 1;
         data.m_quality = 1;
+        data.m_variant = CardLib.IndexOf(code);
+        CardBacks.SetBack(data, back);
         return player.GetInventory().AddItem(data);
     }
 }

@@ -1,151 +1,196 @@
 {
-  "name": "C-01 all 13 Clubs exist as items",
+  "name": "C-01 throwing cards: all 13 Clubs can be made as variants of one item",
   "steps": [
     {
-      "do": "give",
-      "prefab": "Card_CA",
-      "count": 1
+      "do": "teleport",
+      "x": -6,
+      "z": -8.5,
+      "yaw": 218
     },
     {
-      "do": "give",
-      "prefab": "Card_C2",
-      "count": 1
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "CA",
+        "throw"
+      ]
     },
     {
-      "do": "give",
-      "prefab": "Card_C3",
-      "count": 1
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing CA",
+      "expect": true
     },
     {
-      "do": "give",
-      "prefab": "Card_C4",
-      "count": 1
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "C2",
+        "throw"
+      ]
     },
     {
-      "do": "give",
-      "prefab": "Card_C5",
-      "count": 1
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing C2",
+      "expect": true
     },
     {
-      "do": "give",
-      "prefab": "Card_C6",
-      "count": 1
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "C3",
+        "throw"
+      ]
     },
     {
-      "do": "give",
-      "prefab": "Card_C7",
-      "count": 1
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing C3",
+      "expect": true
     },
     {
-      "do": "give",
-      "prefab": "Card_C8",
-      "count": 1
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "C4",
+        "throw"
+      ]
     },
     {
-      "do": "give",
-      "prefab": "Card_C9",
-      "count": 1
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing C4",
+      "expect": true
     },
     {
-      "do": "give",
-      "prefab": "Card_C10",
-      "count": 1
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "C5",
+        "throw"
+      ]
     },
     {
-      "do": "give",
-      "prefab": "Card_CJ",
-      "count": 1
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing C5",
+      "expect": true
     },
     {
-      "do": "give",
-      "prefab": "Card_CQ",
-      "count": 1
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "C6",
+        "throw"
+      ]
     },
     {
-      "do": "give",
-      "prefab": "Card_CK",
-      "count": 1
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing C6",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "C7",
+        "throw"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing C7",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "C8",
+        "throw"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing C8",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "C9",
+        "throw"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing C9",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "C10",
+        "throw"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing C10",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "CJ",
+        "throw"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing CJ",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "CQ",
+        "throw"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing CQ",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "CK",
+        "throw"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing CK",
+      "expect": true
     }
   ],
   "asserts": [
-    {
-      "check": "hasItem",
-      "prefab": "Card_CA",
-      "count": 1,
-      "label": "Card_CA"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_C2",
-      "count": 1,
-      "label": "Card_C2"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_C3",
-      "count": 1,
-      "label": "Card_C3"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_C4",
-      "count": 1,
-      "label": "Card_C4"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_C5",
-      "count": 1,
-      "label": "Card_C5"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_C6",
-      "count": 1,
-      "label": "Card_C6"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_C7",
-      "count": 1,
-      "label": "Card_C7"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_C8",
-      "count": 1,
-      "label": "Card_C8"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_C9",
-      "count": 1,
-      "label": "Card_C9"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_C10",
-      "count": 1,
-      "label": "Card_C10"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_CJ",
-      "count": 1,
-      "label": "Card_CJ"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_CQ",
-      "count": 1,
-      "label": "Card_CQ"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_CK",
-      "count": 1,
-      "label": "Card_CK"
-    },
     {
       "check": "noErrors",
       "source": "BoardVikings-CardGames",

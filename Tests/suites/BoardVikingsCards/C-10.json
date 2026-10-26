@@ -1,36 +1,81 @@
 {
-  "name": "C-10 dropped card lies on the ground and can be picked up",
+  "name": "C-10 giant card: tilt leans the card without turning it, and the build-mode patches are active",
   "steps": [
     {
-      "do": "spawn",
-      "prefab": "Card_CA",
-      "dz": 1.5,
-      "as": "c"
+      "do": "teleport",
+      "x": -6,
+      "z": -8.5,
+      "yaw": 218
     },
     {
-      "do": "wait",
-      "seconds": 2
+      "do": "invoke",
+      "method": "Cards.Giant.GiantCardApi.TestTiltPatched",
+      "args": []
     },
     {
-      "do": "face",
-      "target": "c"
+      "do": "check",
+      "check": "lastResult",
+      "label": "tilt is hooked into build mode",
+      "expect": true
     },
     {
-      "do": "interact",
-      "target": "c"
+      "do": "invoke",
+      "method": "Cards.Giant.GiantCardApi.TestOrientationLean",
+      "args": [
+        0,
+        30
+      ]
     },
     {
-      "do": "wait",
-      "seconds": 1
+      "do": "check",
+      "check": "lastResult",
+      "label": "leans 30 degrees",
+      "expect": 30
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Giant.GiantCardApi.TestOrientationLean",
+      "args": [
+        90,
+        45
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "leans 45 degrees at any facing",
+      "expect": 45
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Giant.GiantCardApi.TestOrientationYaw",
+      "args": [
+        90,
+        40
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "still faces the same way when tilted",
+      "expect": 90
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Giant.GiantCardApi.TestOrientationYaw",
+      "args": [
+        200,
+        40
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "still faces the same way (other facing)",
+      "expect": 200
     }
   ],
   "asserts": [
-    {
-      "check": "hasItem",
-      "prefab": "Card_CA",
-      "count": 1,
-      "label": "picked up"
-    },
     {
       "check": "noErrors",
       "source": "BoardVikings-CardGames",

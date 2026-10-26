@@ -1,0 +1,72 @@
+{
+  "name": "C-27 deck: throwing cards never go into a deck",
+  "steps": [
+    {
+      "do": "teleport",
+      "x": -6,
+      "z": -8.5,
+      "yaw": 218
+    },
+    {
+      "do": "give",
+      "prefab": "Card_Deck",
+      "count": 1
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "S7",
+        "throw"
+      ]
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Deck.DeckApi.TestPull",
+      "args": [
+        "H2"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "pulled the 2 of Hearts",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Deck.DeckApi.TestReturnAll",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "only the playing card went back",
+      "expect": 1
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestCarriedFace",
+      "args": [
+        "throw"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "the throwing card stayed with me",
+      "expect": "S7"
+    }
+  ],
+  "asserts": [
+    {
+      "check": "noErrors",
+      "source": "BoardVikings-CardGames",
+      "label": "no errors from the card mod"
+    },
+    {
+      "check": "noErrors",
+      "label": "no errors from anyone"
+    }
+  ]
+}

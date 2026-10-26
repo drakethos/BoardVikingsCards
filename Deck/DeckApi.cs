@@ -24,7 +24,7 @@ public static class DeckApi
         if (player == null)
             return false;
         var cards = DeckData.Read(deck);
-        if (!cards.Contains(code) || !DeckData.GiveCard(player, code))
+        if (!cards.Contains(code) || !DeckData.GiveCard(player, code, deck.m_variant))
             return false;
         cards.Remove(code);
         DeckData.Write(deck, cards);

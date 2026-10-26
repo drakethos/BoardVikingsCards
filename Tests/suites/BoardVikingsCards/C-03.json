@@ -1,151 +1,196 @@
 {
-  "name": "C-03 all 13 Spades exist as items",
+  "name": "C-03 throwing cards: all 13 Spades can be made as variants of one item",
   "steps": [
     {
-      "do": "give",
-      "prefab": "Card_SA",
-      "count": 1
+      "do": "teleport",
+      "x": -6,
+      "z": -8.5,
+      "yaw": 218
     },
     {
-      "do": "give",
-      "prefab": "Card_S2",
-      "count": 1
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "SA",
+        "throw"
+      ]
     },
     {
-      "do": "give",
-      "prefab": "Card_S3",
-      "count": 1
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing SA",
+      "expect": true
     },
     {
-      "do": "give",
-      "prefab": "Card_S4",
-      "count": 1
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "S2",
+        "throw"
+      ]
     },
     {
-      "do": "give",
-      "prefab": "Card_S5",
-      "count": 1
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing S2",
+      "expect": true
     },
     {
-      "do": "give",
-      "prefab": "Card_S6",
-      "count": 1
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "S3",
+        "throw"
+      ]
     },
     {
-      "do": "give",
-      "prefab": "Card_S7",
-      "count": 1
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing S3",
+      "expect": true
     },
     {
-      "do": "give",
-      "prefab": "Card_S8",
-      "count": 1
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "S4",
+        "throw"
+      ]
     },
     {
-      "do": "give",
-      "prefab": "Card_S9",
-      "count": 1
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing S4",
+      "expect": true
     },
     {
-      "do": "give",
-      "prefab": "Card_S10",
-      "count": 1
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "S5",
+        "throw"
+      ]
     },
     {
-      "do": "give",
-      "prefab": "Card_SJ",
-      "count": 1
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing S5",
+      "expect": true
     },
     {
-      "do": "give",
-      "prefab": "Card_SQ",
-      "count": 1
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "S6",
+        "throw"
+      ]
     },
     {
-      "do": "give",
-      "prefab": "Card_SK",
-      "count": 1
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing S6",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "S7",
+        "throw"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing S7",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "S8",
+        "throw"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing S8",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "S9",
+        "throw"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing S9",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "S10",
+        "throw"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing S10",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "SJ",
+        "throw"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing SJ",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "SQ",
+        "throw"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing SQ",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "SK",
+        "throw"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "throwing SK",
+      "expect": true
     }
   ],
   "asserts": [
-    {
-      "check": "hasItem",
-      "prefab": "Card_SA",
-      "count": 1,
-      "label": "Card_SA"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_S2",
-      "count": 1,
-      "label": "Card_S2"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_S3",
-      "count": 1,
-      "label": "Card_S3"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_S4",
-      "count": 1,
-      "label": "Card_S4"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_S5",
-      "count": 1,
-      "label": "Card_S5"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_S6",
-      "count": 1,
-      "label": "Card_S6"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_S7",
-      "count": 1,
-      "label": "Card_S7"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_S8",
-      "count": 1,
-      "label": "Card_S8"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_S9",
-      "count": 1,
-      "label": "Card_S9"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_S10",
-      "count": 1,
-      "label": "Card_S10"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_SJ",
-      "count": 1,
-      "label": "Card_SJ"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_SQ",
-      "count": 1,
-      "label": "Card_SQ"
-    },
-    {
-      "check": "hasItem",
-      "prefab": "Card_SK",
-      "count": 1,
-      "label": "Card_SK"
-    },
     {
       "check": "noErrors",
       "source": "BoardVikings-CardGames",

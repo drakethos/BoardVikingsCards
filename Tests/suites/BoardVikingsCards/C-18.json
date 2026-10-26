@@ -1,0 +1,187 @@
+{
+  "name": "C-18 archery target: aim is honed (five throws, at least four hit)",
+  "steps": [
+    {
+      "do": "teleport",
+      "x": -6,
+      "z": -8.5,
+      "yaw": 218
+    },
+    {
+      "do": "spawn",
+      "prefab": "piece_ArcheryTarget",
+      "dz": 4,
+      "as": "t"
+    },
+    {
+      "do": "wait",
+      "seconds": 1
+    },
+    {
+      "do": "face",
+      "target": "t"
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestEquipThrowing",
+      "args": [
+        "CA"
+      ]
+    },
+    {
+      "do": "wait",
+      "seconds": 0.6
+    },
+    {
+      "do": "lookAt",
+      "target": "t",
+      "distance": 5
+    },
+    {
+      "do": "wait",
+      "seconds": 0.3
+    },
+    {
+      "do": "pressKey",
+      "button": "Attack"
+    },
+    {
+      "do": "wait",
+      "seconds": 2.2
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestEquipThrowing",
+      "args": [
+        "C2"
+      ]
+    },
+    {
+      "do": "wait",
+      "seconds": 0.6
+    },
+    {
+      "do": "lookAt",
+      "target": "t",
+      "distance": 5
+    },
+    {
+      "do": "wait",
+      "seconds": 0.3
+    },
+    {
+      "do": "pressKey",
+      "button": "Attack"
+    },
+    {
+      "do": "wait",
+      "seconds": 2.2
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestEquipThrowing",
+      "args": [
+        "C3"
+      ]
+    },
+    {
+      "do": "wait",
+      "seconds": 0.6
+    },
+    {
+      "do": "lookAt",
+      "target": "t",
+      "distance": 5
+    },
+    {
+      "do": "wait",
+      "seconds": 0.3
+    },
+    {
+      "do": "pressKey",
+      "button": "Attack"
+    },
+    {
+      "do": "wait",
+      "seconds": 2.2
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestEquipThrowing",
+      "args": [
+        "C4"
+      ]
+    },
+    {
+      "do": "wait",
+      "seconds": 0.6
+    },
+    {
+      "do": "lookAt",
+      "target": "t",
+      "distance": 5
+    },
+    {
+      "do": "wait",
+      "seconds": 0.3
+    },
+    {
+      "do": "pressKey",
+      "button": "Attack"
+    },
+    {
+      "do": "wait",
+      "seconds": 2.2
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestEquipThrowing",
+      "args": [
+        "C5"
+      ]
+    },
+    {
+      "do": "wait",
+      "seconds": 0.6
+    },
+    {
+      "do": "lookAt",
+      "target": "t",
+      "distance": 5
+    },
+    {
+      "do": "wait",
+      "seconds": 0.3
+    },
+    {
+      "do": "pressKey",
+      "button": "Attack"
+    },
+    {
+      "do": "wait",
+      "seconds": 2.2
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestTargetHits",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "at least four of five hit",
+      "min": 4
+    }
+  ],
+  "asserts": [
+    {
+      "check": "noErrors",
+      "source": "BoardVikings-CardGames",
+      "label": "no errors from the card mod"
+    },
+    {
+      "check": "noErrors",
+      "label": "no errors from anyone"
+    }
+  ]
+}

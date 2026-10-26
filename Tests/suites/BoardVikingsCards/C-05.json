@@ -1,18 +1,41 @@
 {
-  "name": "C-05 joker item exists",
+  "name": "C-05 throwing card: the Joker",
   "steps": [
     {
-      "do": "give",
-      "prefab": "Card_Joker",
-      "count": 1
+      "do": "teleport",
+      "x": -6,
+      "z": -8.5,
+      "yaw": 218
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "Joker",
+        "throw"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "Joker",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestCarriedFace",
+      "args": [
+        "throw"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "face kept",
+      "expect": "Joker"
     }
   ],
   "asserts": [
-    {
-      "check": "hasItem",
-      "prefab": "Card_Joker",
-      "count": 1
-    },
     {
       "check": "noErrors",
       "source": "BoardVikings-CardGames",

@@ -10,12 +10,6 @@ namespace Cards.Deck;
 /// <summary>Right-click a deck: pick any card out of it by suit, put cards back, shuffle. Built with the shared Libs window.</summary>
 internal sealed class DeckWindow
 {
-    private static readonly string[] SuitCodes = { "C", "H", "S", "D" };
-    private static readonly string[] SuitNames = { "Clubs", "Hearts", "Spades", "Diamonds" };
-    private static readonly string[] SuitGlyphs = { "♣", "♥", "♠", "♦" };
-    private static readonly string[] RankCodes = { "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
-    private const float CardW = 76f;
-    private const float CardH = 104f;
 
     private static DeckWindow? _instance;
 
@@ -51,7 +45,7 @@ internal sealed class DeckWindow
 
         _window.Body.Add(_suitRow);
 
-        _grid = Wrapping();
+        _grid = CardWidgets.Wrapping();
         _window.Body.Add(_grid);
 
         var divider = UkControls.Divider();
@@ -62,7 +56,7 @@ internal sealed class DeckWindow
         _inventoryHint = UkControls.Text("", 14, UkTheme.TextMuted);
         _inventoryHint.style.marginBottom = 8;
         _window.Body.Add(_inventoryHint);
-        _inventoryRow = Wrapping();
+        _inventoryRow = CardWidgets.Wrapping();
         _window.Body.Add(_inventoryRow);
 
         _window.Footer.Add(UkControls.MakeButton("Shuffle", Shuffle, UkButtonKind.Primary, 140f));
@@ -70,14 +64,6 @@ internal sealed class DeckWindow
         all.style.marginLeft = 8;
         _window.Footer.Add(all);
         _window.ShowFooter(true);
-    }
-
-    private static VisualElement Wrapping()
-    {
-        var row = new VisualElement();
-        row.style.flexDirection = FlexDirection.Row;
-        row.style.flexWrap = Wrap.Wrap;
-        return row;
     }
 
     private void Show(ItemDrop.ItemData deck)
@@ -99,24 +85,24 @@ internal sealed class DeckWindow
             return;
 
         var cards = DeckData.Read(_deck);
-        _window.SetHeader(DeckData.DeckName, cards.Count + (cards.Count == 1 ? " card left" : " cards left"),
-            SpriteTools.TryGetSprite("back"));
+        _window.SetHeader(DeckData.DeckName + " (" + CardBacks.Names[CardBacks.Clamp(_deck.m_variant)] + ")",
+            cards.Count + (cards.Count == 1 ? " card left" : " cards left"), CardBacks.DeckIcon(_deck.m_variant));
 
         for (int i = 0; i < _suitButtons.Length; i++)
         {
             bool joker = i == 4;
-            int count = joker ? cards.Count(c => c == "Joker") : cards.Count(c => c.StartsWith(SuitCodes[i]));
-            _suitButtons[i].text = (joker ? "★ Joker" : SuitGlyphs[i] + " " + SuitNames[i]) + "  " + count;
+            int count = joker ? cards.Count(c => c == "Joker") : cards.Count(c => c.StartsWith(CardWidgets.SuitCodes[i]));
+            _suitButtons[i].text = (joker ? "★ Joker" : CardWidgets.SuitGlyphs[i] + " " + CardWidgets.SuitNames[i]) + "  " + count;
             UkControls.SetKind(_suitButtons[i], i == _suit ? UkButtonKind.Selected : UkButtonKind.Ghost);
         }
 
         _grid.Clear();
-        var codes = _suit == 4 ? new[] { "Joker" } : RankCodes.Select(r => SuitCodes[_suit] + r).ToArray();
+        var codes = CardWidgets.CodesOfSuit(_suit);
         foreach (var code in codes)
         {
             bool inDeck = cards.Contains(code);
             var captured = code;
-            _grid.Add(CardTile(code, inDeck, () => Pull(captured)));
+            _grid.Add(CardWidgets.CardTile(code, inDeck, () => Pull(captured)));
         }
 
         _inventoryRow.Clear();
@@ -130,36 +116,8 @@ internal sealed class DeckWindow
         foreach (var item in loose)
         {
             var captured = item;
-            _inventoryRow.Add(CardTile(DeckData.LooseCardCode(item)!, true, () => Return(captured)));
+            _inventoryRow.Add(CardWidgets.CardTile(DeckData.LooseCardCode(item)!, true, () => Return(captured)));
         }
-    }
-
-    private static Button CardTile(string code, bool enabled, System.Action onClick)
-    {
-        var button = new Button(onClick);
-        button.style.width = CardW;
-        button.style.height = CardH;
-        button.style.marginRight = button.style.marginBottom = 6;
-        button.style.paddingLeft = button.style.paddingRight = button.style.paddingTop = button.style.paddingBottom = 0;
-        button.style.borderTopLeftRadius = button.style.borderTopRightRadius =
-            button.style.borderBottomLeftRadius = button.style.borderBottomRightRadius = 6;
-        button.style.backgroundColor = UkTheme.Raised;
-        var sprite = SpriteTools.TryGetSprite(code);
-        if (sprite != null)
-        {
-            button.style.backgroundImage = new StyleBackground(sprite);
-            button.style.backgroundSize = new BackgroundSize(BackgroundSizeType.Contain);
-            button.style.backgroundPositionX = new BackgroundPosition(BackgroundPositionKeyword.Center);
-            button.style.backgroundPositionY = new BackgroundPosition(BackgroundPositionKeyword.Center);
-        }
-        else
-        {
-            button.text = code;
-        }
-
-        button.SetEnabled(enabled);
-        button.style.opacity = enabled ? 1f : 0.18f;
-        return button;
     }
 
     private void Pull(string code)

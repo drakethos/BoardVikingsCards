@@ -1,88 +1,92 @@
 {
-  "name": "C-12 deck: a fresh deck holds 52, pulls any card, takes it back",
+  "name": "C-12 giant card: the back design is chosen separately, and the next card copies the last pick",
   "steps": [
     {
-      "do": "give",
-      "prefab": "Card_Deck",
-      "count": 1
+      "do": "teleport",
+      "x": -6,
+      "z": -8.5,
+      "yaw": 218
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_Giant",
+      "dz": 5,
+      "as": "first"
+    },
+    {
+      "do": "wait",
+      "seconds": 1
     },
     {
       "do": "invoke",
-      "method": "Cards.Deck.DeckApi.TestCount",
+      "method": "Cards.Giant.GiantCardApi.TestBack",
       "args": []
     },
     {
       "do": "check",
       "check": "lastResult",
-      "expect": 52,
-      "label": "fresh deck has 52"
+      "label": "a new card starts with the default back (red lattice)",
+      "expect": 3
     },
     {
       "do": "invoke",
-      "method": "Cards.Deck.DeckApi.TestPull",
+      "method": "Cards.Giant.GiantCardApi.TestSetBack",
       "args": [
-        "S7"
+        10
       ]
     },
     {
       "do": "check",
       "check": "lastResult",
-      "expect": true,
-      "label": "pulled the 7 of Spades"
+      "label": "back picked",
+      "expect": true
     },
     {
       "do": "invoke",
-      "method": "Cards.Deck.DeckApi.TestCount",
+      "method": "Cards.Giant.GiantCardApi.TestBack",
       "args": []
     },
     {
       "do": "check",
       "check": "lastResult",
-      "expect": 51,
-      "label": "deck now 51"
+      "label": "back is design 10",
+      "expect": 10
     },
     {
       "do": "invoke",
-      "method": "Cards.Deck.DeckApi.TestPull",
-      "args": [
-        "S7"
-      ]
-    },
-    {
-      "do": "check",
-      "check": "lastResult",
-      "expect": false,
-      "label": "cannot pull the same card twice"
-    },
-    {
-      "do": "invoke",
-      "method": "Cards.Deck.DeckApi.TestReturnAll",
+      "method": "Cards.Giant.GiantCardApi.TestNextBack",
       "args": []
     },
     {
       "do": "check",
       "check": "lastResult",
-      "expect": 1,
-      "label": "one card went back"
+      "label": "the next card will copy it",
+      "expect": 10
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_Giant",
+      "dz": 2,
+      "dx": 2,
+      "as": "second"
+    },
+    {
+      "do": "wait",
+      "seconds": 1
     },
     {
       "do": "invoke",
-      "method": "Cards.Deck.DeckApi.TestCount",
+      "method": "Cards.Giant.GiantCardApi.TestBack",
       "args": []
     },
     {
       "do": "check",
       "check": "lastResult",
-      "expect": 52,
-      "label": "deck whole again"
+      "label": "the card placed next has the same back",
+      "expect": 10
     }
   ],
   "asserts": [
-    {
-      "check": "noItem",
-      "prefab": "Card_S7",
-      "label": "no loose 7 left"
-    },
     {
       "check": "noErrors",
       "source": "BoardVikings-CardGames",

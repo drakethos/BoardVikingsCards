@@ -1,32 +1,38 @@
 {
-  "name": "C-13 deck: shuffle keeps 52 and changes the order",
+  "name": "C-13 giant card: face picker opens",
   "steps": [
     {
-      "do": "give",
-      "prefab": "Card_Deck",
-      "count": 1
+      "do": "teleport",
+      "x": -6,
+      "z": -8.5,
+      "yaw": 218
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_Giant",
+      "dz": 4,
+      "as": "g"
+    },
+    {
+      "do": "wait",
+      "seconds": 1
     },
     {
       "do": "invoke",
-      "method": "Cards.Deck.DeckApi.TestShuffleTop",
+      "method": "Cards.Giant.GiantCardApi.TestOpenPicker",
       "args": []
     },
     {
-      "do": "check",
-      "check": "lastResult",
-      "contains": ",",
-      "label": "got a top-8 listing"
+      "do": "wait",
+      "seconds": 1
     },
     {
-      "do": "invoke",
-      "method": "Cards.Deck.DeckApi.TestCount",
-      "args": []
+      "do": "screenshot",
+      "name": "giant-picker"
     },
     {
-      "do": "check",
-      "check": "lastResult",
-      "expect": 52,
-      "label": "still 52"
+      "do": "pressKey",
+      "key": "Escape"
     }
   ],
   "asserts": [

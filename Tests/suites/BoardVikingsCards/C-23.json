@@ -1,0 +1,123 @@
+{
+  "name": "C-23 deck: a fresh deck holds 52, pulls any card as a playing card, takes it back",
+  "steps": [
+    {
+      "do": "teleport",
+      "x": -6,
+      "z": -8.5,
+      "yaw": 218
+    },
+    {
+      "do": "give",
+      "prefab": "Card_Deck",
+      "count": 1
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Deck.DeckApi.TestCount",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "fresh deck has 52",
+      "expect": 52
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Deck.DeckApi.TestPull",
+      "args": [
+        "S7"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "pulled the 7 of Spades",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Deck.DeckApi.TestCount",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "deck now 51",
+      "expect": 51
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestCarriedFace",
+      "args": [
+        "play"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "it is a playing card with the right face",
+      "expect": "S7"
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Deck.DeckApi.TestPull",
+      "args": [
+        "S7"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "cannot pull the same card twice",
+      "expect": false
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Deck.DeckApi.TestReturnAll",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "one card went back",
+      "expect": 1
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Deck.DeckApi.TestCount",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "deck whole again",
+      "expect": 52
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestCarriedFace",
+      "args": [
+        "play"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "no playing card left",
+      "expect": ""
+    }
+  ],
+  "asserts": [
+    {
+      "check": "noErrors",
+      "source": "BoardVikings-CardGames",
+      "label": "no errors from the card mod"
+    },
+    {
+      "check": "noErrors",
+      "label": "no errors from anyone"
+    }
+  ]
+}

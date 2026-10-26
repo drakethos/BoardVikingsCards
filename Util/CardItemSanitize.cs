@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using Jotunn.Entities;
 using Jotunn.Managers;
 using UnityEngine;
@@ -8,40 +10,39 @@ using Object = UnityEngine.Object;
 namespace Cards.Util;
 
 /// <summary>
-/// Cards use a Material donor (LeatherScraps) for stable drop/pickup physics,
-/// then gain spear-style throw via a shared projectile that respawns the card on hit.
-/// Décor pieces clone vanilla "sign" and stay upright/wall-placed.
+/// Card items use a Material donor (LeatherScraps) for stable drop/pickup physics. Throwing cards then gain the vanilla spear
+/// throw (same attack and flight as a spear, so aiming works the way players expect) via a shared projectile that respawns the
+/// card on hit. The giant card piece clones vanilla "sign" and stays upright.
 /// </summary>
 internal static class CardItemSanitize
 {
-    /// <summary>Giant décor card size in meters (matches original card_piece collider).</summary>
+    internal enum Kind
+    {
+        /// <summary>Throwable card, face = variant.</summary>
+        Throwing,
+        /// <summary>Card out of a deck, face = variant. Not a weapon.</summary>
+        Playing,
+        /// <summary>The deck box.</summary>
+        Deck
+    }
+
+    /// <summary>Giant card size in meters.</summary>
     internal static readonly Vector2 PieceSize = new Vector2(1.39f, 1.9f);
 
-    /// <summary>World-drop / in-hand card size.</summary>
-    internal static readonly Vector2 ItemSize = new Vector2(0.55f, 0.75f);
+    /// <summary>A card in the hand or on the ground. Real playing cards are small.</summary>
+    internal static readonly Vector2 ItemSize = new Vector2(0.18f, 0.25f);
 
-    /// <summary>In-flight projectile card size.</summary>
-    internal static readonly Vector2 ProjectileSize = new Vector2(0.4f, 0.55f);
+    /// <summary>In flight, a little larger so the throw reads.</summary>
+    internal static readonly Vector2 ProjectileSize = new Vector2(0.22f, 0.30f);
 
-    private const float ItemClearance = 0.04f;
+    /// <summary>The deck box lying on the ground or in a hand.</summary>
+    internal static readonly Vector2 DeckSize = new Vector2(0.24f, 0.24f);
+
+    private const float ItemClearance = 0.02f;
     private const int ItemLayer = 10;
     private const string SharedProjectileName = "Card_SharedProjectile";
 
     private static readonly string[] SpearItems = { "SpearFlint", "SpearBronze", "SpearCarapace", "SpearChitin" };
-
-    /// <summary>Projectile prefab names read from the real spear items, so a renamed prefab can't break throwing.</summary>
-    private static IEnumerable<string> ProjectileDonorNames()
-    {
-        foreach (var item in SpearItems)
-        {
-            var go = PrefabManager.Instance.GetPrefab(item);
-            var attack = go != null ? go.GetComponent<ItemDrop>()?.m_itemData?.m_shared?.m_attack : null;
-            var secondary = go != null ? go.GetComponent<ItemDrop>()?.m_itemData?.m_shared?.m_secondaryAttack : null;
-            var proj = secondary?.m_attackProjectile != null ? secondary.m_attackProjectile : attack?.m_attackProjectile;
-            if (proj != null && proj.GetComponent<Projectile>() != null)
-                yield return proj.name;
-        }
-    }
 
     private static Sprite? _fallbackBack;
     private static GameObject? _sharedProjectile;
@@ -51,7 +52,47 @@ internal static class CardItemSanitize
         "Sign", "Container", "ItemDrop", "Smelter", "Fireplace", "TerrainModifier"
     };
 
-    /// <summary>Build one networked projectile used by every throwable card.</summary>
+    // ---------------------------------------------------------------- vanilla spear: projectile prefab and throw attack
+
+    private static ItemDrop.ItemData.SharedData? SpearShared(string item)
+    {
+        var go = PrefabManager.Instance.GetPrefab(item);
+        return go != null ? go.GetComponent<ItemDrop>()?.m_itemData?.m_shared : null;
+    }
+
+    /// <summary>Projectile prefab names read from the real spear items, so a renamed prefab can't break throwing.</summary>
+    private static IEnumerable<string> ProjectileDonorNames()
+    {
+        foreach (var item in SpearItems)
+        {
+            var shared = SpearShared(item);
+            var proj = shared?.m_secondaryAttack?.m_attackProjectile;
+            if (proj == null)
+                proj = shared?.m_attack?.m_attackProjectile;
+            if (proj != null && proj.GetComponent<Projectile>() != null)
+                yield return proj.name;
+        }
+    }
+
+    /// <summary>A copy of the first spear's throw, so the flight (speed, gravity, aim) is the spear's own.</summary>
+    private static Attack? SpearThrow()
+    {
+        foreach (var item in SpearItems)
+        {
+            var shared = SpearShared(item);
+            var source = shared?.m_secondaryAttack;
+            if (source == null || source.m_attackProjectile == null)
+                continue;
+            var copy = typeof(object).GetMethod("MemberwiseClone", BindingFlags.Instance | BindingFlags.NonPublic)
+                ?.Invoke(source, null) as Attack;
+            if (copy != null)
+                return copy;
+        }
+
+        return null;
+    }
+
+    /// <summary>Build one networked projectile used by every throwing card.</summary>
     internal static GameObject? EnsureSharedProjectile()
     {
         if (_sharedProjectile != null)
@@ -84,10 +125,9 @@ internal static class CardItemSanitize
             return null;
         }
 
-        // Land → ItemDrop.DropItem(thrown card) so it can be picked up again.
+        // Keep the spear's own flight (speed, gravity, drag) so a throw goes where you aim. Only the landing changes:
+        // the card drops back as an item and does no damage.
         projectile.m_respawnItemOnHit = true;
-        projectile.m_ttl = 10f;
-        projectile.m_gravity = 6f;
         projectile.m_spawnOnHit = null;
         SetField(projectile, "m_spawnOnTtl", false);
         projectile.m_damage = new HitData.DamageTypes();
@@ -95,24 +135,21 @@ internal static class CardItemSanitize
         StripDonorChildren(clone);
         StripVfx(clone);
 
-        var face = SpriteTools.TryGetSprite("Joker")
-                   ?? SpriteTools.TryGetSprite("CA")
-                   ?? SpriteTools.TryGetSprite("back");
-        BuildCardVisual(clone, face, ProjectileSize, flatOnGround: false, lift: 0f);
+        var face = SpriteTools.TryGetSprite(CardLib.All[0].SpriteName);
+        BuildCardVisual(clone, face, ProjectileSize, flatOnGround: true, lift: 0f, variantFace: true);
+        clone.AddComponent<ProjectileCardDriver>();
 
+        // No collider at all: the game's flight check would hit the card's own collider on the first frame and land it at your feet.
         foreach (var col in clone.GetComponentsInChildren<Collider>(true))
             Object.DestroyImmediate(col);
-        var box = clone.AddComponent<BoxCollider>();
-        box.isTrigger = true;
-        box.size = new Vector3(ProjectileSize.x, ProjectileSize.y, 0.05f);
-        box.center = Vector3.zero;
 
+        // The projectile moves itself (position += velocity every physics step). A rigidbody that also falls under gravity would
+        // pull the card through the ground, so it stays kinematic with no gravity.
         var rb = clone.GetComponent<Rigidbody>();
         if (rb == null)
             rb = clone.AddComponent<Rigidbody>();
         rb.useGravity = false;
         rb.isKinematic = true;
-        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 
         var znet = clone.GetComponent<ZNetView>();
         if (znet == null)
@@ -127,7 +164,15 @@ internal static class CardItemSanitize
         return _sharedProjectile;
     }
 
-    internal static void SanitizeAndBuildItem(CustomItem customItem, CardInfo info, Sprite? face, bool isDeck = false)
+    // ---------------------------------------------------------------- items
+
+    internal static void SanitizeAndBuildItem(
+        CustomItem customItem,
+        Kind kind,
+        string displayName,
+        string description,
+        Sprite? face,
+        int variants)
     {
         var prefab = customItem.ItemPrefab;
         var drop = customItem.ItemDrop;
@@ -142,14 +187,14 @@ internal static class CardItemSanitize
             znet.m_syncInitialScale = true;
 
         var shared = drop.m_itemData.m_shared;
-        shared.m_name = info.FullName;
-        shared.m_description = isDeck
-            ? "A full deck of 52 cards in one item. Right-click it to pull out any card, put cards back, or shuffle."
-            : "A throwable playing card. The " + info.FullName;
-        shared.m_itemType = isDeck ? ItemDrop.ItemData.ItemType.Misc : ItemDrop.ItemData.ItemType.OneHandedWeapon;
+        shared.m_name = displayName;
+        shared.m_description = description;
+        shared.m_itemType = kind == Kind.Throwing
+            ? ItemDrop.ItemData.ItemType.OneHandedWeapon
+            : ItemDrop.ItemData.ItemType.Misc;
         shared.m_maxStackSize = 1;
         shared.m_autoStack = false;
-        shared.m_weight = 0.1f;
+        shared.m_weight = kind == Kind.Deck ? 0.5f : 0.05f;
         shared.m_maxQuality = 1;
         shared.m_useDurability = false;
         shared.m_teleportable = true;
@@ -160,10 +205,8 @@ internal static class CardItemSanitize
         shared.m_foodEitr = 0f;
         shared.m_movementModifier = 0f;
         shared.m_equipDuration = 0.2f;
-        shared.m_variants = 0;
+        shared.m_variants = variants;
         shared.m_attachOverride = ItemDrop.ItemData.ItemType.None;
-        shared.m_skillType = isDeck ? Skills.SkillType.None : Skills.SkillType.Spears;
-        shared.m_animationState = ItemDrop.ItemData.AnimationState.OneHanded;
         shared.m_armor = 0f;
         shared.m_armorPerLevel = 0f;
         shared.m_blockPower = 0f;
@@ -179,14 +222,17 @@ internal static class CardItemSanitize
         shared.m_damages = new HitData.DamageTypes();
         shared.m_damagesPerLevel = new HitData.DamageTypes();
 
-        if (face != null)
-            shared.m_icons = new[] { face };
-
-        if (!isDeck)
+        if (kind == Kind.Throwing)
         {
+            shared.m_skillType = Skills.SkillType.Spears;
+            shared.m_animationState = ItemDrop.ItemData.AnimationState.OneHanded;
             var projectile = EnsureSharedProjectile();
-            shared.m_attack = BuildThrowAttack(projectile, stamina: 8f, vel: 25f);
-            shared.m_secondaryAttack = BuildThrowAttack(projectile, stamina: 10f, vel: 20f);
+            shared.m_attack = BuildThrow(projectile, stamina: 8f);
+            shared.m_secondaryAttack = BuildThrow(projectile, stamina: 8f);
+        }
+        else
+        {
+            shared.m_skillType = Skills.SkillType.None;
         }
 
         drop.m_autoPickup = true;
@@ -203,31 +249,51 @@ internal static class CardItemSanitize
 
         StripDonorChildren(prefab);
         StripVfx(prefab);
-        BuildCardVisual(prefab, face, ItemSize, flatOnGround: true, ItemClearance, visualRootName: "attach");
+
+        bool isDeck = kind == Kind.Deck;
+        var size = isDeck ? DeckSize : ItemSize;
+        BuildCardVisual(prefab, face, size, flatOnGround: true, ItemClearance, visualRootName: "attach",
+            variantFace: true, backOverride: isDeck ? face : null, deckBox: isDeck);
+        prefab.AddComponent<CardItemDriver>();
         SetLayerRecursive(prefab, ItemLayer);
     }
 
-    private static Attack BuildThrowAttack(GameObject? projectile, float stamina, float vel)
+    /// <summary>The spear's throw with our card projectile; a plain projectile attack if no spear can be found.</summary>
+    private static Attack BuildThrow(GameObject? projectile, float stamina)
     {
-        return new Attack
+        var attack = SpearThrow();
+        bool fromSpear = attack != null;
+        if (attack == null)
         {
-            m_attackType = Attack.AttackType.Projectile,
-            m_attackAnimation = "spear_throw",
-            m_attackProjectile = projectile,
-            m_consumeItem = true,
-            m_attackStamina = stamina,
-            m_projectileVel = vel,
-            m_projectileVelMin = 2f,
-            m_attackRange = 1.9f,
-            m_attackHeight = 1.5f,
-            m_attackStartNoise = 5f,
-            m_attackHitNoise = 10f,
-            m_projectileAccuracy = 1f,
-            m_projectileAccuracyMin = 10f,
-            m_useCharacterFacing = true,
-            m_useCharacterFacingYAim = true
-        };
+            attack = new Attack
+            {
+                m_attackType = Attack.AttackType.Projectile,
+                m_attackAnimation = "spear_throw",
+                m_projectileVel = 30f,
+                m_projectileVelMin = 2f,
+                m_attackRange = 1.9f,
+                m_attackHeight = 1.5f,
+                m_attackStartNoise = 5f,
+                m_attackHitNoise = 10f,
+                m_projectileAccuracy = 1f,
+                m_projectileAccuracyMin = 10f,
+                m_useCharacterFacing = true,
+                m_useCharacterFacingYAim = true
+            };
+        }
+
+        attack.m_attackProjectile = projectile;
+        // A tap must throw at full speed: with a different minimum the card is only tossed a few feet.
+        attack.m_projectileVelMin = attack.m_projectileVel;
+        attack.m_projectileAccuracyMin = attack.m_projectileAccuracy;
+        Jotunn.Logger.LogInfo($"Card throw: velocity {attack.m_projectileVel}, accuracy {attack.m_projectileAccuracy}, " +
+                              $"animation {attack.m_attackAnimation} ({(fromSpear ? "copied from a spear" : "built from scratch")}).");
+        attack.m_consumeItem = true;
+        attack.m_attackStamina = stamina;
+        return attack;
     }
+
+    // ---------------------------------------------------------------- the giant card piece
 
     internal static void BuildCardPiece(GameObject pieceRoot, Sprite? face, string displayName)
     {
@@ -297,7 +363,8 @@ internal static class CardItemSanitize
         netView.enabled = true;
         netView.m_syncInitialScale = true;
 
-        BuildCardVisual(pieceRoot, face, PieceSize, flatOnGround: false, lift: 0f);
+        // Origin = middle of the bottom edge: the card stands on the ground and tilts around that edge.
+        BuildCardVisual(pieceRoot, face, PieceSize, flatOnGround: false, lift: PieceSize.y * 0.5f);
 
         var piece = pieceRoot.GetComponent<Piece>();
         if (piece != null)
@@ -336,13 +403,18 @@ internal static class CardItemSanitize
         pieceRoot.SetActive(true);
     }
 
+    // ---------------------------------------------------------------- visuals
+
     private static void BuildCardVisual(
         GameObject root,
         Sprite? face,
         Vector2 size,
         bool flatOnGround,
         float lift,
-        string visualRootName = "card_visual")
+        string visualRootName = "card_visual",
+        bool variantFace = false,
+        Sprite? backOverride = null,
+        bool deckBox = false)
     {
         foreach (var col in root.GetComponentsInChildren<Collider>(true))
             Object.DestroyImmediate(col);
@@ -355,72 +427,40 @@ internal static class CardItemSanitize
         }
         else
         {
-            box.center = Vector3.zero;
+            box.center = new Vector3(0f, lift, 0f);
             box.size = new Vector3(size.x, size.y, 0.04f);
         }
 
         var attachGo = new GameObject(visualRootName);
         var attach = attachGo.transform;
         attach.SetParent(root.transform, false);
-        attach.localPosition = flatOnGround ? new Vector3(0f, lift, 0f) : Vector3.zero;
+        attach.localPosition = new Vector3(0f, lift, 0f);
         attach.localRotation = flatOnGround ? Quaternion.Euler(90f, 0f, 0f) : Quaternion.identity;
         attach.localScale = Vector3.one;
 
-        var back = SpriteTools.TryGetSprite("back")
-                   ?? SpriteTools.TryGetSprite("Back")
-                   ?? SpriteTools.TryGetSprite("card_back")
+        var back = backOverride
+                   ?? SpriteTools.TryGetSprite("back")
                    ?? GetFallbackBackSprite();
 
-        AddSpriteFace(attach, "front", face, Quaternion.identity, new Vector3(0f, 0f, 0.001f), size);
-        AddSpriteFace(attach, "back", back, Quaternion.Euler(0f, 180f, 0f), new Vector3(0f, 0f, -0.001f), size);
+        AddSpriteFace(attach, "front", face, size);
+        AddSpriteFace(attach, "back", back, size);
+
+        if (variantFace)
+        {
+            var visual = attachGo.AddComponent<CardFaceVisual>();
+            visual.Box = size;
+            visual.Deck = deckBox;
+        }
     }
 
-    private static void AddSpriteFace(
-        Transform parent,
-        string name,
-        Sprite? sprite,
-        Quaternion localRot,
-        Vector3 localPos,
-        Vector2 targetSize)
+    private static void AddSpriteFace(Transform parent, string name, Sprite? sprite, Vector2 targetSize)
     {
-        var go = new GameObject(name);
-        var t = go.transform;
-        t.SetParent(parent, false);
-        t.localPosition = localPos;
-        t.localRotation = localRot;
-
-        var sr = go.AddComponent<SpriteRenderer>();
-        if (sprite != null)
-        {
-            sr.sprite = sprite;
-            var bounds = sprite.bounds.size;
-            float sx = bounds.x > 0.0001f ? targetSize.x / bounds.x : 1f;
-            float sy = bounds.y > 0.0001f ? targetSize.y / bounds.y : 1f;
-            t.localScale = new Vector3(sx, sy, 1f);
-        }
-        else
-        {
-            t.localScale = new Vector3(targetSize.x, targetSize.y, 1f);
-        }
-
-        sr.sortingOrder = 10;
-        go.layer = parent.gameObject.layer;
+        var face = CardMesh.MakeFace(name, parent, Vector3.zero);
+        CardMesh.Apply(face, sprite, targetSize);
     }
 
-    /// <summary>Fields the store (pre-1.0) stubs lack but the live game has; reflection compiles against both.</summary>
-    private static void SetField(object target, string name, object value)
-    {
-        var field = target.GetType().GetField(name,
-            System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic |
-            System.Reflection.BindingFlags.Instance);
-        if (field == null)
-        {
-            Jotunn.Logger.LogWarning($"{target.GetType().Name}.{name} not found in this Valheim version.");
-            return;
-        }
-
-        field.SetValue(target, value);
-    }
+    /// <summary>Shows a sprite on one side of a card, as large as fits in <paramref name="box"/>, never stretched.</summary>
+    internal static void ApplySprite(GameObject face, Sprite? sprite, Vector2 box) => CardMesh.Apply(face, sprite, box);
 
     private static Sprite GetFallbackBackSprite()
     {
@@ -444,6 +484,19 @@ internal static class CardItemSanitize
         return _fallbackBack;
     }
 
+    /// <summary>Fields the store (pre-1.0) stubs lack but the live game has; reflection compiles against both.</summary>
+    private static void SetField(object target, string name, object value)
+    {
+        var field = target.GetType().GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+        if (field == null)
+        {
+            Jotunn.Logger.LogWarning($"{target.GetType().Name}.{name} not found in this Valheim version.");
+            return;
+        }
+
+        field.SetValue(target, value);
+    }
+
     private static void StripDonorChildren(GameObject prefab)
     {
         var doomed = new List<GameObject>();
@@ -463,10 +516,9 @@ internal static class CardItemSanitize
             Object.DestroyImmediate(mr);
     }
 
+    /// <summary>Never destroys a GameObject: a particle system on the prefab root would take the whole prefab with it.</summary>
     private static void StripVfx(GameObject prefab)
     {
-        // Never destroy a GameObject here: a particle system on the prefab root would take the whole prefab with it
-        // (and leave a destroyed prefab registered in ObjectDB, which breaks the game's own startup).
         foreach (var ps in prefab.GetComponentsInChildren<ParticleSystem>(true))
         {
             if (ps == null)

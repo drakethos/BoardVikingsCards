@@ -1,0 +1,57 @@
+{
+  "name": "C-24 deck: the back design is a variant; the deck is named by it and its icons are square",
+  "steps": [
+    {
+      "do": "teleport",
+      "x": -6,
+      "z": -8.5,
+      "yaw": 218
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestDeckIcons",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "one square deck icon per back design",
+      "expect": 15
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGiveDeck",
+      "args": [
+        7
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "a deck in the Blue Plain back",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestDeckName",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "named by its back",
+      "contains": "Blue Plain"
+    }
+  ],
+  "asserts": [
+    {
+      "check": "noErrors",
+      "source": "BoardVikings-CardGames",
+      "label": "no errors from the card mod"
+    },
+    {
+      "check": "noErrors",
+      "label": "no errors from anyone"
+    }
+  ]
+}

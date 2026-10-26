@@ -41,6 +41,14 @@ public static class SpriteTools
         return null;
     }
 
+    /// <summary>Add a generated sprite (card back, deck box) so it can be found by name like the bundle's.</summary>
+    public static void Register(string spriteName, Sprite sprite)
+    {
+        EnsureLoaded();
+        if (_cache != null && sprite != null)
+            _cache[spriteName] = sprite;
+    }
+
     /// <summary>Lookup without warning (optional backs, aliases).</summary>
     public static Sprite? TryGetSprite(string spriteName)
     {

@@ -1,6 +1,6 @@
 {
   "name": "BoardVikingsCards",
-  "description": "Card items, giant card pieces, throwing, pick-up, deck, and a clean log.",
+  "description": "Throwing and playing cards (one item, face = variant), icons, the deck, giant cards, throwing, and a clean log.",
   "requireMods": [
     {
       "guid": "com.DrakeMods.BoardVikings-CardGames",

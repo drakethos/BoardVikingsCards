@@ -1,41 +1,60 @@
 {
-  "name": "C-11 throwing a card (spear throw, consumed, lands as an item)",
+  "name": "C-11 giant cards look matte and the text reads the right way round from both sides",
   "steps": [
     {
-      "do": "give",
-      "prefab": "Card_SK",
-      "count": 1,
-      "equip": true
+      "do": "teleport",
+      "x": -6,
+      "z": -8.5,
+      "yaw": 218
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_Giant",
+      "dz": 5,
+      "dx": -3,
+      "as": "a"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_Giant",
+      "dz": 5,
+      "dx": 0,
+      "as": "b"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_Giant",
+      "dz": 5,
+      "dx": 3,
+      "yaw": 180,
+      "as": "c"
     },
     {
       "do": "wait",
-      "seconds": 0.5
+      "seconds": 1
     },
     {
-      "do": "pressKey",
-      "button": "Attack"
+      "do": "invoke",
+      "method": "Cards.Giant.GiantCardApi.TestSetFace",
+      "args": [
+        "HK"
+      ]
+    },
+    {
+      "do": "lookAt",
+      "target": "b",
+      "distance": 6
     },
     {
       "do": "wait",
-      "seconds": 5
+      "seconds": 1
     },
     {
       "do": "screenshot",
-      "name": "after-throw"
+      "name": "giant-cards"
     }
   ],
   "asserts": [
-    {
-      "check": "noItem",
-      "prefab": "Card_SK",
-      "label": "card left the inventory"
-    },
-    {
-      "check": "objectNear",
-      "target": "Card_SK",
-      "radius": 80,
-      "label": "card landed as an item"
-    },
     {
       "check": "noErrors",
       "source": "BoardVikings-CardGames",

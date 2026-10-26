@@ -1,0 +1,61 @@
+{
+  "name": "C-25 deck: cards pulled from a deck carry the deck back",
+  "steps": [
+    {
+      "do": "teleport",
+      "x": -6,
+      "z": -8.5,
+      "yaw": 218
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGiveDeck",
+      "args": [
+        11
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "a deck in the Blue Diamonds back",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Deck.DeckApi.TestPull",
+      "args": [
+        "H5"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "pulled the 5 of Hearts",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestCarriedBack",
+      "args": [
+        "play"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "the card has the deck back",
+      "expect": 11
+    }
+  ],
+  "asserts": [
+    {
+      "check": "noErrors",
+      "source": "BoardVikings-CardGames",
+      "label": "no errors from the card mod"
+    },
+    {
+      "check": "noErrors",
+      "label": "no errors from anyone"
+    }
+  ]
+}

@@ -1,0 +1,209 @@
+{
+  "name": "C-21 card table: the dealer sets 2 to 8 seats, players sit and leave",
+  "steps": [
+    {
+      "do": "teleport",
+      "x": -6,
+      "z": -8.5,
+      "yaw": 218
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_Table_Long",
+      "dz": 5,
+      "as": "t"
+    },
+    {
+      "do": "wait",
+      "seconds": 1
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestSeats",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "a new table has 4 seats",
+      "expect": 4
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestSetSeats",
+      "args": [
+        6
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "the dealer sets 6",
+      "expect": 6
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestSetSeats",
+      "args": [
+        12
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "never more than 8",
+      "expect": 8
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestSetSeats",
+      "args": [
+        1
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "never fewer than 2",
+      "expect": 2
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestSit",
+      "args": [
+        2
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "sat in seat 2",
+      "expect": 2
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestTaken",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "one seat taken",
+      "expect": 1
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestSeatName",
+      "args": [
+        2
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "the seat shows my name",
+      "contains": "Bjorn"
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestSetSeats",
+      "args": [
+        8
+      ]
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestSit",
+      "args": [
+        8
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "moved to seat 8",
+      "expect": 8
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestTaken",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "still one seat taken (moving frees the old one)",
+      "expect": 1
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestSetSeats",
+      "args": [
+        2
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "seats switched off",
+      "expect": 2
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestSeatOf",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "my switched-off seat sent me away",
+      "expect": 0
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestSit",
+      "args": [
+        1
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "sat in seat 1",
+      "expect": 1
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestLeave",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "left the table",
+      "expect": 0
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestTaken",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "empty again",
+      "expect": 0
+    }
+  ],
+  "asserts": [
+    {
+      "check": "noErrors",
+      "source": "BoardVikings-CardGames",
+      "label": "no errors from the card mod"
+    },
+    {
+      "check": "noErrors",
+      "label": "no errors from anyone"
+    }
+  ]
+}

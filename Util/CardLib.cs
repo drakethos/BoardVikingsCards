@@ -1,3 +1,6 @@
+using System;
+using System.Linq;
+
 namespace Cards.Util;
 
 public readonly struct CardInfo
@@ -12,9 +15,15 @@ public readonly struct CardInfo
     }
 }
 
-/// <summary>Standard 52-card deck plus Joker.</summary>
+/// <summary>Standard 52-card deck plus Joker. A card's index here is its item variant.</summary>
 public static class CardLib
 {
+    /// <summary>A card you can throw or decorate with. Crafted one at a time, the face is the variant.</summary>
+    internal const string ThrowingPrefab = "Card_Throwing";
+
+    /// <summary>A card that came out of a deck. Not a weapon; goes back into a deck.</summary>
+    internal const string PlayingPrefab = "Card_Playing";
+
     private static readonly string[] SuitCodes = { "C", "H", "S", "D" };
     private static readonly string[] SuitNames = { "Clubs", "Hearts", "Spades", "Diamonds" };
     private static readonly string[] RankCodes =
@@ -42,5 +51,24 @@ public static class CardLib
 
         cards[i] = new CardInfo("Joker", "Joker");
         return cards;
+    }
+
+    internal static bool IsVariantCardPrefab(string prefabName) =>
+        prefabName == ThrowingPrefab || prefabName == PlayingPrefab;
+
+    internal static string CodeOf(int variant) => All[Math.Max(0, Math.Min(All.Length - 1, variant))].SpriteName;
+
+    internal static string NameOf(int variant) => All[Math.Max(0, Math.Min(All.Length - 1, variant))].FullName;
+
+    /// <summary>The variant number of a card code, or -1.</summary>
+    internal static int IndexOf(string code)
+    {
+        for (int i = 0; i < All.Length; i++)
+        {
+            if (All[i].SpriteName == code)
+                return i;
+        }
+
+        return -1;
     }
 }

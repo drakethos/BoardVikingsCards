@@ -1,0 +1,55 @@
+{
+  "name": "C-16 archery target: it takes throwing cards as ammo",
+  "steps": [
+    {
+      "do": "teleport",
+      "x": -6,
+      "z": -8.5,
+      "yaw": 218
+    },
+    {
+      "do": "spawn",
+      "prefab": "piece_ArcheryTarget",
+      "dz": 4,
+      "as": "t"
+    },
+    {
+      "do": "wait",
+      "seconds": 1
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestTargetAcceptsCards",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "the target lists the throwing card as ammo",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestTargetHeight",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "the bullseye stands above the ground, not buried or floating",
+      "min": 0.5,
+      "max": 3
+    }
+  ],
+  "asserts": [
+    {
+      "check": "noErrors",
+      "source": "BoardVikings-CardGames",
+      "label": "no errors from the card mod"
+    },
+    {
+      "check": "noErrors",
+      "label": "no errors from anyone"
+    }
+  ]
+}

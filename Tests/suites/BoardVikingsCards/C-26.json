@@ -1,0 +1,87 @@
+{
+  "name": "C-26 inventory shows decks in different backs",
+  "steps": [
+    {
+      "do": "teleport",
+      "x": -6,
+      "z": -8.5,
+      "yaw": 218
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGiveDeck",
+      "args": [
+        0
+      ]
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGiveDeck",
+      "args": [
+        3
+      ]
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGiveDeck",
+      "args": [
+        5
+      ]
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGiveDeck",
+      "args": [
+        9
+      ]
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGiveDeck",
+      "args": [
+        13
+      ]
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGiveDeck",
+      "args": [
+        14
+      ]
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "SQ",
+        "throw"
+      ]
+    },
+    {
+      "do": "pressKey",
+      "button": "Inventory"
+    },
+    {
+      "do": "wait",
+      "seconds": 1
+    },
+    {
+      "do": "screenshot",
+      "name": "decks-in-inventory"
+    },
+    {
+      "do": "closeUi"
+    }
+  ],
+  "asserts": [
+    {
+      "check": "noErrors",
+      "source": "BoardVikings-CardGames",
+      "label": "no errors from the card mod"
+    },
+    {
+      "check": "noErrors",
+      "label": "no errors from anyone"
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "name": "C-22 card table: it looks like a felt table with seat markers, and the panel opens",
+  "steps": [
+    {
+      "do": "teleport",
+      "x": -6,
+      "z": -8.5,
+      "yaw": 218
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_Table_Long",
+      "dz": 5,
+      "as": "t"
+    },
+    {
+      "do": "wait",
+      "seconds": 1
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestSetSeats",
+      "args": [
+        6
+      ]
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestSit",
+      "args": [
+        1
+      ]
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestTableInfo",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "the table stands near the ground in front of me (not floating)",
+      "contains": "pos+"
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestTableLift",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "its top is at about waist height above the ground",
+      "min": 0.5,
+      "max": 1.3
+    },
+    {
+      "do": "wait",
+      "seconds": 0.6
+    },
+    {
+      "do": "screenshot",
+      "name": "table"
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestOpenPanel",
+      "args": []
+    },
+    {
+      "do": "wait",
+      "seconds": 0.8
+    },
+    {
+      "do": "screenshot",
+      "name": "table-panel"
+    },
+    {
+      "do": "pressKey",
+      "key": "Escape"
+    }
+  ],
+  "asserts": [
+    {
+      "check": "noErrors",
+      "source": "BoardVikings-CardGames",
+      "label": "no errors from the card mod"
+    },
+    {
+      "check": "noErrors",
+      "label": "no errors from anyone"
+    }
+  ]
+}

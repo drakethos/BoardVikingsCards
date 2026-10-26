@@ -1,0 +1,68 @@
+{
+  "name": "C-19 card table: Small and Long are two sizes of one table",
+  "steps": [
+    {
+      "do": "teleport",
+      "x": -6,
+      "z": -8.5,
+      "yaw": 218
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_Table_Long",
+      "dz": 5,
+      "as": "t"
+    },
+    {
+      "do": "wait",
+      "seconds": 1
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestSize",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "the long table",
+      "expect": "2.6,1.2"
+    },
+    {
+      "do": "destroy",
+      "target": "t"
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_Table_Small",
+      "dz": 5,
+      "as": "s"
+    },
+    {
+      "do": "wait",
+      "seconds": 1
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestSize",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "the small table",
+      "expect": "1.5,1.0"
+    }
+  ],
+  "asserts": [
+    {
+      "check": "noErrors",
+      "source": "BoardVikings-CardGames",
+      "label": "no errors from the card mod"
+    },
+    {
+      "check": "noErrors",
+      "label": "no errors from anyone"
+    }
+  ]
+}

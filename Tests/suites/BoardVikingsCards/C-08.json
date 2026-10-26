@@ -1,194 +1,35 @@
 {
-  "name": "C-08 giant card pieces 29-42 spawn",
+  "name": "C-08 a card is named by its face",
   "steps": [
     {
-      "do": "spawn",
-      "prefab": "Card_S3_piece",
-      "dx": -6,
-      "dz": 4,
-      "as": "p0"
+      "do": "teleport",
+      "x": -6,
+      "z": -8.5,
+      "yaw": 218
     },
     {
-      "do": "spawn",
-      "prefab": "Card_S4_piece",
-      "dx": -4,
-      "dz": 4,
-      "as": "p1"
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGive",
+      "args": [
+        "S7",
+        "throw"
+      ]
     },
     {
-      "do": "spawn",
-      "prefab": "Card_S5_piece",
-      "dx": -2,
-      "dz": 4,
-      "as": "p2"
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestCarriedName",
+      "args": [
+        "throw"
+      ]
     },
     {
-      "do": "spawn",
-      "prefab": "Card_S6_piece",
-      "dx": 0,
-      "dz": 4,
-      "as": "p3"
-    },
-    {
-      "do": "spawn",
-      "prefab": "Card_S7_piece",
-      "dx": 2,
-      "dz": 4,
-      "as": "p4"
-    },
-    {
-      "do": "spawn",
-      "prefab": "Card_S8_piece",
-      "dx": 4,
-      "dz": 4,
-      "as": "p5"
-    },
-    {
-      "do": "spawn",
-      "prefab": "Card_S9_piece",
-      "dx": 6,
-      "dz": 4,
-      "as": "p6"
-    },
-    {
-      "do": "spawn",
-      "prefab": "Card_S10_piece",
-      "dx": -6,
-      "dz": 7,
-      "as": "p7"
-    },
-    {
-      "do": "spawn",
-      "prefab": "Card_SJ_piece",
-      "dx": -4,
-      "dz": 7,
-      "as": "p8"
-    },
-    {
-      "do": "spawn",
-      "prefab": "Card_SQ_piece",
-      "dx": -2,
-      "dz": 7,
-      "as": "p9"
-    },
-    {
-      "do": "spawn",
-      "prefab": "Card_SK_piece",
-      "dx": 0,
-      "dz": 7,
-      "as": "p10"
-    },
-    {
-      "do": "spawn",
-      "prefab": "Card_DA_piece",
-      "dx": 2,
-      "dz": 7,
-      "as": "p11"
-    },
-    {
-      "do": "spawn",
-      "prefab": "Card_D2_piece",
-      "dx": 4,
-      "dz": 7,
-      "as": "p12"
-    },
-    {
-      "do": "spawn",
-      "prefab": "Card_D3_piece",
-      "dx": 6,
-      "dz": 7,
-      "as": "p13"
-    },
-    {
-      "do": "wait",
-      "seconds": 1
+      "do": "check",
+      "check": "lastResult",
+      "label": "name is the face",
+      "expect": "7 of Spades"
     }
   ],
   "asserts": [
-    {
-      "check": "objectNear",
-      "target": "Card_S3_piece",
-      "radius": 30,
-      "label": "Card_S3_piece placed"
-    },
-    {
-      "check": "objectNear",
-      "target": "Card_S4_piece",
-      "radius": 30,
-      "label": "Card_S4_piece placed"
-    },
-    {
-      "check": "objectNear",
-      "target": "Card_S5_piece",
-      "radius": 30,
-      "label": "Card_S5_piece placed"
-    },
-    {
-      "check": "objectNear",
-      "target": "Card_S6_piece",
-      "radius": 30,
-      "label": "Card_S6_piece placed"
-    },
-    {
-      "check": "objectNear",
-      "target": "Card_S7_piece",
-      "radius": 30,
-      "label": "Card_S7_piece placed"
-    },
-    {
-      "check": "objectNear",
-      "target": "Card_S8_piece",
-      "radius": 30,
-      "label": "Card_S8_piece placed"
-    },
-    {
-      "check": "objectNear",
-      "target": "Card_S9_piece",
-      "radius": 30,
-      "label": "Card_S9_piece placed"
-    },
-    {
-      "check": "objectNear",
-      "target": "Card_S10_piece",
-      "radius": 30,
-      "label": "Card_S10_piece placed"
-    },
-    {
-      "check": "objectNear",
-      "target": "Card_SJ_piece",
-      "radius": 30,
-      "label": "Card_SJ_piece placed"
-    },
-    {
-      "check": "objectNear",
-      "target": "Card_SQ_piece",
-      "radius": 30,
-      "label": "Card_SQ_piece placed"
-    },
-    {
-      "check": "objectNear",
-      "target": "Card_SK_piece",
-      "radius": 30,
-      "label": "Card_SK_piece placed"
-    },
-    {
-      "check": "objectNear",
-      "target": "Card_DA_piece",
-      "radius": 30,
-      "label": "Card_DA_piece placed"
-    },
-    {
-      "check": "objectNear",
-      "target": "Card_D2_piece",
-      "radius": 30,
-      "label": "Card_D2_piece placed"
-    },
-    {
-      "check": "objectNear",
-      "target": "Card_D3_piece",
-      "radius": 30,
-      "label": "Card_D3_piece placed"
-    },
     {
       "check": "noErrors",
       "source": "BoardVikings-CardGames",
