@@ -1,43 +1,75 @@
-# Board Vikings — Card Games
+# Board Vikings: Cards
 
-Playing cards for Valheim (DrakeMods): throwing cards, a deck you play from, and giant cards you can stand up and build with.
+**DrakesMods presents: Board Vikings, Cards.**
 
-**Requires [Jotunn](https://thunderstore.io/c/valheim/p/ValheimModding/Jotunn/) and DrakeModsLibs.**
-**Recommended: the Gizmo mod** for free rotation when placing giant cards (see below).
+Ever just wanted to play card games inside of Valheim? Well, now you can.
 
-## What's in it
+Throw cards like a boss. Build giant houses of cards (you can rotate them, but they are best with Gizmo). Sit at a card table. Play with rules set in, or free-style, and yes, you can cheat 😉 A table to play at, a cool poker hat, and much more.
+
+> **0.1.0 is the debut.** The cards, the deck, the giant cards, the archery target and the card table (with seats) are all in. Dealing and playing at the table, the dealer's poker hat, rules and chips are the next releases: see [Coming next](#coming-next).
+
+## What's in 0.1.0
 
 | Item | What it is | Cost |
 | --- | --- | --- |
-| **Throwing Card** | One item for all 53 faces. Pick the card when you craft it (the variant picker). Throw it like a spear, or keep it for decoration. | 1 Wood, 1 Coal |
-| **Deck of Cards** | A full 52-card deck in a single item. Right-click it to pull out any card, put cards back, or shuffle. | 20 Wood, 5 Coal |
-| **Playing Card** | A card that came out of a deck. It is not a weapon and goes back into a deck. It cannot be crafted on its own. | — |
-| **Giant Card** | A big card piece (Cards tab of the hammer). Press **E** to choose its face. | 1 Wood, 1 Coal |
+| **Throwing Card** | One card item for all 53 faces. Pick the card when you craft it. Throw it like a spear, decorate with it, hit targets with it. | 1 Wood, 1 Coal |
+| **Deck of Cards** | A full 52-card deck in a single box. Right-click it to pull out any card, put cards back, or shuffle. Pick one of **15 card backs** when you craft it. | 20 Wood, 5 Coal |
+| **Playing Card** | A card that came out of a deck. Not a weapon, and it goes back into a deck. Cannot be crafted on its own. | — |
+| **Giant Card** | A big card that stands on its edge (Cards tab of the hammer). Press **E** to choose its face **and** its back. Lean cards on each other to build a house of cards. | 1 Wood, 1 Coal |
+| **Card Table** (Small and Long) | A felt table with seats (Cards tab of the hammer). Press **E** to sit down. The builder is the dealer and sets how many seats the table uses (2 to 8). | Small: 12 Wood, 4 Leather Scraps. Long: 20 Wood, 4 Leather Scraps |
 
-Throwing cards and playing cards are kept separate on purpose: cards you play with never turn into weapons, and cards you throw never end up in a deck.
+Throwing cards and playing cards are kept apart on purpose: the cards you play with never turn into weapons, and the cards you throw never end up in a deck.
+
+## Throwing cards
+
+Craft a Throwing Card, pick the face in the crafting window, and throw it. It flies like a spear throw, goes where you aim, and lands as an item you can pick up again. It keeps its face.
+
+**The archery target.** The game's own archery target now takes cards. A card that hits scores like an arrow (bullseye = most points), stays stuck in the target, and pressing **E** on the target hands every card back, each with its own face.
 
 ## The deck
 
-Right-click the deck. Pick a suit tab and click any card to take it out. Your own cards are listed at the bottom: click one to put it on top of the deck, or use **Put all my cards back**. **Shuffle** is one button — nobody shuffles 52 cards by hand.
+Right-click a deck. Pick a suit tab and click any card to take it out. Your cards are listed at the bottom: click one to put it on top of the deck, or use **Put all my cards back**. **Shuffle** is one button, so nobody shuffles 52 cards by hand. A card pulled from a deck carries that deck's back.
 
 ## Giant cards and houses of cards
 
-Giant cards stand on their bottom edge. While placing one you can lean it, so two cards can lean on each other.
+A giant card stands on its bottom edge, so it can lean.
 
-- **With the Gizmo mod (recommended):** rotate the card with Gizmo's keys as you would any piece. It rotates around the bottom edge, so it stands and leans naturally. The built-in tilt stays out of the way.
-- **Without Gizmo:** hold **Ctrl** and scroll to lean the card in small steps. The card keeps facing the way you aim it and leans around its two bottom corners, like a `<`. Scroll without Ctrl to turn it as usual. (Change the key or the step size in the config.)
+- **Best with the Gizmo mod (recommended):** rotate the card with Gizmo's keys like any piece. It turns around its bottom edge, so it stands and leans naturally. The built-in tilt switches itself off so the two never fight.
+- **Without Gizmo:** hold **Ctrl** and scroll while placing to lean the card in small steps. It keeps facing the way you aim it and leans around its two bottom corners, like a `<`. Scroll without Ctrl to turn it as usual.
+
+Press **E** on a placed card to pick its face (any of the 53 cards, or the back) and its back design. New giant cards copy your last face and back.
+
+## The card table
+
+Build a table (Small or Long) from the Cards tab of the hammer. Press **E** on it to sit. The table's builder is its dealer and sets how many seats it uses with the − and + buttons: two for a duel, up to eight for a crowd. Your seat is remembered while you play.
+
+## Requirements
+
+- **DrakeModsLibs** (installs automatically)
+- **Jotunn** (installs automatically)
+- Recommended: the **Gizmo** mod, for rotating giant cards freely
 
 ## Config
 
-`Giant card`: tilt key, tilt step, and an option to use the built-in tilt even when Gizmo is installed.
+`Giant card`: the tilt key (Ctrl by default), the tilt step (degrees per scroll notch), and an option to use the built-in tilt even when Gizmo is installed.
+
+## Coming next
+
+- **Play at the table:** put a deck on the table, shuffle, deal, draw, play and flip cards, with hands only you can see. A panel for you, and a panel for the dealer.
+- **The dealer's poker hat:** a translucent green visor. Whoever wears it is the dealer.
+- **Rules your way:** free play with no limits, turn order, or a preset game. The dealer can lock the rules so only the hat wearer changes them. And yes, you can cheat.
+- **Poker chips**, Valheim style.
+- A proper table model and felt, made the Valheim way.
 
 ## Install
 
-Import the Thunderstore zip via **Gale**, **r2modman**, or **Thunderstore Mod Manager**, or extract into:
+Install from **Hexium** with your mod manager (dependencies come with it), or import the zip with **Gale** or **r2modman**, or extract into:
 
 ```
 BepInEx/plugins/DrakeMods-BoardVikings-CardGames/
 ```
+
+Everyone on a server needs the mod.
 
 ## Build / deploy (local)
 
@@ -45,11 +77,7 @@ Uses the DrakeMod RenameIt-style workflow:
 
 1. Copy `environment.props.example` → `environment.props` (already set for `drakeTest` + Gale).
 2. Build `Cards.csproj` (Debug).
-3. Output deploys to:
-   - Gale: `%AppData%\com.kesomannen.gale\valheim\profiles\drakeTest\BepInEx\plugins\DrakeMods-BoardVikings-CardGames\`
-   - r2modman: `%AppData%\r2modmanPlus-local\Valheim\profiles\drakeTest\BepInEx\plugins\DrakeMods-BoardVikings-CardGames\`
-4. Thunderstore zip lands under `C:\Modding\Thunderstore\DrakeMods-BoardVikings-CardGames-{version}.zip`.
+3. Output deploys to the `drakeTest` profile in Gale and r2modman.
+4. The test suite (`Tests/gen_cards_suite.py`) is copied into the test profiles for DrakesTestLab.
 
-Tests: `Tests/gen_cards_suite.py` writes the DrakesTestLab suite; the build copies it into the test profiles.
-
-Tag `v{Version}` (must match `mod.package.props`) to publish **Thunderstore** then **Hexium** via GitHub Actions.
+Tag `v{Version}` (must match `mod.package.props`) to publish to **Hexium** through GitHub Actions. Betas use `vX.Y.Z-beta.N`.

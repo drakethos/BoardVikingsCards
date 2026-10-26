@@ -1,8 +1,8 @@
 {
   "name": "BoardVikings-CardGames",
-  "version_number": "0.0.1",
+  "version_number": "0.1.0",
   "website_url": "",
-  "description": "Playing cards and card games for Valheim.",
+  "description": "Card games in Valheim. Throw cards like a boss, build giant houses of cards, carry a whole deck in one item, hit the archery target, sit at a felt card table. DrakesMods presents Board Vikings: Cards.",
   "dependencies": [
     "denikson-BepInExPack_Valheim-5.4.2333",
     "ValheimModding-Jotunn-2.23.0",

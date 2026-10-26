@@ -1,5 +1,10 @@
 name: Release
 
+# Hexium only (no Thunderstore). Push a tag to release:
+#   Stable: v0.1.0          -> Hexium + GitHub release (DrakeModsLibs must already be on Hexium at the version pinned in mod.package.props)
+#   Beta:   v0.1.0-beta.1   -> Hexium + GitHub prerelease
+# The tag must match <Version> in mod.package.props, and CHANGELOG.md needs a "## <version>" section.
+
 on:
   push:
     tags:
@@ -10,23 +15,35 @@ permissions:
 
 jobs:
   build-and-release:
+    # ubuntu-22.04: mono-complete + nuget are pre-installed.
+    # dotnet SDK added via setup-dotnet for Roslyn (C#10).
     runs-on: ubuntu-22.04
     outputs:
       version: ${{ steps.ver.outputs.version }}
       tag: ${{ steps.ver.outputs.tag }}
+      is_prerelease: ${{ steps.ver.outputs.is_prerelease }}
       zip: ${{ steps.pkg.outputs.zip }}
-      description: ${{ steps.pkg.outputs.description }}
-      website_url: ${{ steps.pkg.outputs.website_url }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # ── Version from mod.package.props (must match release tag v{Version}) ───
       - name: Resolve release version
         id: ver
         run: |
           TAG="${GITHUB_REF_NAME}"
           TAG_VERSION="${TAG#v}"
+
+          if [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            IS_PRERELEASE=false
+          elif [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-(alpha|beta|rc)\.[0-9]+$ ]]; then
+            IS_PRERELEASE=true
+          else
+            echo "::error::Tag ${TAG} must be vX.Y.Z (stable) or vX.Y.Z-beta.N / -alpha.N / -rc.N (prerelease)." >&2
+            exit 1
+          fi
+
           PKG_VERSION=$(sed -n 's/.*<Version>\([^<]*\)<\/Version>.*/\1/p' mod.package.props | head -1 | xargs)
           if [ -z "$PKG_VERSION" ]; then
             echo "::error::Could not read <Version> from mod.package.props" >&2
@@ -38,7 +55,8 @@ jobs:
           fi
           echo "version=$PKG_VERSION" >> "$GITHUB_OUTPUT"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-          echo "Release version: $PKG_VERSION (mod.package.props)"
+          echo "is_prerelease=$IS_PRERELEASE" >> "$GITHUB_OUTPUT"
+          echo "Release version: $PKG_VERSION (prerelease=$IS_PRERELEASE)"
 
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
@@ -49,6 +67,38 @@ jobs:
         run: |
           nuget restore Cards.csproj -PackagesDirectory packages
 
+      # Compile reference for DrakeModsLibs: the exact version this mod depends on, from Hexium.
+      - name: Fetch DrakeModsLibs reference DLL
+        run: |
+          LIBS_DEP=$(grep -oE 'DrakeMods-DrakeModsLibs-[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?' mod.package.props | head -1)
+          LIBS_VER="${LIBS_DEP#DrakeMods-DrakeModsLibs-}"
+          if [ -z "$LIBS_VER" ]; then
+            echo "::error::Could not parse DrakeMods-DrakeModsLibs version from mod.package.props" >&2
+            exit 1
+          fi
+          echo "Resolving DrakeModsLibs $LIBS_VER on Hexium"
+          URL=$(curl -fsSL "https://valheim.hexium.gg/api/experimental/package/DrakeMods/DrakeModsLibs/${LIBS_VER}/" | jq -r '.download_url // empty')
+          if [ -z "$URL" ]; then
+            echo "::error::DrakeModsLibs ${LIBS_VER} is not on Hexium. Publish it first." >&2
+            exit 1
+          fi
+          curl -fsSL "$URL" -o /tmp/drakemodslibs.zip
+          mkdir -p ci_libs /tmp/drakemodslibs
+          unzip -qo /tmp/drakemodslibs.zip -d /tmp/drakemodslibs
+          DLL=$(find /tmp/drakemodslibs -name 'DrakeModsLibs.dll' | head -1)
+          if [ -z "$DLL" ]; then
+            echo "::error::DrakeModsLibs.dll missing from Hexium zip" >&2
+            find /tmp/drakemodslibs -type f >&2
+            exit 1
+          fi
+          cp "$DLL" ci_libs/DrakeModsLibs.dll
+          echo "WORKSHOP_LIBS_DLL=$(pwd)/ci_libs/DrakeModsLibs.dll" >> "$GITHUB_ENV"
+
+      # ── Stage game / BepInEx DLLs from Pfhoenix ─────────────────────────────
+      #  Fake "Valheim install" tree:
+      #    ci_valheim/valheim_Data/Managed/          <- CorlibPath
+      #      publicized_assemblies/                  <- PublicizedAssembliesPath
+      #    ci_valheim/BepInEx/core/                  <- BepInExPath
       - name: Stage game DLLs from Pfhoenix package
         run: |
           PFHOENIX_LIB=$(ls -d packages/Pfhoenix.Valheim.ModProjectReferences.*/lib/net46 2>/dev/null | head -1)
@@ -66,9 +116,7 @@ jobs:
 
           cp "$PFHOENIX_LIB/assembly_valheim.dll" "$PUBLICIZED/assembly_valheim_publicized.dll"
           cp "$PFHOENIX_LIB/assembly_utils.dll"   "$PUBLICIZED/assembly_utils_publicized.dll"
-          cp "$PFHOENIX_LIB/gui_framework.dll"    "$PUBLICIZED/gui_framework_publicized.dll" 2>/dev/null || true
-          [ -f "$PFHOENIX_LIB/assembly_guiutils.dll" ] && \
-            cp "$PFHOENIX_LIB/assembly_guiutils.dll" "$PUBLICIZED/assembly_guiutils_publicized.dll" || true
+          cp "$PFHOENIX_LIB/gui_framework.dll"    "$PUBLICIZED/gui_framework_publicized.dll"
 
           for src in assembly_googleanalytics assembly_guiutils assembly_lux \
                      assembly_postprocessing assembly_simplemeshcombine \
@@ -99,7 +147,8 @@ jobs:
             /t:Build \
             /v:minimal
 
-      - name: Assemble Thunderstore package
+      # Hexium uses the Thunderstore package layout (manifest.json + icon.png + README.md at the root).
+      - name: Assemble package
         id: pkg
         run: |
           VERSION="${{ steps.ver.outputs.version }}"
@@ -108,12 +157,11 @@ jobs:
 
           mkdir -p "$PKG_DIR/Assets"
           cp bin/Release/BoardVikings-CardGames.dll "$PKG_DIR/"
-          if [ -d Assets ]; then
-            cp -r Assets/* "$PKG_DIR/Assets/" || true
-          fi
-          cp README.md    "$PKG_DIR/"
-          cp icon.png     "$PKG_DIR/"
-          cp CHANGELOG.md "$PKG_DIR/"
+          # the art: the card bundle (faces) and the card back sheet
+          cp Assets/card Assets/card_backs.png "$PKG_DIR/Assets/"
+          cp README.md                      "$PKG_DIR/"
+          cp icon.png                       "$PKG_DIR/"
+          cp CHANGELOG.md                   "$PKG_DIR/"
 
           dotnet msbuild Cards.csproj \
             /p:Version="$VERSION" \
@@ -121,134 +169,113 @@ jobs:
             /t:WriteThunderstoreManifest \
             /v:minimal
 
-          DESCRIPTION=$(jq -r '.description' "$PKG_DIR/manifest.json")
-          WEBSITE_URL=$(jq -r '.website_url // empty' "$PKG_DIR/manifest.json")
-
           cd "$PKG_DIR" && zip -r "../$ZIP_NAME" . && cd ..
 
+          # Guard: exactly one icon.png at the zip root, 256x256 (store listing icon).
+          ICON_PATHS=$(zipinfo -1 "$ZIP_NAME" | grep -E '(^|/)icon\.png$' || true)
+          ICON_COUNT=$(printf '%s\n' "$ICON_PATHS" | grep -c . || true)
+          if [ "$ICON_COUNT" -ne 1 ] || [ "$ICON_PATHS" != "icon.png" ]; then
+            echo "::error::Package must contain exactly one icon.png at zip root (found $ICON_COUNT):" >&2
+            printf '%s\n' "$ICON_PATHS" >&2
+            exit 1
+          fi
+          python3 - "$ZIP_NAME" <<'PY'
+          import struct, sys, zipfile
+          z = zipfile.ZipFile(sys.argv[1])
+          data = z.read("icon.png")
+          if data[:8] != b"\x89PNG\r\n\x1a\n":
+              raise SystemExit("icon.png is not a PNG")
+          w, h = struct.unpack(">II", data[16:24])
+          if (w, h) != (256, 256):
+              raise SystemExit(f"icon.png must be 256x256, got {w}x{h}")
+          print(f"OK package icon.png {w}x{h} ({len(data)} bytes)")
+          PY
+
           echo "zip=$ZIP_NAME" >> "$GITHUB_OUTPUT"
-          {
-            echo "description<<EOF"
-            echo "$DESCRIPTION"
-            echo "EOF"
-          } >> "$GITHUB_OUTPUT"
-          echo "website_url=$WEBSITE_URL" >> "$GITHUB_OUTPUT"
           ls -lh "$ZIP_NAME"
+
+      # Release notes = this version's CHANGELOG.md section, wrapped with install / bug-report info.
+      # The run fails if CHANGELOG.md has no "## <version>" heading, so notes can't be forgotten.
+      - name: Write release notes
+        env:
+          VERSION: ${{ steps.ver.outputs.version }}
+          TAG: ${{ steps.ver.outputs.tag }}
+          IS_PRERELEASE: ${{ steps.ver.outputs.is_prerelease }}
+          REPO: ${{ github.repository }}
+        run: |
+          SECTION=$(awk -v v="## ${VERSION}" '
+            $0 == v { found = 1; next }
+            found && /^## / { exit }
+            found { print }
+          ' CHANGELOG.md | sed -e 's/^###/##/')
+          if [ -z "$(printf '%s' "$SECTION" | tr -d '[:space:]')" ]; then
+            echo "::error::CHANGELOG.md has no '## ${VERSION}' section (or it is empty)." >&2
+            exit 1
+          fi
+          {
+            if [ "$IS_PRERELEASE" = "true" ]; then
+              echo "> **Beta build.** Back up your worlds, and please [report bugs](https://github.com/${REPO}/issues) with your \`BepInEx/LogOutput.log\`."
+              echo
+            fi
+            printf '%s\n' "$SECTION"
+            echo
+            echo "## Install"
+            echo "- **Hexium:** https://valheim.hexium.gg/mods/DrakeMods/BoardVikings-CardGames (dependencies install automatically)."
+            echo "- **Zip below:** use your mod manager's \"Import local mod\" (Gale, r2modman), or extract into \`BepInEx/plugins/DrakeMods-BoardVikings-CardGames/\`."
+            echo "- Requires **DrakeModsLibs** (installs automatically) and works best with the **Gizmo** mod for rotating giant cards."
+            echo
+            echo "---"
+            echo "Full history: [CHANGELOG.md](https://github.com/${REPO}/blob/${TAG}/CHANGELOG.md) | How to use it: [README](https://github.com/${REPO}/blob/${TAG}/README.md)"
+          } > release-notes.md
+          cat release-notes.md
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.ver.outputs.tag }}
-          name: "BoardVikings-CardGames ${{ steps.ver.outputs.version }}"
-          prerelease: false
-          body: |
-            ## BoardVikings-CardGames v${{ steps.ver.outputs.version }}
-
-            Thunderstore zip attached. CI also publishes to **Thunderstore** then **Hexium**.
-
-            ### Install
-            Drop the zip into **Gale**, **r2modman**, or **Thunderstore Mod Manager**, or extract into:
-            ```
-            BepInEx/plugins/DrakeMods-BoardVikings-CardGames/
-            ```
-
-            ---
-            See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/${{ steps.ver.outputs.tag }}/CHANGELOG.md) for what's new.
+          name: "Board Vikings - Cards ${{ steps.ver.outputs.version }}${{ steps.ver.outputs.is_prerelease == 'true' && ' (beta)' || '' }}"
+          prerelease: ${{ steps.ver.outputs.is_prerelease == 'true' }}
+          body_path: release-notes.md
           files: ${{ steps.pkg.outputs.zip }}
 
-      - name: Upload Thunderstore zip artifact
+      - name: Upload package artifact
         uses: actions/upload-artifact@v4
         with:
-          name: thunderstore-zip
+          name: package-zip
           path: ${{ steps.pkg.outputs.zip }}
           if-no-files-found: error
 
-  publish-thunderstore:
-    needs: build-and-release
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download Thunderstore zip
-        uses: actions/download-artifact@v4
-        with:
-          name: thunderstore-zip
-          path: dist
-
-      - name: Publish package to Thunderstore
-        uses: GreenTF/upload-thunderstore-package@v4.3
-        with:
-          namespace: DrakeMods
-          name: BoardVikings-CardGames
-          version: ${{ needs.build-and-release.outputs.version }}
-          description: ${{ needs.build-and-release.outputs.description }}
-          community: valheim
-          repo: https://thunderstore.io/c/valheim/
-          token: ${{ secrets.THUNDERSTORE_TOKEN }}
-          file: ${{ needs.build-and-release.outputs.zip }}
-          path: dist
-          website: ${{ needs.build-and-release.outputs.website_url }}
-          categories: |
-            misc
-
   publish-hexium:
-    needs: [build-and-release, publish-thunderstore]
+    needs: build-and-release
+    # Kill switch: repo variable HEXIUM_PUBLISH=false skips the upload (GitHub release still made),
+    # e.g. for a manual first upload. Unset or any other value publishes.
+    #   gh variable set HEXIUM_PUBLISH --body false   /   gh variable delete HEXIUM_PUBLISH
+    if: vars.HEXIUM_PUBLISH != 'false'
     runs-on: ubuntu-latest
     steps:
-      - name: Download Thunderstore zip
+      - name: Checkout publish script
+        uses: actions/checkout@v4
+
+      - name: Download package zip
         uses: actions/download-artifact@v4
         with:
-          name: thunderstore-zip
+          name: package-zip
           path: dist
 
-      - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: "8.0.x"
-
-      - name: Install tcli
-        run: dotnet tool install -g tcli
-
+      # publish-hexium.py (not tcli) so Hexium can receive -beta.N versions.
       - name: Publish package to Hexium
         env:
-          VERSION: ${{ needs.build-and-release.outputs.version }}
-          DESCRIPTION: ${{ needs.build-and-release.outputs.description }}
-          WEBSITE_URL: ${{ needs.build-and-release.outputs.website_url }}
-          ZIP_NAME: ${{ needs.build-and-release.outputs.zip }}
           HEXIUM_TOKEN: ${{ secrets.HEXIUM_TOKEN }}
+          ZIP_NAME: ${{ needs.build-and-release.outputs.zip }}
         run: |
           set -euo pipefail
           if [ -z "${HEXIUM_TOKEN}" ]; then
             echo "::error::HEXIUM_TOKEN secret is not set" >&2
             exit 1
           fi
-
-          DESC_ESC=$(printf '%s' "$DESCRIPTION" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read())[1:-1])')
-          WEB_ESC=$(printf '%s' "$WEBSITE_URL" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read())[1:-1])')
-
-          cat > thunderstore.toml <<EOF
-          [config]
-          schemaVersion = "0.0.1"
-
-          [package]
-          namespace = "DrakeMods"
-          name = "BoardVikings-CardGames"
-          versionNumber = "${VERSION}"
-          description = "${DESC_ESC}"
-          websiteUrl = "${WEB_ESC}"
-          containsNsfwContent = false
-
-          [publish]
-          repository = "https://valheim.hexium.gg"
-          communities = ["valheim"]
-
-          [publish.categories]
-          valheim = ["Misc", "Valheim 1.0"]
-          EOF
-
-          sed -i 's/^          //' thunderstore.toml
-          cat thunderstore.toml
-
-          export PATH="$PATH:$HOME/.dotnet/tools"
-          tcli publish \
-            --config-path thunderstore.toml \
+          python3 .github/scripts/publish-hexium.py \
             --file "dist/${ZIP_NAME}" \
-            --token "${HEXIUM_TOKEN}"
+            --repository "https://valheim.hexium.gg" \
+            --namespace "DrakeMods" \
+            --communities "valheim" \
+            --categories "Misc,Valheim 1.0"

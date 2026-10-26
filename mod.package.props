@@ -5,11 +5,11 @@
     <ThunderstoreAuthor>DrakeMods</ThunderstoreAuthor>
     <RootNamespace>Cards</RootNamespace>
     <AssemblyName>BoardVikings-CardGames</AssemblyName>
-    <Version>0.0.1</Version>
+    <Version>0.1.0</Version>
     <BepInPluginName>BoardVikings-CardGames</BepInPluginName>
     <BepInGuid>com.DrakeMods.BoardVikings-CardGames</BepInGuid>
     <ModInfoClass>Cards</ModInfoClass>
-    <Description>Playing cards and card games for Valheim. Craftable cards, buildable pieces, and a card holder.</Description>
+    <Description>Card games in Valheim. Throw cards like a boss, build giant houses of cards, carry a whole deck in one item, hit the archery target, sit at a felt card table. DrakesMods presents Board Vikings: Cards.</Description>
     <WebsiteUrl></WebsiteUrl>
     <!-- Deploy DLL + Assets after PackageMod staging copies to output -->
     <DeployAfterTargets>CopyModAssetsToOutput</DeployAfterTargets>
