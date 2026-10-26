@@ -2,7 +2,6 @@
 using System;
 using Jotunn.Managers;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 using UnityEngine.UIElements;
 
 namespace Cards.Ui;
@@ -59,8 +58,13 @@ public static class UkFonts
             return null;
         try
         {
-            var asset = FontAsset.CreateFontAsset(font);
-            return asset != null ? FontDefinition.FromSDFFont(asset) : FontDefinition.FromFont(font);
+            // FontAsset lives in a Unity module the store's reference set lacks, so it is called by name.
+            var assetType = Type.GetType("UnityEngine.TextCore.Text.FontAsset, UnityEngine.TextCoreTextEngineModule");
+            var asset = assetType?.GetMethod("CreateFontAsset", new[] { typeof(Font) })?.Invoke(null, new object[] { font });
+            var sdf = assetType != null ? typeof(FontDefinition).GetMethod("FromSDFFont", new[] { assetType }) : null;
+            if (asset != null && sdf != null && sdf.Invoke(null, new[] { asset }) is FontDefinition made)
+                return made;
+            return FontDefinition.FromFont(font);
         }
         catch (Exception ex)
         {
@@ -72,13 +76,13 @@ public static class UkFonts
     public static void ApplyBody(VisualElement e)
     {
         if (Body is { } f)
-            e.style.unityFontDefinition = new StyleFontDefinition(f);
+            e.style.unityFontDefinition = f;
     }
 
     public static void ApplyHeading(VisualElement e)
     {
         if (Heading is { } f)
-            e.style.unityFontDefinition = new StyleFontDefinition(f);
+            e.style.unityFontDefinition = f;
     }
 }
 

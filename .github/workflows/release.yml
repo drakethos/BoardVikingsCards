@@ -89,7 +89,7 @@ jobs:
 
           cp "$PFHOENIX_LIB/assembly_valheim.dll" "$PUBLICIZED/assembly_valheim_publicized.dll"
           cp "$PFHOENIX_LIB/assembly_utils.dll"   "$PUBLICIZED/assembly_utils_publicized.dll"
-          cp "$PFHOENIX_LIB/gui_framework.dll"    "$PUBLICIZED/gui_framework_publicized.dll"
+          [ -f "$PFHOENIX_LIB/gui_framework.dll" ] && cp "$PFHOENIX_LIB/gui_framework.dll" "$PUBLICIZED/gui_framework_publicized.dll" || true
 
           for src in assembly_googleanalytics assembly_guiutils assembly_lux \
                      assembly_postprocessing assembly_simplemeshcombine \
@@ -130,8 +130,8 @@ jobs:
 
           mkdir -p "$PKG_DIR/Assets"
           cp bin/Release/BoardVikings-CardGames.dll "$PKG_DIR/"
-          # the art: the card bundle (faces) and the card back sheet
-          cp Assets/card Assets/card_backs.png "$PKG_DIR/Assets/"
+          # the art: card faces, the card back sheet, the visor model
+          cp -r Assets/. "$PKG_DIR/Assets/"
           cp README.md                      "$PKG_DIR/"
           cp icon.png                       "$PKG_DIR/"
           cp CHANGELOG.md                   "$PKG_DIR/"
