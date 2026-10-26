@@ -110,6 +110,7 @@
     <Compile Include="CardsTestApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Deck\*.cs" />
+    <Compile Include="Gltf\*.cs" />
     <Compile Include="Giant\*.cs" />
     <Compile Include="Target\*.cs" />
     <Compile Include="Table\*.cs" />

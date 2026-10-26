@@ -108,11 +108,64 @@ internal static class DealerVisor
         var attach = new GameObject("attach").transform;
         attach.SetParent(parent, false);
 
+        if (TryBuildFromModel(attach))
+            return;
+
         var cream = TableMaterials.Flat(new Color(0.95f, 0.93f, 0.86f));
         Part(attach, "band", Band(36), cream, new Vector3(0f, BandY, 0f));
         Part(attach, "brim", Brim(28), TableMaterials.Glass(new Color(0.08f, 0.70f, 0.30f, 0.62f)),
             new Vector3(0f, BandY - 0.018f, 0f));
         Part(attach, "trim", Trim(28), cream, new Vector3(0f, BandY - 0.018f, 0f));
+    }
+
+    /// <summary>The modelled visor (Assets/dealer_visor.glb, made by Models/dealer_visor.py). The code-built one below is the fallback.</summary>
+    private static bool TryBuildFromModel(Transform attach)
+    {
+        try
+        {
+            var path = Util.Loader.FindAsset("dealer_visor.glb");
+            if (path == null)
+                return false;
+            var model = Gltf.GlbReader.Read(System.IO.File.ReadAllBytes(path));
+            // The reader's space has the model's front at -Z; the game's head faces +Z, so the model is turned half way round.
+            var root = new GameObject("model").transform;
+            root.SetParent(attach, false);
+            root.localRotation = Quaternion.Euler(0f, 180f, 0f);
+            var materials = new Dictionary<int, Material>();
+            int count = 0;
+            foreach (var sub in model.Submeshes)
+            {
+                var mesh = new Mesh { name = "Visor_" + (sub.Name ?? count.ToString()) };
+                var vertices = new List<Vector3>(sub.Positions.Length / 3);
+                for (int i = 0; i + 2 < sub.Positions.Length; i += 3)
+                    vertices.Add(new Vector3(sub.Positions[i], sub.Positions[i + 1], sub.Positions[i + 2]));
+                mesh.SetVertices(vertices);
+                mesh.SetTriangles(sub.Indices, 0);
+                mesh.RecalculateNormals();
+
+                if (!materials.TryGetValue(sub.Material, out var material))
+                {
+                    var gm = sub.Material >= 0 && sub.Material < model.Materials.Count ? model.Materials[sub.Material] : null;
+                    var c = gm?.BaseColor ?? new[] { 1f, 1f, 1f, 1f };
+                    var color = new Color(c[0], c[1], c[2], c.Length > 3 ? c[3] : 1f);
+                    material = gm != null && gm.Blend ? TableMaterials.Glass(color) : TableMaterials.Flat(color);
+                    materials[sub.Material] = material;
+                }
+
+                Part(root, mesh.name, mesh, material, Vector3.zero);
+                count++;
+            }
+
+            Jotunn.Logger.LogInfo($"Dealer visor: built from dealer_visor.glb ({count} parts).");
+            return count > 0;
+        }
+        catch (System.Exception ex)
+        {
+            Jotunn.Logger.LogWarning($"Dealer visor model could not be read ({ex.Message}); using the built-in shape.");
+            foreach (Transform child in attach)
+                Object.Destroy(child.gameObject);
+            return false;
+        }
     }
 
     private static void Part(Transform parent, string name, Mesh mesh, Material material, Vector3 position)

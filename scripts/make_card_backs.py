@@ -6,7 +6,7 @@ The sheet layout matches CardBacks.cs (do not change one without the other):
   origin (2, 2), pitch 140 x 190, tile 136 x 186, corner radius 12
 
 Each back is a printed card: white edge, solid border, tone-on-tone pattern,
-and a center seal. Geometry only — no imported artwork.
+and a center mark (diamond, ring, or triangle). Geometry only — no imported artwork.
 
   python scripts/make_card_backs.py
 """
@@ -15,7 +15,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "Assets" / "card_backs.png"
@@ -196,7 +196,51 @@ def _seal_mark(kind: str, h: int, w: int, cx: float, cy: float, color_mask_size:
     return np.zeros((h, w), dtype=bool)
 
 
-def draw_back(spec: tuple) -> Image.Image:
+def _shield_points(cx: float, cy: float, scale: float = 1.0) -> list[tuple[float, float]]:
+    """Heater shield: wide flat top, short sides, then a taper to a point."""
+    hw = 72 * scale
+    top = cy - 96 * scale
+    corner = 16 * scale
+    side_y = cy - 28 * scale
+    point = cy + 108 * scale
+    pts: list[tuple[float, float]] = []
+
+    # Top-left corner, then the flat top, then the top-right corner.
+    for i in range(9):
+        ang = np.pi - i / 8 * (np.pi / 2)
+        pts.append((cx - hw + corner + np.cos(ang) * corner, top + corner - np.sin(ang) * corner))
+    pts.append((cx + hw - corner, top))
+    for i in range(1, 9):
+        ang = np.pi / 2 - i / 8 * (np.pi / 2)
+        pts.append((cx + hw - corner + np.cos(ang) * corner, top + corner - np.sin(ang) * corner))
+
+    drop = point - side_y
+    pts.extend(
+        (
+            (cx + hw, side_y),
+            (cx + hw * 0.55, side_y + drop * 0.38),
+            (cx + hw * 0.18, side_y + drop * 0.74),
+            (cx, point),
+            (cx - hw * 0.18, side_y + drop * 0.74),
+            (cx - hw * 0.55, side_y + drop * 0.38),
+            (cx - hw, side_y),
+            (cx - hw, top + corner),
+        )
+    )
+    return pts
+
+
+def _fill_polygon(h: int, w: int, pts: list[tuple[float, float]]) -> np.ndarray:
+    mask = Image.new("L", (w, h), 0)
+    ImageDraw.Draw(mask).polygon(pts, fill=255)
+    return np.array(mask) > 0
+
+
+def _shield(h: int, w: int, cx: float, cy: float, scale: float = 1.0) -> np.ndarray:
+    return _fill_polygon(h, w, _shield_points(cx, cy, scale))
+
+
+def draw_back(spec: tuple, frame: str = "oval") -> Image.Image:
     _name, field, ink, seal, pattern, step, mark = spec
     img = np.zeros((TH, TW, 4), dtype=np.uint8)
     outer_r = CORNER * SCALE
@@ -216,20 +260,34 @@ def draw_back(spec: tuple) -> Image.Image:
     _paint(img, seal, rule_outer & ~body)
 
     cx, cy = (TW - 1) / 2, (TH - 1) / 2
-    rx, ry = 92, 118
-    seal_fill = _ellipse(TH, TW, cx, cy, rx, ry)
-    # A little lighter than the field so the seal reads, still the same ink family.
+    # A little lighter than the field so a framed seal reads, still the same ink family.
     paper = tuple(min(255, int(c + (255 - c) * 0.22)) for c in field)
     if field[0] > 170:
         paper = tuple(min(255, c + 18) for c in field)
 
+    if frame == "shield":
+        seal_fill = _shield(TH, TW, cx, cy + 6, 1.0)
+        seal_inner = _shield(TH, TW, cx, cy + 6, 0.84)
+    elif frame == "mark":
+        seal_fill = np.zeros((TH, TW), dtype=bool)
+        seal_inner = seal_fill
+    else:
+        rx, ry = 92, 118
+        seal_fill = _ellipse(TH, TW, cx, cy, rx, ry)
+        seal_inner = _ellipse(TH, TW, cx, cy, rx - 3 * SCALE, ry - 3 * SCALE)
+
     pat = PATTERNS[pattern](TH, TW, step, max(3, SCALE))
     _paint(img, ink, body & pat & ~seal_fill)
 
-    _paint(img, paper, body & seal_fill)
-    ring = seal_fill & ~_ellipse(TH, TW, cx, cy, rx - 3 * SCALE, ry - 3 * SCALE)
-    _paint(img, seal, body & ring)
-    _paint(img, ink, body & _seal_mark(mark, TH, TW, cx, cy, 78))
+    if frame == "mark":
+        # The shape itself, in the seal color, big enough to read without a frame around it.
+        size = 210 if mark == "circle" else 156
+        _paint(img, seal, body & _seal_mark(mark, TH, TW, cx, cy, size))
+    else:
+        _paint(img, paper, body & seal_fill)
+        _paint(img, seal, body & seal_fill & ~seal_inner)
+        mark_cy = cy - 18 if frame == "shield" else cy
+        _paint(img, ink, body & _seal_mark(mark, TH, TW, cx, mark_cy, 70 if frame == "shield" else 78))
 
     big = Image.fromarray(img, "RGBA").resize((TILE_W, TILE_H), Image.Resampling.LANCZOS)
     out = np.array(big)
@@ -239,17 +297,22 @@ def draw_back(spec: tuple) -> Image.Image:
     return Image.fromarray(out, "RGBA")
 
 
-def main() -> None:
+def _write_sheet(path: Path, frames: dict[str, str] | None = None) -> None:
     if len(BACKS) != 15:
         raise SystemExit(f"Expected 15 backs, got {len(BACKS)}")
     sheet = Image.new("RGBA", (SHEET_W, SHEET_H), (0, 0, 0, 0))
     for i, spec in enumerate(BACKS):
         col, row = i % 3, i // 3
-        tile = draw_back(spec)
+        frame = "mark" if frames is None else frames[spec[0]]
+        tile = draw_back(spec, frame)
         sheet.paste(tile, (X0 + col * PITCH_X, Y0 + row * PITCH_Y), tile)
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    sheet.save(OUT, format="PNG", compress_level=3)
-    print(f"Wrote {OUT} ({SHEET_W}x{SHEET_H})")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    sheet.save(path, format="PNG", compress_level=3)
+    print(f"Wrote {path} ({SHEET_W}x{SHEET_H})")
+
+
+def main() -> None:
+    _write_sheet(OUT)
 
 
 if __name__ == "__main__":
