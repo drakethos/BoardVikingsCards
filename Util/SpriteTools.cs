@@ -15,19 +15,30 @@ public static class SpriteTools
 
         _cache = new Dictionary<string, Sprite>();
 
-        if (Loader.CardBundle == null)
+        var dir = Loader.FindAsset("faces");
+        if (dir == null || !System.IO.Directory.Exists(dir))
         {
-            Jotunn.Logger.LogError("Cannot load card sprites — AssetBundle is null.");
+            Jotunn.Logger.LogError("Cannot load card faces: Assets/faces is missing.");
             return;
         }
 
-        foreach (var sprite in Loader.CardBundle.LoadAllAssets<Sprite>())
+        foreach (var file in System.IO.Directory.GetFiles(dir, "*.png"))
         {
-            if (sprite != null && !_cache.ContainsKey(sprite.name))
-                _cache[sprite.name] = sprite;
+            var name = System.IO.Path.GetFileNameWithoutExtension(file);
+            var tex = new Texture2D(2, 2, TextureFormat.RGBA32, false)
+            {
+                name = "CardFace_" + name,
+                filterMode = FilterMode.Bilinear,
+                wrapMode = TextureWrapMode.Clamp
+            };
+            if (!CardBacks.LoadPng(tex, System.IO.File.ReadAllBytes(file)))
+                continue;
+            var sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100f);
+            sprite.name = name;
+            _cache[name] = sprite;
         }
 
-        Jotunn.Logger.LogInfo($"Loaded {_cache.Count} card sprites from asset bundle.");
+        Jotunn.Logger.LogInfo($"Loaded {_cache.Count} card faces from Assets/faces.");
     }
 
     public static Sprite? GetSprite(string spriteName)

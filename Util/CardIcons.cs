@@ -248,6 +248,38 @@ internal static class CardIcons
         return y >= fy0 + lift && y <= fy1 + lift;
     }
 
+    // ---------------------------------------------------------------- the dealer's visor
+
+    private static Sprite? _visor;
+
+    /// <summary>Inventory icon for the dealer's visor: a green translucent brim on a cream band.</summary>
+    internal static Sprite VisorIcon()
+    {
+        if (_visor != null)
+            return _visor;
+        const int s = 128;
+        var px = new Color[s * s];
+        var green = new Color(0.12f, 0.72f, 0.34f, 0.85f);
+        var greenDark = new Color(0.06f, 0.42f, 0.20f, 1f);
+        for (int y = 0; y < s; y++)
+        {
+            for (int x = 0; x < s; x++)
+            {
+                float bx = (x - 64f) / 52f, by = (y - 50f) / 20f;
+                float ellipse = bx * bx + by * by;
+                Color c = Color.clear;
+                if (ellipse <= 1f && y < 62)
+                    c = ellipse > 0.80f ? greenDark : green;          // the brim
+                if (y >= 58 && y <= 80 && x >= 26 && x <= 102)
+                    c = (y == 58 || y == 80) ? greenDark : Cream;      // the band
+                px[y * s + x] = c;
+            }
+        }
+
+        _visor = Finish(Outline(px, s, s, new Color(0.10f, 0.06f, 0.05f, 0.95f)), s, s, "DealerVisorIcon");
+        return _visor;
+    }
+
     // ---------------------------------------------------------------- helpers
 
     private static bool OutsideRounded(int x, int y, int w, int h, int r)

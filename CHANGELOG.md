@@ -1,6 +1,8 @@
 # Changelog
 
-## 0.1.0
+## 0.1.0-beta.1
+
+**Early preview. Brand new and not thoroughly tested: back up your world and characters.**
 
 The debut. **Board Vikings: Cards** by DrakesMods.
 
@@ -11,7 +13,7 @@ The debut. **Board Vikings: Cards** by DrakesMods.
 - **Archery target:** the game's archery target takes cards. A hit scores like an arrow, the card stays stuck, and E hands every card back with its own face.
 - **Card Table (Small and Long):** a felt table with 2 to 8 seats. Press E to sit; the builder is the dealer and sets how many seats the table uses. (Dealing and playing at the table, the dealer's hat, rules and chips are coming in the next releases.)
 - Cards are built in code (rounded, lit, matte, never stretched), with square inventory icons, a small card in hand and real card proportions.
-- New in this build pipeline: needs **DrakeModsLibs**; releases go to Hexium; the DrakesTestLab suite (29 tests) covers items, icons, the deck, giant cards, throwing, the archery target and the table.
+- Standalone: no DrakeModsLibs or other mod needed. Card faces are plain PNGs in `Assets/faces` (no asset bundle); releases go to Hexium; the DrakesTestLab suite (35 tests) covers items, icons, the deck, giant cards, throwing, the archery target and the table.
 
 ## 0.0.1
 

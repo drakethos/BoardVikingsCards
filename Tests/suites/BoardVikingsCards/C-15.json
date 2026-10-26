@@ -1,5 +1,5 @@
 {
-  "name": "C-15 throwing a card: it flies a spear-like distance, keeps its face, and lands as an item",
+  "name": "C-15 dropped card lies on the ground and can be picked up",
   "steps": [
     {
       "do": "teleport",
@@ -8,73 +8,51 @@
       "yaw": 218
     },
     {
-      "do": "invoke",
-      "method": "Cards.CardsTestApi.TestProbeThrow",
-      "args": [
-        true
-      ]
+      "do": "setconfig",
+      "guid": "com.drakemods.serverteams",
+      "values": {
+        "4 Visuals/TeamGlow": false
+      }
     },
     {
-      "do": "invoke",
-      "method": "Cards.CardsTestApi.TestEquipThrowing",
-      "args": [
-        "SK"
-      ]
+      "do": "give",
+      "prefab": "ArmorLeatherLegs",
+      "equip": true
     },
     {
-      "do": "check",
-      "check": "lastResult",
-      "label": "holding the King of Spades",
-      "expect": true
+      "do": "give",
+      "prefab": "ArmorLeatherChest",
+      "equip": true
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_Throwing",
+      "dz": 1.5,
+      "as": "c"
+    },
+    {
+      "do": "wait",
+      "seconds": 2
+    },
+    {
+      "do": "face",
+      "target": "c"
+    },
+    {
+      "do": "interact",
+      "target": "c"
     },
     {
       "do": "wait",
       "seconds": 1
-    },
-    {
-      "do": "screenshot",
-      "name": "holding-card"
-    },
-    {
-      "do": "pressKey",
-      "button": "Attack"
-    },
-    {
-      "do": "wait",
-      "seconds": 5
-    },
-    {
-      "do": "screenshot",
-      "name": "after-throw"
-    },
-    {
-      "do": "invoke",
-      "method": "Cards.CardsTestApi.TestThrowDistance",
-      "args": []
-    },
-    {
-      "do": "check",
-      "check": "lastResult",
-      "label": "flew at least 5 m (not dropped at my feet)",
-      "min": 5
-    },
-    {
-      "do": "invoke",
-      "method": "Cards.CardsTestApi.TestLandedFace",
-      "args": []
-    },
-    {
-      "do": "check",
-      "check": "lastResult",
-      "label": "the landed card is still the King of Spades",
-      "expect": "SK"
     }
   ],
   "asserts": [
     {
-      "check": "noItem",
+      "check": "hasItem",
       "prefab": "Card_Throwing",
-      "label": "card left the inventory"
+      "count": 1,
+      "label": "picked up"
     },
     {
       "check": "noErrors",

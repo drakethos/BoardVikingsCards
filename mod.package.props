@@ -5,11 +5,11 @@
     <ThunderstoreAuthor>DrakeMods</ThunderstoreAuthor>
     <RootNamespace>Cards</RootNamespace>
     <AssemblyName>BoardVikings-CardGames</AssemblyName>
-    <Version>0.1.0</Version>
+    <Version>0.1.0-beta.1</Version>
     <BepInPluginName>BoardVikings-CardGames</BepInPluginName>
     <BepInGuid>com.DrakeMods.BoardVikings-CardGames</BepInGuid>
     <ModInfoClass>Cards</ModInfoClass>
-    <Description>Card games in Valheim. Throw cards like a boss, build giant houses of cards, carry a whole deck in one item, hit the archery target, sit at a felt card table. DrakesMods presents Board Vikings: Cards.</Description>
+    <Description>EARLY PREVIEW (beta). Card games in Valheim. Throw cards like a boss, build giant houses of cards, carry a whole deck in one item, hit the archery target, sit at a felt card table. DrakesMods presents Board Vikings: Cards. Back up your world and characters.</Description>
     <WebsiteUrl></WebsiteUrl>
     <!-- Deploy DLL + Assets after PackageMod staging copies to output -->
     <DeployAfterTargets>CopyModAssetsToOutput</DeployAfterTargets>
@@ -17,6 +17,5 @@
   <ItemGroup>
     <ThunderstoreDependency Include="denikson-BepInExPack_Valheim-5.4.2333" />
     <ThunderstoreDependency Include="ValheimModding-Jotunn-2.23.0" />
-    <ThunderstoreDependency Include="DrakeMods-DrakeModsLibs-1.0.2" />
   </ItemGroup>
 </Project>

@@ -14,8 +14,24 @@ internal static class CardMesh
     private const int ArcSteps = 5;
     private const float CornerFraction = 0.06f;
 
-    /// <summary>How bright the paper is (lit surfaces, so a little under 1 keeps full sun from glaring).</summary>
-    private const float Tint = 0.80f;
+    /// <summary>
+    /// How bright the paper is. The paper is lit by the world, and a white card in full sun would go past 1.0 and glow through the
+    /// game's bloom, so it is dimmed well down. Set from the config ("Paper brightness") and live while the game runs.
+    /// </summary>
+    internal static float Brightness { get; private set; } = 0.62f;
+
+    internal static void SetBrightness(float value)
+    {
+        Brightness = Mathf.Clamp(value, 0.05f, 1f);
+        foreach (var material in Materials.Values)
+        {
+            if (material != null && material.HasProperty("_Color"))
+                material.SetColor("_Color", new Color(Level(Brightness), Level(Brightness), Level(Brightness), 1f));
+        }
+
+        if (_plain != null && _plain.HasProperty("_Color"))
+            _plain.SetColor("_Color", new Color(0.45f * Level(Brightness), 0.08f * Level(Brightness), 0.1f * Level(Brightness), 1f));
+    }
 
     private static readonly Dictionary<(int sprite, int w, int h, bool back), Mesh> Meshes =
         new Dictionary<(int, int, int, bool), Mesh>();
@@ -23,6 +39,17 @@ internal static class CardMesh
     private static readonly Dictionary<int, Material> Materials = new Dictionary<int, Material>();
     private static Shader? _shader;
     private static Material? _plain;
+    private static bool _selfLit;
+
+    /// <summary>
+    /// The colour multiplier for a brightness. The self-lit paper shader adds the card's own colour to the lit colour, so cards in
+    /// shade stay readable instead of going black; it needs a lower multiplier to match the plain shader's look in the sun.
+    /// </summary>
+    internal static float Level(float brightness)
+    {
+        PaperShader();
+        return _selfLit ? brightness * 0.56f : brightness;
+    }
 
     /// <summary>A child object that will show one side of a card. Named "front" or "back"; the name decides which side it faces.</summary>
     internal static GameObject MakeFace(string name, Transform parent, Vector3 localPos)
@@ -176,11 +203,27 @@ internal static class CardMesh
     {
         if (_shader != null)
             return _shader;
+        // The game's own piece shader lights things the way the rest of the world is lit (shade is dim, never black); it is not
+        // findable by name, so it is borrowed from a vanilla piece.
+        try
+        {
+            var donor = Jotunn.Managers.PrefabManager.Instance.GetPrefab("wood_floor");
+            var shader = donor != null ? donor.GetComponentInChildren<Renderer>()?.sharedMaterial?.shader : null;
+            if (shader != null && shader.name.StartsWith("Custom/"))
+            {
+                _shader = shader;
+                Jotunn.Logger.LogInfo($"Card paper shader: {shader.name} (from wood_floor).");
+                return _shader;
+            }
+        }
+        catch (System.Exception ex) { Jotunn.Logger.LogWarning($"Card paper shader donor failed: {ex.Message}"); }
+
         foreach (var name in new[] { "Legacy Shaders/Diffuse", "Sprites/Default" })
         {
             _shader = Shader.Find(name);
             if (_shader != null)
             {
+                _selfLit = name.Contains("Self-Illumin");
                 Jotunn.Logger.LogInfo($"Card paper shader: {name}.");
                 break;
             }
@@ -198,7 +241,7 @@ internal static class CardMesh
         material = new Material(PaperShader()) { name = "CardPaper_" + texture.name };
         material.mainTexture = texture;
         if (material.HasProperty("_Color"))
-            material.SetColor("_Color", new Color(Tint, Tint, Tint, 1f));
+            material.SetColor("_Color", new Color(Level(Brightness), Level(Brightness), Level(Brightness), 1f));
         Materials[id] = material;
         return material;
     }
@@ -209,7 +252,7 @@ internal static class CardMesh
             return _plain;
         _plain = new Material(PaperShader()) { name = "CardPaperPlain" };
         if (_plain.HasProperty("_Color"))
-            _plain.SetColor("_Color", new Color(0.45f * Tint, 0.08f * Tint, 0.1f * Tint, 1f));
+            _plain.SetColor("_Color", new Color(0.45f * Level(Brightness), 0.08f * Level(Brightness), 0.1f * Level(Brightness), 1f));
         return _plain;
     }
 }

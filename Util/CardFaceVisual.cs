@@ -195,26 +195,3 @@ internal static class CardHeldFacePatch
             visual.Set(variant);
     }
 }
-
-/// <summary>Shows "Seven of Spades" for a card item instead of the generic item name.</summary>
-internal sealed class CardNameLayer : DrakeModsLibs.API.IItemDisplayNameLayer
-{
-    public int Priority => 50;
-
-    public bool TryApply(ItemDrop.ItemData? item, ref string displayName)
-    {
-        if (item?.m_dropPrefab == null)
-            return false;
-        var prefab = item.m_dropPrefab.name;
-        if (prefab == Deck.DeckData.DeckPrefab)
-        {
-            displayName = Deck.DeckData.DeckName + " (" + CardBacks.Names[CardBacks.Clamp(item.m_variant)] + ")";
-            return true;
-        }
-
-        if (!CardLib.IsVariantCardPrefab(prefab))
-            return false;
-        displayName = CardLib.NameOf(item.m_variant);
-        return true;
-    }
-}

@@ -1,5 +1,5 @@
 {
-  "name": "C-17 archery target: thrown cards score, stay stuck in it, and come back with their own faces",
+  "name": "C-17 archery target: it takes throwing cards as ammo",
   "steps": [
     {
       "do": "teleport",
@@ -8,9 +8,21 @@
       "yaw": 218
     },
     {
-      "do": "invoke",
-      "method": "Cards.CardsTestApi.TestClearThrown",
-      "args": []
+      "do": "setconfig",
+      "guid": "com.drakemods.serverteams",
+      "values": {
+        "4 Visuals/TeamGlow": false
+      }
+    },
+    {
+      "do": "give",
+      "prefab": "ArmorLeatherLegs",
+      "equip": true
+    },
+    {
+      "do": "give",
+      "prefab": "ArmorLeatherChest",
+      "equip": true
     },
     {
       "do": "spawn",
@@ -24,164 +36,26 @@
     },
     {
       "do": "invoke",
-      "method": "Cards.CardsTestApi.TestEquipThrowing",
-      "args": [
-        "SK"
-      ]
-    },
-    {
-      "do": "wait",
-      "seconds": 0.6
-    },
-    {
-      "do": "lookAt",
-      "target": "t",
-      "distance": 5
-    },
-    {
-      "do": "wait",
-      "seconds": 0.3
-    },
-    {
-      "do": "pressKey",
-      "button": "Attack"
-    },
-    {
-      "do": "wait",
-      "seconds": 2.2
-    },
-    {
-      "do": "invoke",
-      "method": "Cards.CardsTestApi.TestEquipThrowing",
-      "args": [
-        "HQ"
-      ]
-    },
-    {
-      "do": "wait",
-      "seconds": 0.6
-    },
-    {
-      "do": "lookAt",
-      "target": "t",
-      "distance": 5
-    },
-    {
-      "do": "wait",
-      "seconds": 0.3
-    },
-    {
-      "do": "pressKey",
-      "button": "Attack"
-    },
-    {
-      "do": "wait",
-      "seconds": 2.2
-    },
-    {
-      "do": "invoke",
-      "method": "Cards.CardsTestApi.TestEquipThrowing",
-      "args": [
-        "D7"
-      ]
-    },
-    {
-      "do": "wait",
-      "seconds": 0.6
-    },
-    {
-      "do": "lookAt",
-      "target": "t",
-      "distance": 5
-    },
-    {
-      "do": "wait",
-      "seconds": 0.3
-    },
-    {
-      "do": "pressKey",
-      "button": "Attack"
-    },
-    {
-      "do": "wait",
-      "seconds": 2.2
-    },
-    {
-      "do": "screenshot",
-      "name": "cards-in-target"
-    },
-    {
-      "do": "invoke",
-      "method": "Cards.CardsTestApi.TestTargetHits",
+      "method": "Cards.CardsTestApi.TestTargetAcceptsCards",
       "args": []
     },
     {
       "do": "check",
       "check": "lastResult",
-      "label": "all three cards hit the target",
-      "min": 3
+      "label": "the target lists the throwing card as ammo",
+      "expect": true
     },
     {
       "do": "invoke",
-      "method": "Cards.CardsTestApi.TestTargetScore",
+      "method": "Cards.CardsTestApi.TestTargetHeight",
       "args": []
     },
     {
       "do": "check",
       "check": "lastResult",
-      "label": "they scored points",
-      "min": 1
-    },
-    {
-      "do": "invoke",
-      "method": "Cards.CardsTestApi.TestTargetFaces",
-      "args": []
-    },
-    {
-      "do": "check",
-      "check": "lastResult",
-      "label": "the target remembers each face in order",
-      "expect": "SK,HQ,D7"
-    },
-    {
-      "do": "face",
-      "target": "t"
-    },
-    {
-      "do": "interact",
-      "target": "t"
-    },
-    {
-      "do": "wait",
-      "seconds": 1.5
-    },
-    {
-      "do": "invoke",
-      "method": "Cards.CardsTestApi.TestTargetHits",
-      "args": []
-    },
-    {
-      "do": "check",
-      "check": "lastResult",
-      "label": "pressing E collected them (score reset)",
-      "expect": 0
-    },
-    {
-      "do": "screenshot",
-      "name": "cards-returned"
-    },
-    {
-      "do": "invoke",
-      "method": "Cards.CardsTestApi.TestNearbyFaces",
-      "args": [
-        12
-      ]
-    },
-    {
-      "do": "check",
-      "check": "lastResult",
-      "label": "the same three cards came back, each with its own face",
-      "expect": "D7,HQ,SK"
+      "label": "the bullseye stands above the ground, not buried or floating",
+      "min": 0.5,
+      "max": 3
     }
   ],
   "asserts": [

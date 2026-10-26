@@ -1,11 +1,38 @@
 {
-  "name": "C-18 archery target: aim is honed (five throws, at least four hit)",
+  "name": "C-18 archery target: thrown cards score, stay stuck in it, and come back with their own faces",
   "steps": [
     {
       "do": "teleport",
       "x": -6,
       "z": -8.5,
       "yaw": 218
+    },
+    {
+      "do": "setconfig",
+      "guid": "com.drakemods.serverteams",
+      "values": {
+        "4 Visuals/TeamGlow": false
+      }
+    },
+    {
+      "do": "give",
+      "prefab": "ArmorLeatherLegs",
+      "equip": true
+    },
+    {
+      "do": "give",
+      "prefab": "ArmorLeatherChest",
+      "equip": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestWearVisor",
+      "args": []
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestClearThrown",
+      "args": []
     },
     {
       "do": "spawn",
@@ -18,14 +45,10 @@
       "seconds": 1
     },
     {
-      "do": "face",
-      "target": "t"
-    },
-    {
       "do": "invoke",
       "method": "Cards.CardsTestApi.TestEquipThrowing",
       "args": [
-        "CA"
+        "SK"
       ]
     },
     {
@@ -53,7 +76,7 @@
       "do": "invoke",
       "method": "Cards.CardsTestApi.TestEquipThrowing",
       "args": [
-        "C2"
+        "HQ"
       ]
     },
     {
@@ -81,7 +104,7 @@
       "do": "invoke",
       "method": "Cards.CardsTestApi.TestEquipThrowing",
       "args": [
-        "C3"
+        "D7"
       ]
     },
     {
@@ -106,60 +129,18 @@
       "seconds": 2.2
     },
     {
-      "do": "invoke",
-      "method": "Cards.CardsTestApi.TestEquipThrowing",
-      "args": [
-        "C4"
-      ]
+      "do": "lookAt",
+      "target": "t",
+      "distance": 3
     },
     {
       "do": "wait",
       "seconds": 0.6
     },
     {
-      "do": "lookAt",
-      "target": "t",
-      "distance": 5
-    },
-    {
-      "do": "wait",
-      "seconds": 0.3
-    },
-    {
-      "do": "pressKey",
-      "button": "Attack"
-    },
-    {
-      "do": "wait",
-      "seconds": 2.2
-    },
-    {
-      "do": "invoke",
-      "method": "Cards.CardsTestApi.TestEquipThrowing",
-      "args": [
-        "C5"
-      ]
-    },
-    {
-      "do": "wait",
-      "seconds": 0.6
-    },
-    {
-      "do": "lookAt",
-      "target": "t",
-      "distance": 5
-    },
-    {
-      "do": "wait",
-      "seconds": 0.3
-    },
-    {
-      "do": "pressKey",
-      "button": "Attack"
-    },
-    {
-      "do": "wait",
-      "seconds": 2.2
+      "do": "screenshot",
+      "name": "cards-in-target",
+      "clean": true
     },
     {
       "do": "invoke",
@@ -169,8 +150,71 @@
     {
       "do": "check",
       "check": "lastResult",
-      "label": "at least four of five hit",
-      "min": 4
+      "label": "all three cards hit the target",
+      "min": 3
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestTargetScore",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "they scored points",
+      "min": 1
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestTargetFaces",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "the target remembers each face in order",
+      "expect": "SK,HQ,D7"
+    },
+    {
+      "do": "face",
+      "target": "t"
+    },
+    {
+      "do": "interact",
+      "target": "t"
+    },
+    {
+      "do": "wait",
+      "seconds": 1.5
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestTargetHits",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "pressing E collected them (score reset)",
+      "expect": 0
+    },
+    {
+      "do": "screenshot",
+      "name": "cards-returned",
+      "clean": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestNearbyFaces",
+      "args": [
+        12
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "the same three cards came back, each with its own face",
+      "expect": "D7,HQ,SK"
     }
   ],
   "asserts": [

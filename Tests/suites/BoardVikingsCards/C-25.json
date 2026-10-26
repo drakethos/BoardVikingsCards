@@ -1,5 +1,5 @@
 {
-  "name": "C-25 deck: cards pulled from a deck carry the deck back",
+  "name": "C-25 card table: it looks like a felt table with seats, a deck, cards and chips",
   "steps": [
     {
       "do": "teleport",
@@ -8,43 +8,129 @@
       "yaw": 218
     },
     {
+      "do": "setconfig",
+      "guid": "com.drakemods.serverteams",
+      "values": {
+        "4 Visuals/TeamGlow": false
+      }
+    },
+    {
+      "do": "give",
+      "prefab": "ArmorLeatherLegs",
+      "equip": true
+    },
+    {
+      "do": "give",
+      "prefab": "ArmorLeatherChest",
+      "equip": true
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_Table_Long",
+      "dz": 5,
+      "as": "t"
+    },
+    {
+      "do": "wait",
+      "seconds": 1
+    },
+    {
       "do": "invoke",
-      "method": "Cards.CardsTestApi.TestGiveDeck",
+      "method": "Cards.Table.TableTestApi.TestSetSeats",
       "args": [
-        11
+        6
       ]
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestSit",
+      "args": [
+        1
+      ]
+    },
+    {
+      "do": "give",
+      "prefab": "Card_Deck",
+      "count": 1
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestPlaceDeck",
+      "args": []
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestDeal",
+      "args": [
+        5
+      ]
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestPlay",
+      "args": [
+        0,
+        true
+      ]
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestPlay",
+      "args": [
+        0,
+        false
+      ]
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestDiscard",
+      "args": [
+        0
+      ]
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestStack",
+      "args": []
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestBet",
+      "args": [
+        1,
+        3
+      ]
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestTableLift",
+      "args": []
     },
     {
       "do": "check",
       "check": "lastResult",
-      "label": "a deck in the Blue Diamonds back",
-      "expect": true
+      "label": "its top is at about waist height above the ground",
+      "min": 0.5,
+      "max": 1.3
     },
     {
       "do": "invoke",
-      "method": "Cards.Deck.DeckApi.TestPull",
-      "args": [
-        "H5"
-      ]
+      "method": "Cards.Table.TableTestApi.TestWearVisor",
+      "args": []
     },
     {
-      "do": "check",
-      "check": "lastResult",
-      "label": "pulled the 5 of Hearts",
-      "expect": true
+      "do": "lookAt",
+      "target": "t",
+      "distance": 3.2
     },
     {
-      "do": "invoke",
-      "method": "Cards.CardsTestApi.TestCarriedBack",
-      "args": [
-        "play"
-      ]
+      "do": "wait",
+      "seconds": 0.8
     },
     {
-      "do": "check",
-      "check": "lastResult",
-      "label": "the card has the deck back",
-      "expect": 11
+      "do": "screenshot",
+      "name": "table",
+      "clean": true
     }
   ],
   "asserts": [

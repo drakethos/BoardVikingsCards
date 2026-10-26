@@ -1,11 +1,79 @@
 {
-  "name": "C-13 giant card: face picker opens",
+  "name": "C-13 paper brightness: the setting reaches the cards, stays in range, and a lit card does not glare",
   "steps": [
     {
       "do": "teleport",
       "x": -6,
       "z": -8.5,
       "yaw": 218
+    },
+    {
+      "do": "setconfig",
+      "guid": "com.drakemods.serverteams",
+      "values": {
+        "4 Visuals/TeamGlow": false
+      }
+    },
+    {
+      "do": "give",
+      "prefab": "ArmorLeatherLegs",
+      "equip": true
+    },
+    {
+      "do": "give",
+      "prefab": "ArmorLeatherChest",
+      "equip": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestWearVisor",
+      "args": []
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestSetBrightness",
+      "args": [
+        0.4
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "default brightness",
+      "expect": 0.4
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestSetBrightness",
+      "args": [
+        5
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "never above 1",
+      "expect": 1
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestSetBrightness",
+      "args": [
+        0
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "never fully black",
+      "expect": 0.05
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestSetBrightness",
+      "args": [
+        0.4
+      ]
     },
     {
       "do": "spawn",
@@ -15,24 +83,51 @@
     },
     {
       "do": "wait",
-      "seconds": 1
+      "seconds": 0.5
     },
     {
       "do": "invoke",
-      "method": "Cards.Giant.GiantCardApi.TestOpenPicker",
-      "args": []
+      "method": "Cards.Giant.GiantCardApi.TestSetFace",
+      "args": [
+        "CA"
+      ]
+    },
+    {
+      "do": "lookAt",
+      "target": "g",
+      "distance": 4
     },
     {
       "do": "wait",
-      "seconds": 1
+      "seconds": 0.6
     },
     {
       "do": "screenshot",
-      "name": "giant-picker"
+      "name": "brightness-0.4",
+      "clean": true
     },
     {
-      "do": "pressKey",
-      "key": "Escape"
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestSetBrightness",
+      "args": [
+        0.25
+      ]
+    },
+    {
+      "do": "wait",
+      "seconds": 0.4
+    },
+    {
+      "do": "screenshot",
+      "name": "brightness-0.25",
+      "clean": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestSetBrightness",
+      "args": [
+        0.4
+      ]
     }
   ],
   "asserts": [

@@ -133,7 +133,7 @@ public static class CardsTestApi
     {
         var player = Player.m_localPlayer;
         var item = player?.GetInventory().GetAllItems().FirstOrDefault(DeckData.IsDeck);
-        return item == null ? "" : DrakeModsLibs.API.CustomizeLibsAPI.GetDisplayNameForUi(item, true);
+        return item == null ? "" : CardNames.Display(item) ?? "";
     }
 
     /// <summary>How many deck variant icons are square (one per back design).</summary>
@@ -142,6 +142,13 @@ public static class CardsTestApi
         var prefab = ObjectDB.instance != null ? ObjectDB.instance.GetItemPrefab(DeckData.DeckPrefab) : null;
         var icons = prefab != null ? prefab.GetComponent<ItemDrop>()?.m_itemData?.m_shared?.m_icons : null;
         return icons == null ? -1 : icons.Count(i => i != null && Mathf.Abs(i.rect.width - i.rect.height) < 0.5f);
+    }
+
+    /// <summary>Set the paper brightness (as the config does) and return what is in effect.</summary>
+    public static float TestSetBrightness(float value)
+    {
+        CardMesh.SetBrightness(value);
+        return Mathf.Round(CardMesh.Brightness * 100f) / 100f;
     }
 
     /// <summary>Gives a throwing card and holds it.</summary>
@@ -181,7 +188,7 @@ public static class CardsTestApi
             return "";
         var prefab = kind == "play" ? CardLib.PlayingPrefab : CardLib.ThrowingPrefab;
         var item = player.GetInventory().GetAllItems().FirstOrDefault(i => i.m_dropPrefab != null && i.m_dropPrefab.name == prefab);
-        return item == null ? "" : DrakeModsLibs.API.CustomizeLibsAPI.GetDisplayNameForUi(item, true);
+        return item == null ? "" : CardNames.Display(item) ?? "";
     }
 
     private static ItemDrop? NearestLandedThrowing()

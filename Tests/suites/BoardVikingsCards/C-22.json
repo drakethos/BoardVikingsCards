@@ -1,5 +1,5 @@
 {
-  "name": "C-22 card table: it looks like a felt table with seat markers, and the panel opens",
+  "name": "C-22 card table rules on a bare state: deal, play, flip, turns, lock, leave, collect, shuffle, chips, saving",
   "steps": [
     {
       "do": "teleport",
@@ -8,76 +8,190 @@
       "yaw": 218
     },
     {
-      "do": "spawn",
-      "prefab": "Card_Table_Long",
-      "dz": 5,
-      "as": "t"
+      "do": "setconfig",
+      "guid": "com.drakemods.serverteams",
+      "values": {
+        "4 Visuals/TeamGlow": false
+      }
     },
     {
-      "do": "wait",
-      "seconds": 1
+      "do": "give",
+      "prefab": "ArmorLeatherLegs",
+      "equip": true
+    },
+    {
+      "do": "give",
+      "prefab": "ArmorLeatherChest",
+      "equip": true
     },
     {
       "do": "invoke",
-      "method": "Cards.Table.TableTestApi.TestSetSeats",
+      "method": "Cards.Table.TableTestApi.TestScenario",
       "args": [
-        6
+        "deal"
       ]
-    },
-    {
-      "do": "invoke",
-      "method": "Cards.Table.TableTestApi.TestSit",
-      "args": [
-        1
-      ]
-    },
-    {
-      "do": "invoke",
-      "method": "Cards.Table.TableTestApi.TestTableInfo",
-      "args": []
     },
     {
       "do": "check",
       "check": "lastResult",
-      "label": "the table stands near the ground in front of me (not floating)",
-      "contains": "pos+"
+      "label": "scenario deal",
+      "expect": "hands=5,5,5,5 deck=32 total=52"
     },
     {
       "do": "invoke",
-      "method": "Cards.Table.TableTestApi.TestTableLift",
-      "args": []
+      "method": "Cards.Table.TableTestApi.TestScenario",
+      "args": [
+        "deal-short"
+      ]
     },
     {
       "do": "check",
       "check": "lastResult",
-      "label": "its top is at about waist height above the ground",
-      "min": 0.5,
-      "max": 1.3
-    },
-    {
-      "do": "wait",
-      "seconds": 0.6
-    },
-    {
-      "do": "screenshot",
-      "name": "table"
+      "label": "scenario deal-short",
+      "expect": "hands=2,1,1,1 deck=0"
     },
     {
       "do": "invoke",
-      "method": "Cards.Table.TableTestApi.TestOpenPanel",
-      "args": []
+      "method": "Cards.Table.TableTestApi.TestScenario",
+      "args": [
+        "play"
+      ]
     },
     {
-      "do": "wait",
-      "seconds": 0.8
+      "do": "check",
+      "check": "lastResult",
+      "label": "scenario play",
+      "expect": "hands=1,3,2,4 felt=2 discard=1 deck=39 up=ud total=52"
     },
     {
-      "do": "screenshot",
-      "name": "table-panel"
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestScenario",
+      "args": [
+        "flip"
+      ]
     },
     {
-      "do": "pressKey",
-      "key": "Escape"
+      "do": "check",
+      "check": "lastResult",
+      "label": "scenario flip",
+      "expect": "own=True other=False creator=True visor=True"
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestScenario",
+      "args": [
+        "turns"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "scenario turns",
+      "expect": "wrongTurn=False myTurn=True afterPass=True turn=1"
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestScenario",
+      "args": [
+        "lock"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "scenario lock",
+      "expect": "creatorBefore=True locked=True creatorAfterLock=False playerSeats=False unlockWithoutVisor=False visorChanges=True visorUnlocks=True mode=turns locked=False"
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestScenario",
+      "args": [
+        "locked-play"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "scenario locked-play",
+      "expect": "playerShuffle=False visorShuffle=True playerDraws=True"
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestScenario",
+      "args": [
+        "no-creator"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "scenario no-creator",
+      "expect": "withoutVisor=False withVisor=True"
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestScenario",
+      "args": [
+        "leave"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "scenario leave",
+      "expect": "taken=3 deck=37 total=52"
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestScenario",
+      "args": [
+        "collect"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "scenario collect",
+      "expect": "deck=52 hands=0 felt=0 discard=0"
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestScenario",
+      "args": [
+        "shuffle"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "scenario shuffle",
+      "expect": "changed=True total=52 distinct=52"
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestScenario",
+      "args": [
+        "chips"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "scenario chips",
+      "expect": "start=270 bet=True tooMuch=False pot=20 afterWin=0 winner=280"
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestScenario",
+      "args": [
+        "saved"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "scenario saved",
+      "expect": "same=True total=52 chips=267 pot=3 locked=True"
     }
   ],
   "asserts": [

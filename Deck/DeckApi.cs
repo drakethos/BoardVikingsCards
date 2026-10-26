@@ -1,4 +1,6 @@
+using Cards.Util;
 using System.Linq;
+using UnityEngine;
 
 namespace Cards.Deck;
 
@@ -97,6 +99,32 @@ public static class DeckApi
         if (d == null)
             return false;
         DeckWindow.Open(d);
+        return true;
+    }
+
+    // ---- the deck on a card table
+
+    /// <summary>The cards left in a deck item as card numbers (see CardLib), top first.</summary>
+    internal static System.Collections.Generic.List<int> ToTableCards(ItemDrop.ItemData deck) =>
+        DeckData.Read(deck).Select(CardLib.IndexOf).Where(i => i >= 0).ToList();
+
+    /// <summary>
+    /// Gives the player a deck item holding these cards in this back design (it drops at their feet when the inventory is full).
+    /// </summary>
+    internal static bool MakeDeckItem(Player player, System.Collections.Generic.IList<int> cards, int back)
+    {
+        var prefab = ObjectDB.instance != null ? ObjectDB.instance.GetItemPrefab(DeckData.DeckPrefab) : null;
+        var drop = prefab != null ? prefab.GetComponent<ItemDrop>() : null;
+        if (drop == null)
+            return false;
+        var data = drop.m_itemData.Clone();
+        data.m_dropPrefab = prefab;
+        data.m_stack = 1;
+        data.m_quality = 1;
+        data.m_variant = CardBacks.Clamp(back);
+        DeckData.Write(data, cards.Select(CardLib.CodeOf).ToList());
+        if (!player.GetInventory().AddItem(data))
+            ItemDrop.DropItem(data, 1, player.transform.position + player.transform.forward + Vector3.up, player.transform.rotation);
         return true;
     }
 }

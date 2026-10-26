@@ -1,0 +1,66 @@
+{
+  "name": "C-34 deck: shuffle keeps 52 and changes the order",
+  "steps": [
+    {
+      "do": "teleport",
+      "x": -6,
+      "z": -8.5,
+      "yaw": 218
+    },
+    {
+      "do": "setconfig",
+      "guid": "com.drakemods.serverteams",
+      "values": {
+        "4 Visuals/TeamGlow": false
+      }
+    },
+    {
+      "do": "give",
+      "prefab": "ArmorLeatherLegs",
+      "equip": true
+    },
+    {
+      "do": "give",
+      "prefab": "ArmorLeatherChest",
+      "equip": true
+    },
+    {
+      "do": "give",
+      "prefab": "Card_Deck",
+      "count": 1
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Deck.DeckApi.TestShuffleTop",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "got a top-8 listing",
+      "contains": ","
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Deck.DeckApi.TestCount",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "still 52",
+      "expect": 52
+    }
+  ],
+  "asserts": [
+    {
+      "check": "noErrors",
+      "source": "BoardVikings-CardGames",
+      "label": "no errors from the card mod"
+    },
+    {
+      "check": "noErrors",
+      "label": "no errors from anyone"
+    }
+  ]
+}

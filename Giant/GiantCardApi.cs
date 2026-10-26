@@ -1,3 +1,4 @@
+using Cards.Util;
 using System.Linq;
 using UnityEngine;
 
@@ -40,6 +41,14 @@ public static class GiantCardApi
     }
 
     /// <summary>The back a card placed next would get.</summary>
+    /// <summary>Forget the last picks (a fresh game session).</summary>
+    public static bool TestResetNext()
+    {
+        GiantCard.NextBack = CardBacks.DefaultBack;
+        GiantCard.NextFace = GiantCard.Back;
+        return true;
+    }
+
     public static int TestNextBack() => GiantCard.NextBack;
 
     /// <summary>Tilt applied to the next placement, in degrees.</summary>

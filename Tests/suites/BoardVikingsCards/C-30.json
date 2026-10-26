@@ -1,0 +1,74 @@
+{
+  "name": "C-30 deck: the back design is a variant; the deck is named by it and its icons are square",
+  "steps": [
+    {
+      "do": "teleport",
+      "x": -6,
+      "z": -8.5,
+      "yaw": 218
+    },
+    {
+      "do": "setconfig",
+      "guid": "com.drakemods.serverteams",
+      "values": {
+        "4 Visuals/TeamGlow": false
+      }
+    },
+    {
+      "do": "give",
+      "prefab": "ArmorLeatherLegs",
+      "equip": true
+    },
+    {
+      "do": "give",
+      "prefab": "ArmorLeatherChest",
+      "equip": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestDeckIcons",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "one square deck icon per back design",
+      "expect": 15
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestGiveDeck",
+      "args": [
+        7
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "a deck in the Sea back",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestDeckName",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "named by its back",
+      "contains": "Sea"
+    }
+  ],
+  "asserts": [
+    {
+      "check": "noErrors",
+      "source": "BoardVikings-CardGames",
+      "label": "no errors from the card mod"
+    },
+    {
+      "check": "noErrors",
+      "label": "no errors from anyone"
+    }
+  ]
+}

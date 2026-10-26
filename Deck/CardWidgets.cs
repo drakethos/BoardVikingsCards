@@ -1,4 +1,5 @@
 using System;
+using Cards.Ui;
 using Cards.Util;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -50,7 +51,7 @@ internal static class CardWidgets
         button.style.paddingLeft = button.style.paddingRight = button.style.paddingTop = button.style.paddingBottom = 0;
         button.style.borderTopLeftRadius = button.style.borderTopRightRadius =
             button.style.borderBottomLeftRadius = button.style.borderBottomRightRadius = 6;
-        button.style.backgroundColor = DrakeModsLibs.UI.Toolkit.UkTheme.Raised;
+        button.style.backgroundColor = UkTheme.Raised;
         if (sprite != null)
         {
             button.style.backgroundImage = new StyleBackground(sprite);

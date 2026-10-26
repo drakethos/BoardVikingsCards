@@ -14,7 +14,6 @@ namespace Cards
 {
     [BepInEx.BepInPlugin(GUID, ModName, Version)]
     [BepInEx.BepInDependency(Jotunn.Main.ModGuid)]
-    [BepInEx.BepInDependency("com.drakemods.libs")]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
     public partial class Cards : BepInEx.BaseUnityPlugin
     {
@@ -53,10 +52,14 @@ namespace Cards
             _alwaysTilt = Config.Bind("Giant card", "Built-in tilt with Gizmo", false,
                 "The built-in tilt (hold the tilt key and scroll) is switched off when the Gizmo mod is installed, because Gizmo " +
                 "rotates freely on every axis. Turn this on to use the built-in tilt as well.");
-            Loader.AddBundles();
+            var brightness = Config.Bind("Appearance", "Paper brightness", 0.62f,
+                new BepInEx.Configuration.ConfigDescription(
+                    "How bright the cards are. Lower it if cards glow in bright sun, raise it if they look dull.",
+                    new BepInEx.Configuration.AcceptableValueRange<float>(0.05f, 1f)));
+            CardMesh.SetBrightness(brightness.Value);
+            brightness.SettingChanged += (_, _) => CardMesh.SetBrightness(brightness.Value);
             try { _harmony.PatchAll(typeof(Cards).Assembly); CardTargets.Apply(_harmony); }
             catch (System.Exception ex) { Logger.LogError($"Card patches failed (cards still load): {ex.Message}"); }
-            DrakeModsLibs.API.CustomizeLibsAPI.RegisterDisplayNameLayer(new CardNameLayer());
             PrefabManager.OnVanillaPrefabsAvailable += MakeCards;
         }
 
@@ -69,12 +72,6 @@ namespace Cards
         private void MakeCards()
         {
             PrefabManager.OnVanillaPrefabsAvailable -= MakeCards;
-
-            if (Loader.CardBundle == null)
-            {
-                Logger.LogError("Card AssetBundle missing — aborting card registration.");
-                return;
-            }
 
             SpriteTools.EnsureLoaded();
             CardBacks.Init();
@@ -96,6 +93,8 @@ namespace Cards
             catch (System.Exception ex) { Logger.LogError($"Small card table failed: {ex}"); }
             try { CreateTable("Card_Table_Long", "Card Table (Long)", new Vector2(2.6f, 1.2f), 20); }
             catch (System.Exception ex) { Logger.LogError($"Long card table failed: {ex}"); }
+            try { DealerVisor.Create(); }
+            catch (System.Exception ex) { Logger.LogError($"Dealer visor failed: {ex}"); }
             try { CardTargets.Register(_throwingCard); }
             catch (System.Exception ex) { Logger.LogError($"Archery target support failed: {ex}"); }
         }

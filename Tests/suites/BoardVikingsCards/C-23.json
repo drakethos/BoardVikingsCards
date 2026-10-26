@@ -1,5 +1,5 @@
 {
-  "name": "C-23 deck: a fresh deck holds 52, pulls any card as a playing card, takes it back",
+  "name": "C-23 card table: put a deck on, deal, play, discard, draw, flip, collect, pick the deck up again",
   "steps": [
     {
       "do": "teleport",
@@ -8,108 +8,249 @@
       "yaw": 218
     },
     {
+      "do": "setconfig",
+      "guid": "com.drakemods.serverteams",
+      "values": {
+        "4 Visuals/TeamGlow": false
+      }
+    },
+    {
+      "do": "give",
+      "prefab": "ArmorLeatherLegs",
+      "equip": true
+    },
+    {
+      "do": "give",
+      "prefab": "ArmorLeatherChest",
+      "equip": true
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_Table_Long",
+      "dz": 5,
+      "as": "t"
+    },
+    {
+      "do": "wait",
+      "seconds": 1
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestSetSeats",
+      "args": [
+        4
+      ]
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestSit",
+      "args": [
+        1
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "sat in seat 1",
+      "expect": 1
+    },
+    {
       "do": "give",
       "prefab": "Card_Deck",
       "count": 1
     },
     {
       "do": "invoke",
-      "method": "Cards.Deck.DeckApi.TestCount",
+      "method": "Cards.Table.TableTestApi.TestPlaceDeck",
       "args": []
     },
     {
       "do": "check",
       "check": "lastResult",
-      "label": "fresh deck has 52",
+      "label": "the whole deck is on the table",
       "expect": 52
     },
     {
       "do": "invoke",
-      "method": "Cards.Deck.DeckApi.TestPull",
-      "args": [
-        "S7"
-      ]
-    },
-    {
-      "do": "check",
-      "check": "lastResult",
-      "label": "pulled the 7 of Spades",
-      "expect": true
-    },
-    {
-      "do": "invoke",
-      "method": "Cards.Deck.DeckApi.TestCount",
+      "method": "Cards.Table.TableTestApi.TestShuffle",
       "args": []
     },
     {
       "do": "check",
       "check": "lastResult",
-      "label": "deck now 51",
-      "expect": 51
+      "label": "shuffled, still 52",
+      "expect": 52
     },
     {
       "do": "invoke",
-      "method": "Cards.CardsTestApi.TestCarriedFace",
+      "method": "Cards.Table.TableTestApi.TestDeal",
       "args": [
-        "play"
+        5
       ]
     },
     {
       "do": "check",
       "check": "lastResult",
-      "label": "it is a playing card with the right face",
-      "expect": "S7"
+      "label": "dealt 5 to the one player seated",
+      "expect": 47
     },
     {
       "do": "invoke",
-      "method": "Cards.Deck.DeckApi.TestPull",
-      "args": [
-        "S7"
-      ]
-    },
-    {
-      "do": "check",
-      "check": "lastResult",
-      "label": "cannot pull the same card twice",
-      "expect": false
-    },
-    {
-      "do": "invoke",
-      "method": "Cards.Deck.DeckApi.TestReturnAll",
+      "method": "Cards.Table.TableTestApi.TestHand",
       "args": []
     },
     {
       "do": "check",
       "check": "lastResult",
-      "label": "one card went back",
+      "label": "my hand has 5 cards",
+      "expect": 5
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestCardObjects",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "the table shows its cards",
+      "min": 6
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestPlay",
+      "args": [
+        0,
+        true
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "one card on the felt",
       "expect": 1
     },
     {
       "do": "invoke",
-      "method": "Cards.Deck.DeckApi.TestCount",
-      "args": []
-    },
-    {
-      "do": "check",
-      "check": "lastResult",
-      "label": "deck whole again",
-      "expect": 52
-    },
-    {
-      "do": "invoke",
-      "method": "Cards.CardsTestApi.TestCarriedFace",
+      "method": "Cards.Table.TableTestApi.TestDiscard",
       "args": [
-        "play"
+        0
       ]
     },
     {
       "do": "check",
       "check": "lastResult",
-      "label": "no playing card left",
-      "expect": ""
+      "label": "one card discarded",
+      "expect": 1
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestDraw",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "drew one: 5 - 2 + 1 cards in hand",
+      "expect": 4
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestFlip",
+      "args": [
+        0
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "turned a card face up",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestCardTotal",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "no card lost or added",
+      "expect": 52
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestWearVisor",
+      "args": []
+    },
+    {
+      "do": "lookAt",
+      "target": "t",
+      "distance": 3.2
+    },
+    {
+      "do": "wait",
+      "seconds": 0.5
+    },
+    {
+      "do": "screenshot",
+      "name": "table-dealt",
+      "clean": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestGrab",
+      "args": [
+        0
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "picked the played card back up",
+      "expect": 5
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestCollect",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "everything collected into the deck",
+      "expect": 52
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestTakeDeck",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "I picked the deck up: a deck item with 52 cards",
+      "expect": 52
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestDeckCount",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "the table has no deck now",
+      "expect": 0
     }
   ],
   "asserts": [
+    {
+      "check": "hasItem",
+      "prefab": "Card_Deck",
+      "count": 1,
+      "label": "the deck is in my inventory again"
+    },
     {
       "check": "noErrors",
       "source": "BoardVikings-CardGames",

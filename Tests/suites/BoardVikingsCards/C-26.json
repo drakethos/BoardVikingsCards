@@ -1,5 +1,5 @@
 {
-  "name": "C-26 inventory shows decks in different backs",
+  "name": "C-26 card table: the dealer visor makes the dealer; locked rules answer only to it",
   "steps": [
     {
       "do": "teleport",
@@ -8,69 +8,151 @@
       "yaw": 218
     },
     {
-      "do": "invoke",
-      "method": "Cards.CardsTestApi.TestGiveDeck",
-      "args": [
-        0
-      ]
+      "do": "setconfig",
+      "guid": "com.drakemods.serverteams",
+      "values": {
+        "4 Visuals/TeamGlow": false
+      }
     },
     {
-      "do": "invoke",
-      "method": "Cards.CardsTestApi.TestGiveDeck",
-      "args": [
-        3
-      ]
+      "do": "give",
+      "prefab": "ArmorLeatherLegs",
+      "equip": true
     },
     {
-      "do": "invoke",
-      "method": "Cards.CardsTestApi.TestGiveDeck",
-      "args": [
-        5
-      ]
+      "do": "give",
+      "prefab": "ArmorLeatherChest",
+      "equip": true
     },
     {
-      "do": "invoke",
-      "method": "Cards.CardsTestApi.TestGiveDeck",
-      "args": [
-        9
-      ]
-    },
-    {
-      "do": "invoke",
-      "method": "Cards.CardsTestApi.TestGiveDeck",
-      "args": [
-        13
-      ]
-    },
-    {
-      "do": "invoke",
-      "method": "Cards.CardsTestApi.TestGiveDeck",
-      "args": [
-        14
-      ]
-    },
-    {
-      "do": "invoke",
-      "method": "Cards.CardsTestApi.TestGive",
-      "args": [
-        "SQ",
-        "throw"
-      ]
-    },
-    {
-      "do": "pressKey",
-      "button": "Inventory"
+      "do": "spawn",
+      "prefab": "Card_Table_Long",
+      "dz": 5,
+      "as": "t",
+      "owner": "Alice"
     },
     {
       "do": "wait",
       "seconds": 1
     },
     {
-      "do": "screenshot",
-      "name": "decks-in-inventory"
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestSit",
+      "args": [
+        1
+      ]
     },
     {
-      "do": "closeUi"
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestIsDealer",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "not the dealer: Alice built the table and I wear no visor",
+      "expect": false
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestWearVisor",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "the visor is on",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestIsDealer",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "wearing the visor makes me the dealer",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestSetMode",
+      "args": [
+        "turns"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "the dealer sets turn order",
+      "expect": "turns"
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestLock",
+      "args": [
+        true
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "the dealer locks the rules",
+      "expect": "turns+locked"
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestTakeVisorOff",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "the visor is off",
+      "expect": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestIsDealer",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "no longer the dealer",
+      "expect": false
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestSetMode",
+      "args": [
+        "free"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "locked rules refuse a player (the mode stays turns)",
+      "expect": "turns"
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestWearVisor",
+      "args": []
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestLock",
+      "args": [
+        false
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "the visor unlocks them",
+      "expect": "turns"
     }
   ],
   "asserts": [

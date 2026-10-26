@@ -1,5 +1,5 @@
 {
-  "name": "C-24 deck: the back design is a variant; the deck is named by it and its icons are square",
+  "name": "C-24 card table: the panel shows my hand, the piles and the dealer tools",
   "steps": [
     {
       "do": "teleport",
@@ -8,39 +8,88 @@
       "yaw": 218
     },
     {
-      "do": "invoke",
-      "method": "Cards.CardsTestApi.TestDeckIcons",
-      "args": []
+      "do": "setconfig",
+      "guid": "com.drakemods.serverteams",
+      "values": {
+        "4 Visuals/TeamGlow": false
+      }
     },
     {
-      "do": "check",
-      "check": "lastResult",
-      "label": "one square deck icon per back design",
-      "expect": 15
+      "do": "give",
+      "prefab": "ArmorLeatherLegs",
+      "equip": true
+    },
+    {
+      "do": "give",
+      "prefab": "ArmorLeatherChest",
+      "equip": true
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_Table_Long",
+      "dz": 5,
+      "as": "t"
+    },
+    {
+      "do": "wait",
+      "seconds": 1
     },
     {
       "do": "invoke",
-      "method": "Cards.CardsTestApi.TestGiveDeck",
+      "method": "Cards.Table.TableTestApi.TestSetSeats",
       "args": [
-        7
+        4
       ]
     },
     {
-      "do": "check",
-      "check": "lastResult",
-      "label": "a deck in the Blue Plain back",
-      "expect": true
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestSit",
+      "args": [
+        1
+      ]
+    },
+    {
+      "do": "give",
+      "prefab": "Card_Deck",
+      "count": 1
     },
     {
       "do": "invoke",
-      "method": "Cards.CardsTestApi.TestDeckName",
+      "method": "Cards.Table.TableTestApi.TestPlaceDeck",
       "args": []
     },
     {
-      "do": "check",
-      "check": "lastResult",
-      "label": "named by its back",
-      "contains": "Blue Plain"
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestDeal",
+      "args": [
+        5
+      ]
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestPlay",
+      "args": [
+        0,
+        true
+      ]
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestOpenPanel",
+      "args": []
+    },
+    {
+      "do": "wait",
+      "seconds": 0.8
+    },
+    {
+      "do": "screenshot",
+      "name": "table-panel-hand",
+      "clean": true
+    },
+    {
+      "do": "pressKey",
+      "key": "Escape"
     }
   ],
   "asserts": [

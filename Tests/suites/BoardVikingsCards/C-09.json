@@ -8,6 +8,28 @@
       "yaw": 218
     },
     {
+      "do": "setconfig",
+      "guid": "com.drakemods.serverteams",
+      "values": {
+        "4 Visuals/TeamGlow": false
+      }
+    },
+    {
+      "do": "give",
+      "prefab": "ArmorLeatherLegs",
+      "equip": true
+    },
+    {
+      "do": "give",
+      "prefab": "ArmorLeatherChest",
+      "equip": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestWearVisor",
+      "args": []
+    },
+    {
       "do": "spawn",
       "prefab": "Card_Giant",
       "dz": 4,
@@ -67,7 +89,8 @@
     },
     {
       "do": "screenshot",
-      "name": "giant-card"
+      "name": "giant-card",
+      "clean": true
     }
   ],
   "asserts": [

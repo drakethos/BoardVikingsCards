@@ -14,7 +14,7 @@ internal static class CardBacks
 {
     internal const string SheetFile = "card_backs.png";
 
-    /// <summary>The back used where none is chosen (the red lattice).</summary>
+    /// <summary>The back used where none is chosen (Banner).</summary>
     internal const int DefaultBack = 3;
 
     /// <summary>Item custom data key holding a card's back design.</summary>
@@ -27,11 +27,11 @@ internal static class CardBacks
     /// <summary>Names in sheet order (left to right, top to bottom).</summary>
     internal static readonly string[] Names =
     {
-        "Red Suits", "Green Suits", "Blue Suits",
-        "Red Lattice", "Green Lattice", "Blue Lattice",
-        "Red Frame", "Blue Plain", "Blue Frame",
-        "Red Diamonds", "Green Diamonds", "Blue Diamonds",
-        "Red Plain", "Green Plain", "Green Frame"
+        "Crimson Knot", "Pine Braid", "Frost",
+        "Banner", "Mead", "Iron",
+        "Leather", "Sea", "Bone",
+        "Ember", "Moss", "Night",
+        "Wolf", "Copper", "Stone"
     };
 
     internal static int Count => Names.Length;
@@ -119,7 +119,7 @@ internal static class CardBacks
     /// Texture2D.LoadImage lives in a Unity module whose reference does not compile against the store's reference set, so it is
     /// called by name; it is part of every game build.
     /// </summary>
-    private static bool LoadPng(Texture2D target, byte[] bytes)
+    internal static bool LoadPng(Texture2D target, byte[] bytes)
     {
         var type = Type.GetType("UnityEngine.ImageConversion, UnityEngine.ImageConversionModule");
         var method = type?.GetMethod("LoadImage", new[] { typeof(Texture2D), typeof(byte[]), typeof(bool) });

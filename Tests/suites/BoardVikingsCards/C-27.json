@@ -1,5 +1,5 @@
 {
-  "name": "C-27 deck: throwing cards never go into a deck",
+  "name": "C-27 dealer visor: how it looks on the head (front and side)",
   "steps": [
     {
       "do": "teleport",
@@ -8,54 +8,75 @@
       "yaw": 218
     },
     {
+      "do": "setconfig",
+      "guid": "com.drakemods.serverteams",
+      "values": {
+        "4 Visuals/TeamGlow": false
+      }
+    },
+    {
       "do": "give",
-      "prefab": "Card_Deck",
-      "count": 1
+      "prefab": "ArmorLeatherLegs",
+      "equip": true
+    },
+    {
+      "do": "give",
+      "prefab": "ArmorLeatherChest",
+      "equip": true
     },
     {
       "do": "invoke",
-      "method": "Cards.CardsTestApi.TestGive",
-      "args": [
-        "S7",
-        "throw"
-      ]
-    },
-    {
-      "do": "invoke",
-      "method": "Cards.Deck.DeckApi.TestPull",
-      "args": [
-        "H2"
-      ]
-    },
-    {
-      "do": "check",
-      "check": "lastResult",
-      "label": "pulled the 2 of Hearts",
-      "expect": true
-    },
-    {
-      "do": "invoke",
-      "method": "Cards.Deck.DeckApi.TestReturnAll",
+      "method": "Cards.Table.TableTestApi.TestWearVisor",
       "args": []
     },
     {
       "do": "check",
       "check": "lastResult",
-      "label": "only the playing card went back",
-      "expect": 1
+      "label": "the visor is on",
+      "expect": true
+    },
+    {
+      "do": "wait",
+      "seconds": 1.5
     },
     {
       "do": "invoke",
-      "method": "Cards.CardsTestApi.TestCarriedFace",
+      "method": "Cards.Table.TableTestApi.TestCameraAround",
       "args": [
-        "throw"
+        180
       ]
     },
     {
-      "do": "check",
-      "check": "lastResult",
-      "label": "the throwing card stayed with me",
-      "expect": "S7"
+      "do": "wait",
+      "seconds": 1.2
+    },
+    {
+      "do": "screenshot",
+      "name": "visor-front",
+      "clean": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestCameraAround",
+      "args": [
+        90
+      ]
+    },
+    {
+      "do": "wait",
+      "seconds": 1.2
+    },
+    {
+      "do": "screenshot",
+      "name": "visor-side",
+      "clean": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestCameraAround",
+      "args": [
+        0
+      ]
     }
   ],
   "asserts": [

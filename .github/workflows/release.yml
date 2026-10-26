@@ -1,7 +1,7 @@
 name: Release
 
 # Hexium only (no Thunderstore). Push a tag to release:
-#   Stable: v0.1.0          -> Hexium + GitHub release (DrakeModsLibs must already be on Hexium at the version pinned in mod.package.props)
+#   Stable: v0.1.0          -> Hexium + GitHub release
 #   Beta:   v0.1.0-beta.1   -> Hexium + GitHub prerelease
 # The tag must match <Version> in mod.package.props, and CHANGELOG.md needs a "## <version>" section.
 
@@ -66,33 +66,6 @@ jobs:
       - name: Restore NuGet packages
         run: |
           nuget restore Cards.csproj -PackagesDirectory packages
-
-      # Compile reference for DrakeModsLibs: the exact version this mod depends on, from Hexium.
-      - name: Fetch DrakeModsLibs reference DLL
-        run: |
-          LIBS_DEP=$(grep -oE 'DrakeMods-DrakeModsLibs-[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?' mod.package.props | head -1)
-          LIBS_VER="${LIBS_DEP#DrakeMods-DrakeModsLibs-}"
-          if [ -z "$LIBS_VER" ]; then
-            echo "::error::Could not parse DrakeMods-DrakeModsLibs version from mod.package.props" >&2
-            exit 1
-          fi
-          echo "Resolving DrakeModsLibs $LIBS_VER on Hexium"
-          URL=$(curl -fsSL "https://valheim.hexium.gg/api/experimental/package/DrakeMods/DrakeModsLibs/${LIBS_VER}/" | jq -r '.download_url // empty')
-          if [ -z "$URL" ]; then
-            echo "::error::DrakeModsLibs ${LIBS_VER} is not on Hexium. Publish it first." >&2
-            exit 1
-          fi
-          curl -fsSL "$URL" -o /tmp/drakemodslibs.zip
-          mkdir -p ci_libs /tmp/drakemodslibs
-          unzip -qo /tmp/drakemodslibs.zip -d /tmp/drakemodslibs
-          DLL=$(find /tmp/drakemodslibs -name 'DrakeModsLibs.dll' | head -1)
-          if [ -z "$DLL" ]; then
-            echo "::error::DrakeModsLibs.dll missing from Hexium zip" >&2
-            find /tmp/drakemodslibs -type f >&2
-            exit 1
-          fi
-          cp "$DLL" ci_libs/DrakeModsLibs.dll
-          echo "WORKSHOP_LIBS_DLL=$(pwd)/ci_libs/DrakeModsLibs.dll" >> "$GITHUB_ENV"
 
       # ── Stage game / BepInEx DLLs from Pfhoenix ─────────────────────────────
       #  Fake "Valheim install" tree:
@@ -222,7 +195,7 @@ jobs:
             echo "## Install"
             echo "- **Hexium:** https://valheim.hexium.gg/mods/DrakeMods/BoardVikings-CardGames (dependencies install automatically)."
             echo "- **Zip below:** use your mod manager's \"Import local mod\" (Gale, r2modman), or extract into \`BepInEx/plugins/DrakeMods-BoardVikings-CardGames/\`."
-            echo "- Requires **DrakeModsLibs** (installs automatically) and works best with the **Gizmo** mod for rotating giant cards."
+            echo "- Works best with the **Gizmo** mod for rotating giant cards."
             echo
             echo "---"
             echo "Full history: [CHANGELOG.md](https://github.com/${REPO}/blob/${TAG}/CHANGELOG.md) | How to use it: [README](https://github.com/${REPO}/blob/${TAG}/README.md)"

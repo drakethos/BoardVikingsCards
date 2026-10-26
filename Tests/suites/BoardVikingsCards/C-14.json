@@ -1,5 +1,5 @@
 {
-  "name": "C-14 dropped card lies on the ground and can be picked up",
+  "name": "C-14 giant card: face picker opens",
   "steps": [
     {
       "do": "teleport",
@@ -8,35 +8,57 @@
       "yaw": 218
     },
     {
+      "do": "setconfig",
+      "guid": "com.drakemods.serverteams",
+      "values": {
+        "4 Visuals/TeamGlow": false
+      }
+    },
+    {
+      "do": "give",
+      "prefab": "ArmorLeatherLegs",
+      "equip": true
+    },
+    {
+      "do": "give",
+      "prefab": "ArmorLeatherChest",
+      "equip": true
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestWearVisor",
+      "args": []
+    },
+    {
       "do": "spawn",
-      "prefab": "Card_Throwing",
-      "dz": 1.5,
-      "as": "c"
-    },
-    {
-      "do": "wait",
-      "seconds": 2
-    },
-    {
-      "do": "face",
-      "target": "c"
-    },
-    {
-      "do": "interact",
-      "target": "c"
+      "prefab": "Card_Giant",
+      "dz": 4,
+      "as": "g"
     },
     {
       "do": "wait",
       "seconds": 1
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Giant.GiantCardApi.TestOpenPicker",
+      "args": []
+    },
+    {
+      "do": "wait",
+      "seconds": 1
+    },
+    {
+      "do": "screenshot",
+      "name": "giant-picker",
+      "clean": true
+    },
+    {
+      "do": "pressKey",
+      "key": "Escape"
     }
   ],
   "asserts": [
-    {
-      "check": "hasItem",
-      "prefab": "Card_Throwing",
-      "count": 1,
-      "label": "picked up"
-    },
     {
       "check": "noErrors",
       "source": "BoardVikings-CardGames",

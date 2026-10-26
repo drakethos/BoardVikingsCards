@@ -1,4 +1,5 @@
 using System;
+using Cards.Deck;
 using Cards.Util;
 using UnityEngine;
 
@@ -59,13 +60,28 @@ internal class CardTable : MonoBehaviour, Hoverable, Interactable
 
     // ---------------------------------------------------------------- acting
 
-    /// <summary>The creator of the table is its dealer until a dealer visor is worn at it.</summary>
-    internal bool IsDealer(long player)
+    /// <summary>The player who built the table (0 when unknown).</summary>
+    internal long Creator
     {
-        var piece = GetComponent<Piece>();
-        long creator = piece != null ? piece.GetCreator() : 0;
-        return creator == 0 || creator == player;
+        get
+        {
+            var piece = GetComponent<Piece>();
+            return piece != null ? piece.GetCreator() : 0;
+        }
     }
+
+    internal static long MyId => Player.m_localPlayer != null ? Player.m_localPlayer.GetPlayerID() : 0;
+
+    internal static string MyName => Player.m_localPlayer != null ? Player.m_localPlayer.GetPlayerName() : "";
+
+    /// <summary>Am I wearing the dealer's visor?</summary>
+    internal static bool MyVisor => DealerVisor.IsWorn(Player.m_localPlayer);
+
+    /// <summary>
+    /// The dealer: whoever wears the visor, or, while the rules are not locked, the table's builder. (The visor is claimed in
+    /// every command, so it is an honor system, like the hidden hands.)
+    /// </summary>
+    internal bool IsDealerMe => MyVisor || (!_state.locked && Creator != 0 && Creator == MyId);
 
     /// <summary>Do an action as the local player (it runs here when this client owns the table, otherwise on the owner).</summary>
     internal void Act(string action)
@@ -73,26 +89,49 @@ internal class CardTable : MonoBehaviour, Hoverable, Interactable
         if (!IsReal)
             return;
         if (_nview!.IsOwner())
-            Run(action, Player.m_localPlayer != null ? Player.m_localPlayer.GetPlayerID() : 0);
+            Run(action);
         else
             _nview.InvokeRPC(ActRpc, action);
     }
 
-    private void RPC_Act(long sender, string action)
+    /// <summary>Put the deck in my inventory on the table (the item goes; its cards, in order, go on the felt). False when I cannot.</summary>
+    internal bool PlaceDeckFromInventory()
     {
-        if (!IsReal || !_nview!.IsOwner())
-            return;
-        // Every action names its player; the dealer check uses that player.
-        var parts = action.Split('|');
-        long player = parts.Length > 1 && long.TryParse(parts[1], out var id) ? id : 0;
-        Run(action, player);
+        var player = Player.m_localPlayer;
+        var item = DeckApi.FindDeck();
+        if (player == null || item == null || _state.deck.Count > 0)
+            return false;
+        var cards = DeckApi.ToTableCards(item);
+        if (cards.Count == 0)
+            return false;
+        player.GetInventory().RemoveItem(item);
+        Act(TableActions.PlaceDeck(MyId, MyVisor, item.m_variant, cards));
+        return true;
     }
 
-    private void Run(string action, long player)
+    /// <summary>Pick the deck up: I get a deck item holding what is left of it, in order.</summary>
+    internal bool TakeDeckToInventory()
+    {
+        var player = Player.m_localPlayer;
+        if (player == null || _state.deck.Count == 0)
+            return false;
+        var cards = new System.Collections.Generic.List<int>(_state.deck);
+        int back = _state.deckBack;
+        Act(TableActions.TakeDeck(MyId, MyVisor));
+        return DeckApi.MakeDeckItem(player, cards, back);
+    }
+
+    private void RPC_Act(long sender, string action)
+    {
+        if (IsReal && _nview!.IsOwner())
+            Run(action);
+    }
+
+    private void Run(string action)
     {
         var zdo = _nview!.GetZDO();
         var state = TableState.Parse(zdo.GetString(StateKey, ""));
-        if (TableActions.Apply(state, action, IsDealer(player)))
+        if (TableActions.Apply(state, action, Creator))
             zdo.Set(StateKey, state.Serialize());
         Refresh();
     }
@@ -107,8 +146,7 @@ internal class CardTable : MonoBehaviour, Hoverable, Interactable
 
     public string GetHoverText()
     {
-        var me = Player.m_localPlayer != null ? Player.m_localPlayer.GetPlayerID() : 0;
-        int seat = _state.SeatOf(me);
+        int seat = _state.SeatOf(MyId);
         return Localization.instance.Localize(
             $"{Title}  ({_state.Taken()}/{_state.seatCount} seated)\n[<color=yellow><b>$KEY_Use</b></color>] " +
             (seat >= 0 ? "Open your seat" : "Sit down"));

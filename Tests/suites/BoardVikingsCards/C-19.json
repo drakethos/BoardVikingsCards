@@ -1,5 +1,5 @@
 {
-  "name": "C-19 card table: Small and Long are two sizes of one table",
+  "name": "C-19 archery target: aim is honed (five throws, at least four hit)",
   "steps": [
     {
       "do": "teleport",
@@ -8,9 +8,26 @@
       "yaw": 218
     },
     {
+      "do": "setconfig",
+      "guid": "com.drakemods.serverteams",
+      "values": {
+        "4 Visuals/TeamGlow": false
+      }
+    },
+    {
+      "do": "give",
+      "prefab": "ArmorLeatherLegs",
+      "equip": true
+    },
+    {
+      "do": "give",
+      "prefab": "ArmorLeatherChest",
+      "equip": true
+    },
+    {
       "do": "spawn",
-      "prefab": "Card_Table_Long",
-      "dz": 5,
+      "prefab": "piece_ArcheryTarget",
+      "dz": 4,
       "as": "t"
     },
     {
@@ -18,40 +35,159 @@
       "seconds": 1
     },
     {
-      "do": "invoke",
-      "method": "Cards.Table.TableTestApi.TestSize",
-      "args": []
-    },
-    {
-      "do": "check",
-      "check": "lastResult",
-      "label": "the long table",
-      "expect": "2.6,1.2"
-    },
-    {
-      "do": "destroy",
+      "do": "face",
       "target": "t"
     },
     {
-      "do": "spawn",
-      "prefab": "Card_Table_Small",
-      "dz": 5,
-      "as": "s"
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestEquipThrowing",
+      "args": [
+        "CA"
+      ]
     },
     {
       "do": "wait",
-      "seconds": 1
+      "seconds": 0.6
+    },
+    {
+      "do": "lookAt",
+      "target": "t",
+      "distance": 5
+    },
+    {
+      "do": "wait",
+      "seconds": 0.3
+    },
+    {
+      "do": "pressKey",
+      "button": "Attack"
+    },
+    {
+      "do": "wait",
+      "seconds": 2.2
     },
     {
       "do": "invoke",
-      "method": "Cards.Table.TableTestApi.TestSize",
+      "method": "Cards.CardsTestApi.TestEquipThrowing",
+      "args": [
+        "C2"
+      ]
+    },
+    {
+      "do": "wait",
+      "seconds": 0.6
+    },
+    {
+      "do": "lookAt",
+      "target": "t",
+      "distance": 5
+    },
+    {
+      "do": "wait",
+      "seconds": 0.3
+    },
+    {
+      "do": "pressKey",
+      "button": "Attack"
+    },
+    {
+      "do": "wait",
+      "seconds": 2.2
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestEquipThrowing",
+      "args": [
+        "C3"
+      ]
+    },
+    {
+      "do": "wait",
+      "seconds": 0.6
+    },
+    {
+      "do": "lookAt",
+      "target": "t",
+      "distance": 5
+    },
+    {
+      "do": "wait",
+      "seconds": 0.3
+    },
+    {
+      "do": "pressKey",
+      "button": "Attack"
+    },
+    {
+      "do": "wait",
+      "seconds": 2.2
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestEquipThrowing",
+      "args": [
+        "C4"
+      ]
+    },
+    {
+      "do": "wait",
+      "seconds": 0.6
+    },
+    {
+      "do": "lookAt",
+      "target": "t",
+      "distance": 5
+    },
+    {
+      "do": "wait",
+      "seconds": 0.3
+    },
+    {
+      "do": "pressKey",
+      "button": "Attack"
+    },
+    {
+      "do": "wait",
+      "seconds": 2.2
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestEquipThrowing",
+      "args": [
+        "C5"
+      ]
+    },
+    {
+      "do": "wait",
+      "seconds": 0.6
+    },
+    {
+      "do": "lookAt",
+      "target": "t",
+      "distance": 5
+    },
+    {
+      "do": "wait",
+      "seconds": 0.3
+    },
+    {
+      "do": "pressKey",
+      "button": "Attack"
+    },
+    {
+      "do": "wait",
+      "seconds": 2.2
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.CardsTestApi.TestTargetHits",
       "args": []
     },
     {
       "do": "check",
       "check": "lastResult",
-      "label": "the small table",
-      "expect": "1.5,1.0"
+      "label": "at least four of five hit",
+      "min": 4
     }
   ],
   "asserts": [

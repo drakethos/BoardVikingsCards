@@ -1,5 +1,5 @@
 {
-  "name": "C-28 deck: shuffle keeps 52 and changes the order",
+  "name": "C-28 card table: chips (a starting stack, a bet, the pot paid out)",
   "steps": [
     {
       "do": "teleport",
@@ -8,31 +8,103 @@
       "yaw": 218
     },
     {
+      "do": "setconfig",
+      "guid": "com.drakemods.serverteams",
+      "values": {
+        "4 Visuals/TeamGlow": false
+      }
+    },
+    {
       "do": "give",
-      "prefab": "Card_Deck",
-      "count": 1
+      "prefab": "ArmorLeatherLegs",
+      "equip": true
+    },
+    {
+      "do": "give",
+      "prefab": "ArmorLeatherChest",
+      "equip": true
+    },
+    {
+      "do": "spawn",
+      "prefab": "Card_Table_Long",
+      "dz": 5,
+      "as": "t"
+    },
+    {
+      "do": "wait",
+      "seconds": 1
     },
     {
       "do": "invoke",
-      "method": "Cards.Deck.DeckApi.TestShuffleTop",
+      "method": "Cards.Table.TableTestApi.TestSetSeats",
+      "args": [
+        4
+      ]
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestSit",
+      "args": [
+        1
+      ]
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestStack",
       "args": []
     },
     {
       "do": "check",
       "check": "lastResult",
-      "label": "got a top-8 listing",
-      "contains": ","
+      "label": "a starting stack is worth 270",
+      "expect": 270
     },
     {
       "do": "invoke",
-      "method": "Cards.Deck.DeckApi.TestCount",
+      "method": "Cards.Table.TableTestApi.TestBet",
+      "args": [
+        2,
+        2
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "two green chips in the pot (25 each)",
+      "expect": 50
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestChips",
       "args": []
     },
     {
       "do": "check",
       "check": "lastResult",
-      "label": "still 52",
-      "expect": 52
+      "label": "my stack is 270 - 50",
+      "expect": 220
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestWin",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "the pot is empty after paying it out",
+      "expect": 0
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestChips",
+      "args": []
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "and it all came back to me",
+      "expect": 270
     }
   ],
   "asserts": [

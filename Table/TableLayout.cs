@@ -38,4 +38,45 @@ internal static class TableLayout
             facing = Vector3.forward;
         facing.Normalize();
     }
+
+    /// <summary>Size of a card lying on the table, in meters.</summary>
+    internal static readonly Vector2 CardSize = new Vector2(0.10f, 0.14f);
+
+    /// <summary>The deck's spot (left of the middle) and the discard pile's (right of it).</summary>
+    internal static Vector3 DeckSpot(Vector2 size) => new Vector3(-0.13f, 0f, 0f);
+
+    internal static Vector3 DiscardSpot(Vector2 size) => new Vector3(0.13f, 0f, 0f);
+
+    /// <summary>Where the pot's chips sit.</summary>
+    internal static Vector3 PotSpot(Vector2 size) => new Vector3(0f, 0f, -0.16f);
+
+    /// <summary>
+    /// Where the n-th played card lies: a tidy grid across the middle of the felt, behind the deck and discard (towards the north edge).
+    /// </summary>
+    internal static Vector3 PlayedSpot(Vector2 size, int index)
+    {
+        int perRow = Mathf.Max(3, Mathf.FloorToInt((size.x - 0.5f) / 0.115f));
+        int row = index / perRow;
+        int col = index % perRow;
+        float width = (perRow - 1) * 0.115f;
+        return new Vector3(-width / 2f + col * 0.115f, 0f, 0.17f + row * 0.15f);
+    }
+
+    /// <summary>A seat's hand: cards fanned in front of the seat, towards the middle, centred on the seat.</summary>
+    internal static void HandSpot(Vector2 size, int seat, int seatCount, int index, int handCount, out Vector3 position, out Vector3 facing)
+    {
+        Seat(size, seat, seatCount, out var at, out facing);
+        var across = Vector3.Cross(Vector3.up, facing).normalized;
+        float step = Mathf.Min(0.075f, 0.5f / Mathf.Max(1, handCount));
+        float offset = (index - (handCount - 1) / 2f) * step;
+        position = at + facing * 0.12f + across * offset + Vector3.up * (0.002f * index);
+    }
+
+    /// <summary>A seat's chips sit just beside the hand.</summary>
+    internal static Vector3 ChipSpot(Vector2 size, int seat, int seatCount)
+    {
+        Seat(size, seat, seatCount, out var at, out var facing);
+        var across = Vector3.Cross(Vector3.up, facing).normalized;
+        return at + facing * 0.12f + across * 0.30f;
+    }
 }

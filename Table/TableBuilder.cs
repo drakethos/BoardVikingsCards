@@ -23,6 +23,16 @@ internal static class TableMaterials
         return material;
     }
 
+    /// <summary>See-through tinted plastic (unlit, shows from both sides): the visor's brim.</summary>
+    internal static Material Glass(Color color)
+    {
+        var shader = Shader.Find("Sprites/Default") ?? Diffuse();
+        var material = new Material(shader) { name = "CardGlass" };
+        if (material.HasProperty("_Color"))
+            material.SetColor("_Color", color);
+        return material;
+    }
+
     /// <summary>Wood: the material of a vanilla wooden piece, shared (never copied, which keeps graphics memory low).</summary>
     internal static Material Wood()
     {

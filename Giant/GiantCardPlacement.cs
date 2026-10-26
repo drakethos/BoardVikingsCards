@@ -1,5 +1,5 @@
 using System.Linq;
-using DrakeModsLibs.UI;
+using Cards.Ui;
 using HarmonyLib;
 using UnityEngine;
 
@@ -51,7 +51,7 @@ internal static class GiantCardPlacement
         if (Time.unscaledTime - _lastMessage > 0.15f)
         {
             _lastMessage = Time.unscaledTime;
-            DrakeMessage.Show("Tilt " + Pitch.ToString("0.#") + "°", DrakeMessageKind.Info, null, 1.2f);
+            HudText.Say("Tilt " + Pitch.ToString("0.#") + "°");
         }
     }
 
