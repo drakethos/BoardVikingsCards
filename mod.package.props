@@ -9,7 +9,7 @@
     <BepInPluginName>BoardVikings-CardGames</BepInPluginName>
     <BepInGuid>com.DrakeMods.BoardVikings-CardGames</BepInGuid>
     <ModInfoClass>Cards</ModInfoClass>
-    <Description>EARLY PREVIEW (beta). Card games in Valheim. Throw cards like a boss, build giant houses of cards, carry a whole deck in one item, hit the archery target, sit at a felt card table. DrakesMods presents Board Vikings: Cards. Back up your world and characters.</Description>
+    <Description>EARLY PREVIEW (beta), back up your world. Throw cards, build giant houses of cards, carry a deck in one item, hit the archery target, sit at a felt card table with chips and a dealer visor. DrakesMods: Board Vikings Cards.</Description>
     <WebsiteUrl></WebsiteUrl>
     <!-- Deploy DLL + Assets after PackageMod staging copies to output -->
     <DeployAfterTargets>CopyModAssetsToOutput</DeployAfterTargets>
