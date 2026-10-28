@@ -1,12 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.1.0-beta.3
 
-### Fixed
-
-- Packaging only: the Hexium/Thunderstore zip now puts the DLL and every data folder under `plugins/`, so Gale and r2modman
-  keep the folder structure (they flatten anything outside `plugins/`). A CI guard (`check-gale-layout.py`) fails the build
-  if that ever regresses. No code or behaviour change for players.
+- **Packaging fix:** the zip now ships the DLL and the whole `Assets/` folder (card faces, card backs, dealer visor, icons) under `plugins/` so Gale and r2modman keep the folder layout (they flattened `Assets/` into loose files, so the art never loaded). A build guard (`check-gale-layout.py`) fails the release if that regresses. No gameplay change.
+- Card faces, the card-back sheet, the dealer visor model and the table icons are now found beside the mod's DLL first (the old lookup by folder name stays as a fallback).
 
 ## 0.1.0-beta.2
 
