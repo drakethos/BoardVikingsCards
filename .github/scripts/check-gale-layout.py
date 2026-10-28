@@ -12,6 +12,8 @@ Usage:
                                e.g. --expect MyMod.dll --expect Assets/data.json
   --expect-tree SRC:ZIPDIR     every file under repo folder SRC must be in the zip under ZIPDIR (e.g. Assets:plugins/Assets)
   --ignore NAME                file name that --expect-tree may skip (repeatable)
+  --allow-root-dir NAME        top-level folder that is store-listing/docs only (e.g. screenshots); it may stay outside
+                               plugins/ (Gale flattens it to loose files, which is harmless because nothing reads them)
 
 Rules enforced (exit 1 on any):
   1. every file except manifest.json/icon.png/README.md/CHANGELOG.md sits under a Gale-recognized folder
@@ -45,12 +47,13 @@ def main(argv):
     if len(argv) < 2:
         print(__doc__); return 2
     zpath, pkg = argv[0], argv[1]
-    expect, trees, ignore = [], [], set()
+    expect, trees, ignore, allow = [], [], set(), set()
     i = 2
     while i < len(argv):
         if argv[i] == "--expect": expect.append(argv[i + 1]); i += 2
         elif argv[i] == "--expect-tree": trees.append(argv[i + 1]); i += 2
         elif argv[i] == "--ignore": ignore.add(argv[i + 1]); i += 2
+        elif argv[i] == "--allow-root-dir": allow.add(argv[i + 1]); i += 2
         else: print("unknown arg", argv[i]); return 2
     z = zipfile.ZipFile(zpath)
     names = [n for n in z.namelist() if not n.endswith("/")]
@@ -65,6 +68,8 @@ def main(argv):
             flattened.append(n)
     base = f"BepInEx/plugins/{pkg}/"
     for n in flattened:
+        if n.split("/")[0] in allow and "/" in n:
+            continue
         errors.append(f"not under plugins/ (Gale would flatten it): {n} -> {mapped[n]}")
     seen = {}
     for n, m in mapped.items():
