@@ -128,10 +128,13 @@ jobs:
           PKG_DIR="DrakeMods-BoardVikings_CardGames-${VERSION}"
           ZIP_NAME="DrakeMods-BoardVikings_CardGames-${VERSION}.zip"
 
-          mkdir -p "$PKG_DIR/Assets"
-          cp bin/Release/BoardVikings-CardGames.dll "$PKG_DIR/"
+          # Gale (and r2modman) only keep folder structure for files under plugins/ (or patchers/, monomod/, core/,
+          # config/); anything else is flattened to loose files. The DLL and every data folder therefore live under
+          # plugins/; only manifest.json, icon.png, README.md and CHANGELOG.md sit at the zip root.
+          mkdir -p "$PKG_DIR/plugins/Assets"
+          cp bin/Release/BoardVikings-CardGames.dll "$PKG_DIR/plugins/"
           # the art: card faces, the card back sheet, the visor model
-          cp -r Assets/. "$PKG_DIR/Assets/"
+          cp -r Assets/. "$PKG_DIR/plugins/Assets/"
           cp README.md                      "$PKG_DIR/"
           cp icon.png                       "$PKG_DIR/"
           cp CHANGELOG.md                   "$PKG_DIR/"
@@ -143,6 +146,10 @@ jobs:
             /v:minimal
 
           cd "$PKG_DIR" && zip -r "../$ZIP_NAME" . && cd ..
+
+          # Guard: simulate Gale's install rules. Fails if anything would be flattened out of its folder
+          # (only files under plugins/ keep their sub-folders), or a shipped data file is missing.
+          python3 .github/scripts/check-gale-layout.py "$ZIP_NAME" "DrakeMods-BoardVikings_CardGames" --expect "BoardVikings-CardGames.dll" --expect-tree "Assets:plugins/Assets"
 
           # Guard: exactly one icon.png at the zip root, 256x256 (store listing icon).
           ICON_PATHS=$(zipinfo -1 "$ZIP_NAME" | grep -E '(^|/)icon\.png$' || true)
