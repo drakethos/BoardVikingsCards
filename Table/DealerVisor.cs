@@ -31,8 +31,8 @@ internal static class DealerVisor
 
     internal static void Create()
     {
-        const string description = "A green dealer's visor. Wear it at a card table and you are the dealer: you deal, you set the rules, " +
-                                   "and once the rules are locked only the visor can change them.";
+        const string description = "A green dealer's visor. Wear it at a card table and you are the dealer. Without it, the first player " +
+                                   "to use the table is the dealer. Once the rules are locked, only the visor can change them.";
         var icon = Util.CardIcons.VisorIcon();
         var config = new ItemConfig
         {

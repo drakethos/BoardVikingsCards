@@ -74,7 +74,7 @@
       "do": "check",
       "check": "lastResult",
       "label": "scenario flip",
-      "expect": "own=True other=False creator=True visor=True"
+      "expect": "own=True other=False dealer=True visor=True"
     },
     {
       "do": "invoke",
@@ -119,14 +119,27 @@
       "do": "invoke",
       "method": "Cards.Table.TableTestApi.TestScenario",
       "args": [
-        "no-creator"
+        "first-touch"
       ]
     },
     {
       "do": "check",
       "check": "lastResult",
-      "label": "scenario no-creator",
-      "expect": "withoutVisor=False withVisor=True"
+      "label": "scenario first-touch",
+      "expect": "opened=True taken=True sat=True kept=False seats=True other=False next=True dealer=9"
+    },
+    {
+      "do": "invoke",
+      "method": "Cards.Table.TableTestApi.TestScenario",
+      "args": [
+        "spread"
+      ]
+    },
+    {
+      "do": "check",
+      "check": "lastResult",
+      "label": "scenario spread",
+      "expect": "hands=3,4,6,5 board=4 meld=1 deck=29 total=52"
     },
     {
       "do": "invoke",

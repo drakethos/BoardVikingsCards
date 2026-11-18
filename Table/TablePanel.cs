@@ -21,6 +21,7 @@ internal sealed class TablePanel
     private readonly ScrollView _scroll;
     private CardTable? _table;
     private int _selected = -1;
+    private int _carried = -1;
     private bool _giving;
     private int _dealEach = 5;
 
@@ -51,6 +52,7 @@ internal sealed class TablePanel
                 _table.Changed -= Rebuild;
         };
         _selected = -1;
+        _carried = -1;
         _giving = false;
         Rebuild();
         _window.Open();
@@ -118,16 +120,24 @@ internal sealed class TablePanel
         bool dealer = _table.IsDealerMe;
         bool open = !state.locked && state.mode == TableState.Free;
         bool canTable = dealer || (open && seated);
+        bool holdsDeal = state.dealer == Me;
         if (!seated || _selected >= state.seats[mine].hand.Count)
             _selected = -1;
 
-        string role = dealer ? "You are the dealer" : (seated ? "Seat " + (mine + 1) : "Not seated");
+        string role = dealer
+            ? "You are the dealer"
+            : holdsDeal
+                ? "You hold the deal, but the rules are locked"
+                : state.dealer == 0
+                    ? "No dealer yet — the first to use the table takes it"
+                    : (string.IsNullOrEmpty(state.dealerName) ? "Someone else is the dealer" : state.dealerName + " is the dealer");
         _window.SetHeader(_table.Title, $"{state.Taken()} of {state.seatCount} seated · {(state.mode == TableState.Free ? "free play" : "turn order")}" +
                                          (state.locked ? " · rules locked" : "") + " · " + role, CardBacks.DeckIcon(state.deckBack));
 
         _scroll.Clear();
         if (seated)
             AddHand(state, mine);
+        AddCarried(state, mine, seated);
         AddPiles(state, mine, seated, canTable);
         AddChips(state, mine, seated, canTable);
         AddSeats(state, mine);
@@ -156,6 +166,7 @@ internal sealed class TablePanel
             var tile = CardWidgets.CardTile(CardLib.CodeOf(seat.hand[i]), true, () =>
             {
                 _selected = _selected == index ? -1 : index;
+                _carried = -1;
                 _giving = false;
                 Rebuild();
             });
@@ -169,8 +180,8 @@ internal sealed class TablePanel
 
         var buttons = Buttons();
         bool has = _selected >= 0;
-        buttons.Add(Action("Play face up", () => Pick(i => TableActions.Play(Me, Visor, i, true)), UkButtonKind.Primary, has && myTurn));
-        buttons.Add(Action("Play face down", () => Pick(i => TableActions.Play(Me, Visor, i, false)), UkButtonKind.Secondary, has && myTurn));
+        buttons.Add(Action("New spread", () => Pick(i => TableActions.Lay(Me, Visor, i, -1, true)), UkButtonKind.Primary, has && myTurn));
+        buttons.Add(Action("New spread face down", () => Pick(i => TableActions.Lay(Me, Visor, i, -1, false)), UkButtonKind.Secondary, has && myTurn));
         buttons.Add(Action("Discard", () => Pick(i => TableActions.Discard(Me, Visor, i)), UkButtonKind.Secondary, has && myTurn));
         buttons.Add(Action("Turn over", () => Pick(i => TableActions.Flip(Me, Visor, mine, i)), UkButtonKind.Secondary, has));
         buttons.Add(Action(_giving ? "Give to…" : "Give to…", () =>
@@ -238,22 +249,119 @@ internal sealed class TablePanel
             box.Add(top);
         }
 
-        box.Add(UkControls.Text(state.played.Count == 0 ? "No cards on the felt." : "On the felt (click to pick one up):", 13, UkTheme.TextMuted));
-        var felt = Tiles();
+        box.Add(UkControls.Text(state.played.Count == 0
+            ? "No spreads yet. Lay a card to start a row you can add to and pick up from, like a poker board or a rummy meld. The discard pile only gives up its top card."
+            : "Spreads (click a card to pick it up):", 13, UkTheme.TextMuted));
+
+        int rows = 0;
         for (int i = 0; i < state.played.Count; i++)
         {
-            int index = i;
-            var tile = CardWidgets.CardTile(CardLib.CodeOf(state.played[i]), seated && myTurn, () => Do(TableActions.Grab(Me, Visor, index)));
-            if (!state.playedUp[i] && !(seated && state.playedBy[i] == mine))
-            {
-                // A card played face down: only its player (and nobody else) sees what it is.
-                tile = CardWidgets.SpriteTile(CardBacks.Back(state.deckBack), "?", seated && myTurn, () => Do(TableActions.Grab(Me, Visor, index)));
-            }
-
-            felt.Add(tile);
+            int spread = i < state.playedSpread.Count ? state.playedSpread[i] : 0;
+            if (spread + 1 > rows)
+                rows = spread + 1;
         }
 
-        box.Add(felt);
+        bool myCard = seated && myTurn && _selected >= 0;
+        for (int spread = 0; spread < rows; spread++)
+        {
+            var line = new VisualElement().Row();
+            line.style.marginTop = 8;
+            line.Add(UkControls.Text("Spread " + (spread + 1), 14, UkTheme.Gold, heading: true, wrap: false));
+            if (myCard)
+            {
+                int addTo = spread;
+                var add = Action("Add", () => Pick(i => TableActions.Lay(Me, Visor, i, addTo, true)), UkButtonKind.Secondary, true);
+                add.style.marginLeft = 8;
+                add.style.marginTop = 0;
+                line.Add(add);
+            }
+
+            box.Add(line);
+            var felt = Tiles();
+            int n = 0;
+            for (int i = 0; i < state.played.Count; i++)
+            {
+                int onRow = i < state.playedSpread.Count ? state.playedSpread[i] : 0;
+                if (onRow != spread)
+                    continue;
+                int at = n++;
+                int which = spread;
+                bool mineDown = seated && state.playedBy[i] == mine;
+                var tile = CardWidgets.CardTile(CardLib.CodeOf(state.played[i]), seated && myTurn, () => Do(TableActions.Pickup(Me, Visor, which, at)));
+                if (!state.playedUp[i] && !mineDown)
+                    tile = CardWidgets.SpriteTile(CardBacks.Back(state.deckBack), "?", seated && myTurn, () => Do(TableActions.Pickup(Me, Visor, which, at)));
+                felt.Add(tile);
+            }
+
+            box.Add(felt);
+        }
+
+        _scroll.Add(box);
+    }
+
+    /// <summary>Playing cards in the inventory. Laying one puts it on a spread and takes it out of the inventory.</summary>
+    private void AddCarried(TableState state, int mine, bool seated)
+    {
+        var player = Player.m_localPlayer;
+        if (player == null)
+            return;
+        var cards = player.GetInventory().GetAllItems().Where(i => DeckData.LooseCardCode(i) != null).ToList();
+        if (cards.Count == 0)
+            return;
+        if (_carried >= cards.Count)
+            _carried = -1;
+
+        bool myTurn = seated && (state.mode == TableState.Free || state.turn == mine || _table!.IsDealerMe);
+        var box = Section($"Cards you are carrying ({cards.Count})");
+        box.Add(UkControls.Text(seated
+            ? "Lay one on a spread. You can add to that row and pick any card back up. Discard only gives up its top card."
+            : "Sit down to lay these on a spread.", 13, UkTheme.TextMuted));
+
+        var tiles = Tiles();
+        for (int i = 0; i < cards.Count; i++)
+        {
+            int index = i;
+            var code = DeckData.LooseCardCode(cards[i]);
+            if (code == null)
+                continue;
+            var tile = CardWidgets.CardTile(code, true, () =>
+            {
+                _carried = _carried == index ? -1 : index;
+                _selected = -1;
+                _giving = false;
+                Rebuild();
+            });
+            Mark(tile, i == _carried);
+            tiles.Add(tile);
+        }
+
+        box.Add(tiles);
+        if (myTurn && _carried >= 0 && _carried < cards.Count)
+        {
+            var item = cards[_carried];
+            var buttons = Buttons();
+            buttons.Add(Action("New spread", () =>
+            {
+                if (_table != null && _table.LayCarried(item, -1, true))
+                    _carried = -1;
+            }, UkButtonKind.Primary));
+
+            var seen = new HashSet<int>();
+            for (int i = 0; i < state.playedSpread.Count; i++)
+                seen.Add(state.playedSpread[i]);
+            foreach (var spread in seen.OrderBy(n => n))
+            {
+                int row = spread;
+                buttons.Add(Action("Add to spread " + (row + 1), () =>
+                {
+                    if (_table != null && _table.LayCarried(item, row, true))
+                        _carried = -1;
+                }));
+            }
+
+            box.Add(buttons);
+        }
+
         _scroll.Add(box);
     }
 
@@ -324,8 +432,9 @@ internal sealed class TablePanel
                 .Border(UkTheme.LineSoft);
             row.style.marginTop = 6;
             string turn = state.mode == TableState.Turns && state.turn == i && s.Taken ? "  ◄ turn" : "";
+            string deal = s.Taken && s.player == state.dealer ? "  · dealer" : "";
             row.Add(UkControls.Text("Seat " + (i + 1), 15, UkTheme.Text, heading: true, wrap: false));
-            var who = UkControls.Text(s.Taken ? "  " + s.name + turn : "  empty", 14, s.Taken ? UkTheme.Gold : UkTheme.TextMuted, wrap: false);
+            var who = UkControls.Text(s.Taken ? "  " + s.name + turn + deal : "  empty", 14, s.Taken ? UkTheme.Gold : UkTheme.TextMuted, wrap: false);
             who.style.marginLeft = 10;
             row.Add(who);
             row.Add(UkControls.Spacer());
@@ -379,6 +488,11 @@ internal sealed class TablePanel
         deal.Add(go);
         box.Add(deal);
 
+        var board = Buttons();
+        board.Add(Action("Deal 3 as a new spread", () => Do(TableActions.DealSpread(Me, Visor, 3, -1)), UkButtonKind.Primary, state.deck.Count > 0));
+        board.Add(Action("Deal 1 onto the latest spread", () => Do(TableActions.DealSpread(Me, Visor, 1, -2)), UkButtonKind.Secondary, state.deck.Count > 0));
+        box.Add(board);
+
         var more = Buttons();
         more.Add(Action("Collect every card", () => Do(TableActions.Collect(Me, Visor))));
         more.Add(Action(state.reveal ? "Hide the hands" : "Show every hand", () => Do(TableActions.Reveal(Me, Visor))));
@@ -406,7 +520,7 @@ internal sealed class TablePanel
         box.Add(mode);
         box.Add(UkControls.Text(state.locked
             ? "Locked: only the dealer's visor changes the rules."
-            : "Unlocked: free play lets anyone at the table deal and shuffle.", 13, UkTheme.TextMuted));
+            : "The first player to use the table is the dealer. Free play lets anyone seated deal and shuffle.", 13, UkTheme.TextMuted));
 
         var seats = new VisualElement().Row();
         seats.style.marginTop = 8;

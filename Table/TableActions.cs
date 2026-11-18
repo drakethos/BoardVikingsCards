@@ -8,8 +8,8 @@ namespace Cards.Table;
 /// <summary>
 /// Everything a player or the dealer can do at the table, as short text commands ("play|id|vis|card|up"). The table's owner runs
 /// them against the saved state, so every client sees the same table. Free play checks nothing except who may change the rules;
-/// turn order only holds players to their turn. Who is the dealer: whoever wears the dealer visor (the "vis" flag) or, while the
-/// rules are unlocked, the table's creator (a table with no known creator has no dealer but the visor).
+/// turn order only holds players to their turn. Who is the dealer: the first player to use the table (press E, sit, or deal), until
+/// they leave. The dealer visor (the "vis" flag) is also the dealer, and once the rules are locked only the visor changes them.
 /// </summary>
 internal static class TableActions
 {
@@ -19,6 +19,9 @@ internal static class TableActions
 
     internal static string Sit(long player, bool visor, string name, int seat) =>
         $"{Head("sit", player, visor)}|{Clean(name)}|{seat}";
+
+    /// <summary>Press E on the table. The first player to do this, while nobody is sitting as dealer, becomes the dealer.</summary>
+    internal static string Touch(long player, bool visor, string name) => $"{Head("touch", player, visor)}|{Clean(name)}";
 
     internal static string Leave(long player, bool visor) => Head("leave", player, visor);
 
@@ -35,9 +38,23 @@ internal static class TableActions
 
     internal static string Draw(long player, bool visor) => Head("draw", player, visor);
 
-    /// <summary>Play a card from my hand onto the felt (face up or down).</summary>
+    /// <summary>Play a card from my hand onto the first spread (face up or down).</summary>
     internal static string Play(long player, bool visor, int handIndex, bool faceUp) =>
         $"{Head("play", player, visor)}|{handIndex}|{(faceUp ? 1 : 0)}";
+
+    /// <summary>
+    /// Lay a hand card on a spread. Spread -1 starts a new row; -2 adds to the latest row; 0, 1, 2... are specific rows.
+    /// </summary>
+    internal static string Lay(long player, bool visor, int handIndex, int spread, bool faceUp) =>
+        $"{Head("lay", player, visor)}|{handIndex}|{spread}|{(faceUp ? 1 : 0)}";
+
+    /// <summary>Lay a card I was carrying (it is no longer an item) onto a spread. Same spread numbers as <see cref="Lay"/>.</summary>
+    internal static string PlaceCard(long player, bool visor, int card, int spread, bool faceUp) =>
+        $"{Head("place", player, visor)}|{card}|{spread}|{(faceUp ? 1 : 0)}";
+
+    /// <summary>Deal cards from the deck onto a spread, face up. Spread -1 starts a new row; -2 adds to the latest.</summary>
+    internal static string DealSpread(long player, bool visor, int count, int spread) =>
+        $"{Head("dealspread", player, visor)}|{count}|{spread}";
 
     internal static string Discard(long player, bool visor, int handIndex) => $"{Head("discard", player, visor)}|{handIndex}";
 
@@ -49,8 +66,12 @@ internal static class TableActions
     internal static string Flip(long player, bool visor, int seat, int handIndex) =>
         $"{Head("flip", player, visor)}|{seat}|{handIndex}";
 
-    /// <summary>Pick a card up off the felt into my hand.</summary>
+    /// <summary>Pick a card up off the felt into my hand (flat index across every spread).</summary>
     internal static string Grab(long player, bool visor, int playedIndex) => $"{Head("grab", player, visor)}|{playedIndex}";
+
+    /// <summary>Pick one card up out of a spread into my hand (the card's place in that row, not across all rows).</summary>
+    internal static string Pickup(long player, bool visor, int spread, int indexInSpread) =>
+        $"{Head("pickup", player, visor)}|{spread}|{indexInSpread}";
 
     internal static string TakeDiscard(long player, bool visor) => Head("takediscard", player, visor);
 
@@ -84,9 +105,10 @@ internal static class TableActions
     // ---- running a command
 
     /// <summary>Apply one command to the state. Returns true when the state changed.</summary>
-    /// <param name="creator">Id of the player who built the table (0 = unknown).</param>
+    /// <param name="creator">Kept so older callers still compile. The builder is not the dealer.</param>
     internal static bool Apply(TableState state, string action, long creator)
     {
+        _ = creator;
         if (string.IsNullOrEmpty(action))
             return false;
         var p = action.Split('|');
@@ -97,76 +119,94 @@ internal static class TableActions
 
         int me = state.SeatOf(player);
         bool seated = me >= 0 && me < state.seatCount;
-        bool dealer = visor || (!state.locked && creator != 0 && player == creator);
+        // Nobody holds the deal yet: the first setup action (deal, seats, shuffle, ...) claims it.
+        bool claimOnSuccess = false;
+        bool dealer = state.PlayerIsDealer(player, visor);
+        if (!dealer && state.dealer == 0 && !state.locked && player != 0 && CanClaim(p[0]))
+        {
+            dealer = true;
+            claimOnSuccess = true;
+        }
+
         bool open = !state.locked && state.mode == TableState.Free;
         bool onTable = dealer || (open && seated);
         bool myTurn = seated && (state.mode == TableState.Free || state.turn == me || dealer);
 
-        switch (p[0])
+        bool changed = p[0] switch
         {
-            case "sit" when args.Length >= 2 && int.TryParse(args[1], out var seat):
-                return Sit(state, player, args[0], seat);
-            case "leave":
-                return Leave(state, player);
-            case "seats" when dealer && args.Length >= 1 && int.TryParse(args[0], out var count):
-                return SetSeats(state, count);
+            "touch" => Touch(state, player, args.Length > 0 ? args[0] : ""),
+            "sit" when args.Length >= 2 && int.TryParse(args[1], out var seat) => Sit(state, player, args[0], seat),
+            "leave" => Leave(state, player),
+            "seats" when dealer && args.Length >= 1 && int.TryParse(args[0], out var count) => SetSeats(state, count),
 
-            case "placedeck" when onTable && args.Length >= 2 && int.TryParse(args[0], out var back):
-                return PlaceDeck(state, back, args[1]);
-            case "takedeck" when onTable:
-                return TakeDeck(state);
-            case "shuffle" when onTable:
-                return Shuffle(state);
-            case "deal" when onTable && args.Length >= 1 && int.TryParse(args[0], out var each):
-                return Deal(state, each);
-            case "collect" when onTable:
-                return Collect(state);
-            case "reveal" when onTable:
-                state.reveal = !state.reveal;
-                return true;
-            case "win" when onTable && args.Length >= 1 && int.TryParse(args[0], out var winner):
-                return Win(state, winner);
+            "placedeck" when onTable && args.Length >= 2 && int.TryParse(args[0], out var back) => PlaceDeck(state, back, args[1]),
+            "takedeck" when onTable => TakeDeck(state),
+            "shuffle" when onTable => Shuffle(state),
+            "deal" when onTable && args.Length >= 1 && int.TryParse(args[0], out var each) => Deal(state, each),
+            "dealspread" when onTable && Ints(args, 2, out var ds) => DealOntoSpread(state, ds[0], ds[1]),
+            "collect" when onTable => Collect(state),
+            "reveal" when onTable => Toggle(state),
+            "win" when onTable && args.Length >= 1 && int.TryParse(args[0], out var winner) => Win(state, winner),
 
-            case "draw" when myTurn:
-                return Draw(state, me);
-            case "play" when myTurn && Ints(args, 2, out var a):
-                return Play(state, me, a[0], a[1] == 1);
-            case "discard" when myTurn && Ints(args, 1, out var d):
-                return Discard(state, me, d[0]);
-            case "give" when myTurn && Ints(args, 2, out var g):
-                return Give(state, me, g[0], g[1]);
-            case "grab" when myTurn && Ints(args, 1, out var gr):
-                return Grab(state, me, gr[0]);
-            case "takediscard" when myTurn:
-                return TakeDiscard(state, me);
-            case "flip" when seated && Ints(args, 2, out var f) && (f[0] == me || dealer):
-                return Flip(state, f[0], f[1]);
-            case "bet" when myTurn && Ints(args, 2, out var b):
-                return Bet(state, me, b[0], b[1]);
-            case "buyin" when seated && Ints(args, 2, out var bi):
-                return Chip(state.seats[me].chips, bi[0], bi[1]);
-            case "cashout" when seated && Ints(args, 2, out var co):
-                return Chip(state.seats[me].chips, co[0], -co[1]);
+            "draw" when myTurn => Draw(state, me),
+            "play" when myTurn && Ints(args, 2, out var a) => Play(state, me, a[0], a[1] == 1),
+            "lay" when myTurn && Ints(args, 3, out var lay) => LayCard(state, me, lay[0], lay[1], lay[2] == 1),
+            "place" when myTurn && Ints(args, 3, out var pc) => PlaceOntoSpread(state, me, pc[0], pc[1], pc[2] == 1),
+            "discard" when myTurn && Ints(args, 1, out var d) => Discard(state, me, d[0]),
+            "give" when myTurn && Ints(args, 2, out var g) => Give(state, me, g[0], g[1]),
+            "grab" when myTurn && Ints(args, 1, out var gr) => Grab(state, me, gr[0]),
+            "pickup" when myTurn && Ints(args, 2, out var pu) => Pickup(state, me, pu[0], pu[1]),
+            "takediscard" when myTurn => TakeDiscard(state, me),
+            "flip" when seated && Ints(args, 2, out var f) && (f[0] == me || dealer) => Flip(state, f[0], f[1]),
+            "bet" when myTurn && Ints(args, 2, out var b) => Bet(state, me, b[0], b[1]),
+            "buyin" when seated && Ints(args, 2, out var bi) => Chip(state.seats[me].chips, bi[0], bi[1]),
+            "cashout" when seated && Ints(args, 2, out var co) => Chip(state.seats[me].chips, co[0], -co[1]),
 
-            case "stack" when dealer:
-                return StartingStacks(state);
-            case "mode" when dealer && args.Length >= 1 && (args[0] == TableState.Free || args[0] == TableState.Turns):
-                if (state.mode == args[0])
-                    return false;
-                state.mode = args[0];
-                return true;
-            case "lock" when args.Length >= 1 && (args[0] == "1" ? dealer : visor):
-                // locking takes the dealer; unlocking takes the visor itself
-                bool want = args[0] == "1";
-                if (state.locked == want)
-                    return false;
-                state.locked = want;
-                return true;
-            case "next" when seated && (dealer || state.turn == me):
-                return NextTurn(state);
-        }
+            "stack" when dealer => StartingStacks(state),
+            "mode" when dealer && args.Length >= 1 && (args[0] == TableState.Free || args[0] == TableState.Turns) => SetMode(state, args[0]),
+            "lock" when args.Length >= 1 && (args[0] == "1" ? dealer : visor) => SetLock(state, args[0] == "1"),
+            "next" when seated && (dealer || state.turn == me) => NextTurn(state),
+            _ => false
+        };
 
-        return false;
+        if (!changed)
+            return false;
+        // A visor wearer who sets the table up, while nobody else holds the deal, becomes the dealer too.
+        if (claimOnSuccess || (visor && state.dealer == 0 && CanClaim(p[0])))
+            Claim(state, player, SeatName(state, player));
+        return true;
+    }
+
+    /// <summary>Commands that count as using the table, so the first one of them claims the deal when it is free.</summary>
+    private static bool CanClaim(string command) => command is "seats" or "placedeck" or "takedeck" or "shuffle" or "deal"
+        or "dealspread" or "collect" or "reveal" or "win" or "stack" or "mode" or "lock";
+
+    private static bool Toggle(TableState state)
+    {
+        state.reveal = !state.reveal;
+        return true;
+    }
+
+    private static bool SetMode(TableState state, string mode)
+    {
+        if (state.mode == mode)
+            return false;
+        state.mode = mode;
+        return true;
+    }
+
+    private static bool SetLock(TableState state, bool want)
+    {
+        if (state.locked == want)
+            return false;
+        state.locked = want;
+        return true;
+    }
+
+    private static string SeatName(TableState state, long player)
+    {
+        int seat = state.SeatOf(player);
+        return seat >= 0 ? state.seats[seat].name : "";
     }
 
     private static bool Ints(string[] args, int count, out int[] values)
@@ -201,10 +241,39 @@ internal static class TableActions
 
         state.seats[seat].player = player;
         state.seats[seat].name = name;
+        Claim(state, player, name);
         return true;
     }
 
-    /// <summary>Moving to another seat takes your cards and chips with you.</summary>
+    /// <summary>
+    /// Take the deal. Does nothing while a different player is already sitting as dealer.
+    /// A dealer who is not seated (they only pressed E) loses it to the next person who uses the table.
+    /// </summary>
+    private static void Claim(TableState state, long player, string name)
+    {
+        if (player == 0)
+            return;
+        if (state.dealer != 0 && state.dealer != player && state.DealerIsSeated())
+            return;
+        if (state.dealer == player && state.DealerIsSeated())
+            return;
+        state.dealer = player;
+        if (!string.IsNullOrEmpty(name))
+            state.dealerName = name;
+    }
+
+    private static bool Touch(TableState state, long player, string name)
+    {
+        if (player == 0)
+            return false;
+        if (state.dealer == player)
+            return false;
+        if (state.DealerIsSeated())
+            return false;
+        Claim(state, player, name);
+        return state.dealer == player;
+    }
+    /// <summary>Moving to another seat takes your cards and chips with you. The deal stays with the player.</summary>
     private static void MoveSeat(SeatState from, SeatState to)
     {
         to.hand.AddRange(from.hand);
@@ -227,9 +296,15 @@ internal static class TableActions
         return true;
     }
 
-    /// <summary>A seat empties: its cards go under the deck and its chips into the pot, so nothing is lost.</summary>
+    /// <summary>A seat empties: its cards go under the deck and its chips into the pot, so nothing is lost. If this was the dealer, the deal is open again.</summary>
     private static void Vacate(TableState state, SeatState seat)
     {
+        if (state.dealer != 0 && state.dealer == seat.player)
+        {
+            state.dealer = 0;
+            state.dealerName = "";
+        }
+
         state.deck.AddRange(seat.hand);
         for (int i = 0; i < Chips.Kinds; i++)
             state.pot[i] += seat.chips[i];
@@ -324,6 +399,7 @@ internal static class TableActions
         state.played.Clear();
         state.playedUp.Clear();
         state.playedBy.Clear();
+        state.playedSpread.Clear();
         state.deck.AddRange(state.discard);
         state.discard.Clear();
         state.reveal = false;
@@ -364,16 +440,83 @@ internal static class TableActions
         return card;
     }
 
-    private static bool Play(TableState state, int seat, int index, bool faceUp)
+    private static bool Play(TableState state, int seat, int index, bool faceUp) =>
+        LayCard(state, seat, index, 0, faceUp);
+
+    /// <summary>The next free spread number (0 when the felt is empty).</summary>
+    private static int NextSpread(TableState state)
     {
-        var s = state.seats[seat];
-        if (!Valid(s, index))
-            return false;
-        int card = RemoveFromHand(s, index, out _);
+        int max = -1;
+        for (int i = 0; i < state.playedSpread.Count; i++)
+        {
+            if (state.playedSpread[i] > max)
+                max = state.playedSpread[i];
+        }
+
+        return max + 1;
+    }
+
+    /// <summary>-1 starts a new spread, any other negative number means the latest one, and 0, 1, 2... pick a row.</summary>
+    private static bool TrySpread(TableState state, int requested, out int spread)
+    {
+        int next = NextSpread(state);
+        if (requested == -1)
+            spread = next;
+        else if (requested < 0)
+            spread = next == 0 ? 0 : next - 1;
+        else
+            spread = requested;
+        return spread >= 0 && spread <= next;
+    }
+
+    private static void AddPlayed(TableState state, int card, bool faceUp, int by, int spread)
+    {
         state.played.Add(card);
         state.playedUp.Add(faceUp);
-        state.playedBy.Add(seat);
+        state.playedBy.Add(by);
+        state.playedSpread.Add(spread);
+    }
+
+    private static void RemovePlayed(TableState state, int index)
+    {
+        state.played.RemoveAt(index);
+        state.playedUp.RemoveAt(index);
+        state.playedBy.RemoveAt(index);
+        if (index < state.playedSpread.Count)
+            state.playedSpread.RemoveAt(index);
+    }
+
+    private static bool LayCard(TableState state, int seat, int index, int spread, bool faceUp)
+    {
+        var s = state.seats[seat];
+        if (!Valid(s, index) || !TrySpread(state, spread, out var row))
+            return false;
+        AddPlayed(state, RemoveFromHand(s, index, out _), faceUp, seat, row);
         return true;
+    }
+
+    private static bool PlaceOntoSpread(TableState state, int seat, int card, int spread, bool faceUp)
+    {
+        if (card < 0 || card >= Util.CardLib.All.Length || !TrySpread(state, spread, out var row))
+            return false;
+        AddPlayed(state, card, faceUp, seat, row);
+        return true;
+    }
+
+    private static bool DealOntoSpread(TableState state, int count, int spread)
+    {
+        count = Mathf.Clamp(count, 1, 5);
+        if (state.deck.Count == 0 || !TrySpread(state, spread, out var row))
+            return false;
+        // A new row stays one row: every card dealt together lands on the spread chosen up front.
+        bool any = false;
+        for (int i = 0; i < count && state.deck.Count > 0; i++)
+        {
+            AddPlayed(state, TakeTop(state.deck), true, -1, row);
+            any = true;
+        }
+
+        return any;
     }
 
     private static bool Discard(TableState state, int seat, int index)
@@ -399,10 +542,29 @@ internal static class TableActions
         if (playedIndex < 0 || playedIndex >= state.played.Count)
             return false;
         AddToHand(state.seats[seat], state.played[playedIndex], false);
-        state.played.RemoveAt(playedIndex);
-        state.playedUp.RemoveAt(playedIndex);
-        state.playedBy.RemoveAt(playedIndex);
+        RemovePlayed(state, playedIndex);
         return true;
+    }
+
+    private static bool Pickup(TableState state, int seat, int spread, int indexInSpread)
+    {
+        if (indexInSpread < 0)
+            return false;
+        int seen = -1;
+        for (int i = 0; i < state.played.Count; i++)
+        {
+            int row = i < state.playedSpread.Count ? state.playedSpread[i] : 0;
+            if (row != spread)
+                continue;
+            seen++;
+            if (seen != indexInSpread)
+                continue;
+            AddToHand(state.seats[seat], state.played[i], false);
+            RemovePlayed(state, i);
+            return true;
+        }
+
+        return false;
     }
 
     private static bool TakeDiscard(TableState state, int seat)

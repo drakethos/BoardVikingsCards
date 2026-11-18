@@ -50,8 +50,8 @@
     {
       "do": "check",
       "check": "lastResult",
-      "label": "not the dealer: Alice built the table and I wear no visor",
-      "expect": false
+      "label": "I sat first, so I am the dealer",
+      "expect": true
     },
     {
       "do": "invoke",

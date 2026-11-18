@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- The first player to use a card table is the dealer (the builder no longer is). The dealer's visor still counts, and locked rules still answer only to it.
+- Spreads: lay cards in rows you can add to and pick any card up from, like a poker board or a rummy meld. The discard pile still only gives up its top card. Cards you are carrying can be laid out too.
+- Breaking a card table destroys the cards on it (the ones in play, and any card or deck lying on the felt).
+
 ## 0.1.0-beta.2
 
 - The right package icon.

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Cards.Table;
 
 /// <summary>
-/// Draws the table from its saved state: seat markers, the deck, the discard pile, cards played onto the felt, every hand (only
+/// Draws the table from its saved state: seat markers, the deck, the discard pile, spreads on the felt, every hand (only
 /// the faces the player turned up are shown; the panel shows you your own) and the chips. Objects are pooled and reused.
 /// </summary>
 internal sealed class TableView : MonoBehaviour
@@ -33,7 +33,7 @@ internal sealed class TableView : MonoBehaviour
 
         DrawDeck(table.Size, state);
         DrawDiscard(table.Size, state);
-        DrawPlayed(table.Size, state);
+        DrawSpreads(table.Size, state);
         DrawHands(table.Size, state);
         DrawChips(table.Size, state);
 
@@ -154,10 +154,36 @@ internal sealed class TableView : MonoBehaviour
         }
     }
 
-    private void DrawPlayed(Vector2 size, TableState state)
+    private void DrawSpreads(Vector2 size, TableState state)
     {
+        int rows = 0;
         for (int i = 0; i < state.played.Count; i++)
-            ShowCard(TableLayout.PlayedSpot(size, i), Vector3.forward, state.played[i], state.playedUp[i], state.deckBack);
+        {
+            int spread = i < state.playedSpread.Count ? state.playedSpread[i] : 0;
+            if (spread + 1 > rows)
+                rows = spread + 1;
+        }
+
+        for (int spread = 0; spread < rows; spread++)
+        {
+            int count = 0;
+            for (int i = 0; i < state.played.Count; i++)
+            {
+                int row = i < state.playedSpread.Count ? state.playedSpread[i] : 0;
+                if (row == spread)
+                    count++;
+            }
+
+            int n = 0;
+            for (int i = 0; i < state.played.Count; i++)
+            {
+                int row = i < state.playedSpread.Count ? state.playedSpread[i] : 0;
+                if (row != spread)
+                    continue;
+                ShowCard(TableLayout.SpreadSpot(size, spread, n, count), Vector3.forward, state.played[i], state.playedUp[i], state.deckBack);
+                n++;
+            }
+        }
     }
 
     private void DrawHands(Vector2 size, TableState state)

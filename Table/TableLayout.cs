@@ -51,15 +51,20 @@ internal static class TableLayout
     internal static Vector3 PotSpot(Vector2 size) => new Vector3(0f, 0f, -0.16f);
 
     /// <summary>
-    /// Where the n-th played card lies: a tidy grid across the middle of the felt, behind the deck and discard (towards the north edge).
+    /// Where one card of a spread lies. Spreads are rows across the felt, starting just north of the deck, one row per spread.
     /// </summary>
-    internal static Vector3 PlayedSpot(Vector2 size, int index)
+    internal static Vector3 SpreadSpot(Vector2 size, int spread, int index, int count)
     {
-        int perRow = Mathf.Max(3, Mathf.FloorToInt((size.x - 0.5f) / 0.115f));
-        int row = index / perRow;
-        int col = index % perRow;
-        float width = (perRow - 1) * 0.115f;
-        return new Vector3(-width / 2f + col * 0.115f, 0f, 0.17f + row * 0.15f);
+        const float step = 0.115f;
+        float width = Mathf.Max(0, count - 1) * step;
+        float x = -width / 2f + index * step;
+        float maxX = size.x / 2f - 0.12f;
+        x = Mathf.Clamp(x, -maxX, maxX);
+        float z = 0.20f + spread * 0.155f;
+        float maxZ = size.y / 2f - 0.12f;
+        if (z > maxZ)
+            z = maxZ;
+        return new Vector3(x, spread * 0.001f, z);
     }
 
     /// <summary>A seat's hand: cards fanned in front of the seat, towards the middle, centred on the seat.</summary>

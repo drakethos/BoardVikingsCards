@@ -218,11 +218,9 @@ public static class TableTestApi
         return table == null ? -1 : table.GetComponentsInChildren<Transform>().Count(t => t.name == "table_card" && t.gameObject.activeSelf);
     }
 
-    // ---- the rules on a bare state (no table piece): quick, exact checks of the logic. Player 100 built the table.
+    // ---- the rules on a bare state (no table piece): quick, exact checks of the logic. The first player to sit is the dealer.
 
-    private const long Creator = 100;
-
-    private static bool Do(TableState state, string action) => TableActions.Apply(state, action, Creator);
+    private static bool Do(TableState state, string action) => TableActions.Apply(state, action, 0);
 
     private static TableState Seated(int players)
     {
@@ -269,9 +267,9 @@ public static class TableTestApi
                 Do(s, TableActions.Deal(100, false, 1));
                 bool own = Do(s, TableActions.Flip(101, false, 1, 0));
                 bool other = Do(s, TableActions.Flip(101, false, 2, 0));
-                bool creator = Do(s, TableActions.Flip(100, false, 2, 0));
+                bool dealerFlip = Do(s, TableActions.Flip(100, false, 2, 0));
                 bool visor = Do(s, TableActions.Flip(103, true, 1, 0));
-                return $"own={own} other={other} creator={creator} visor={visor}";
+                return $"own={own} other={other} dealer={dealerFlip} visor={visor}";
             }
 
             case "turns":
@@ -309,13 +307,29 @@ public static class TableTestApi
                 return $"playerShuffle={shuffle} visorShuffle={dealerShuffle} playerDraws={draw}";
             }
 
-            case "no-creator":
+            case "first-touch":
+                return FirstTouch();
+
+            case "spread":
             {
-                var bare = TableState.Parse("");
-                TableActions.Apply(bare, TableActions.Sit(5, false, "A", 0), 0);
-                bool noVisor = TableActions.Apply(bare, TableActions.SetSeats(5, false, 6), 0);
-                bool visor = TableActions.Apply(bare, TableActions.SetSeats(5, true, 6), 0);
-                return $"withoutVisor={noVisor} withVisor={visor}";
+                FullDeck(s);
+                Do(s, TableActions.Deal(100, false, 5));
+                Do(s, TableActions.Lay(100, false, 0, -1, true));
+                Do(s, TableActions.Lay(100, false, 0, 0, true));
+                Do(s, TableActions.Lay(101, false, 0, -1, true));
+                Do(s, TableActions.Pickup(102, false, 0, 0));
+                Do(s, TableActions.DealSpread(100, false, 3, 0));
+                int board = 0;
+                int meld = 0;
+                for (int i = 0; i < s.playedSpread.Count; i++)
+                {
+                    if (s.playedSpread[i] == 0)
+                        board++;
+                    else
+                        meld++;
+                }
+
+                return $"hands={Hands(s)} board={board} meld={meld} deck={s.deck.Count} total={s.CardTotal()}";
             }
 
             case "leave":
@@ -366,5 +380,20 @@ public static class TableTestApi
         }
 
         return "unknown scenario";
+    }
+
+    /// <summary>The first person to use the table takes the deal. Sitting beats a player who only pressed E and walked off.</summary>
+    private static string FirstTouch()
+    {
+        var bare = TableState.Parse("");
+        bool opened = TableActions.Apply(bare, TableActions.Touch(5, false, "A"), 0);
+        bool taken = TableActions.Apply(bare, TableActions.Touch(9, false, "B"), 0);
+        bool sat = TableActions.Apply(bare, TableActions.Sit(5, false, "A", 0), 0);
+        bool kept = TableActions.Apply(bare, TableActions.Touch(9, false, "B"), 0);
+        bool seats = TableActions.Apply(bare, TableActions.SetSeats(5, false, 6), 0);
+        bool other = TableActions.Apply(bare, TableActions.SetSeats(9, false, 3), 0);
+        TableActions.Apply(bare, TableActions.Leave(5, false), 0);
+        bool next = TableActions.Apply(bare, TableActions.Sit(9, false, "B", 1), 0);
+        return $"opened={opened} taken={taken} sat={sat} kept={kept} seats={seats} other={other} next={next} dealer={bare.dealer}";
     }
 }

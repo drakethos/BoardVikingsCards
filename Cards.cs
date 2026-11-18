@@ -185,8 +185,8 @@ namespace Cards
                 PieceTable = PieceTables.Hammer,
                 Category = CARD_CATEGORY,
                 Name = title,
-                Description = "A felt table for card games. Press E to sit; the table's builder is its dealer and sets how many " +
-                              "seats it uses. Free play: no rules unless the dealer sets them.",
+                Description = "A felt table for card games. Press E to sit. The first player to use it is the dealer. " +
+                              "Lay cards in spreads you can add to and pick up. Breaking the table destroys the cards on it.",
                 Icon = CardIcons.TableIcon(prefabName.EndsWith("Long")) ?? CardBacks.DeckIcon(CardBacks.DefaultBack),
                 Requirements =
                 [

@@ -20,7 +20,7 @@ Throw cards like a boss. Build giant houses of cards (you can rotate them, but t
 | **Deck of Cards** | A full 52-card deck in a single box. Right-click it to pull out any card, put cards back, or shuffle. Pick one of **15 card backs** when you craft it. | 20 Wood, 5 Coal |
 | **Playing Card** | A card that came out of a deck. Not a weapon, and it goes back into a deck. Cannot be crafted on its own. | — |
 | **Giant Card** | A big card that stands on its edge (Cards tab of the hammer). Press **E** to choose its face **and** its back. Lean cards on each other to build a house of cards. | 1 Wood, 1 Coal |
-| **Card Table** (Small and Long) | A felt table with seats (Cards tab of the hammer). Press **E** to sit down. The builder is the dealer and sets how many seats the table uses (2 to 8). | Small: 12 Wood, 4 Leather Scraps. Long: 20 Wood, 4 Leather Scraps |
+| **Card Table** (Small and Long) | A felt table with seats (Cards tab of the hammer). Press **E** to sit down. The first player to use it is the dealer and sets how many seats it uses (2 to 8). Lay cards in spreads you can add to and pick up. Breaking the table destroys the cards on it. | Small: 12 Wood, 4 Leather Scraps. Long: 20 Wood, 4 Leather Scraps |
 
 Throwing cards and playing cards are kept apart on purpose: the cards you play with never turn into weapons, and the cards you throw never end up in a deck.
 
@@ -45,7 +45,7 @@ Press **E** on a placed card to pick its face (any of the 53 cards, or the back)
 
 ## The card table
 
-Build a table (Small or Long) from the Cards tab of the hammer. Press **E** on it to sit. The table's builder is its dealer and sets how many seats it uses with the − and + buttons: two for a duel, up to eight for a crowd. Your seat is remembered while you play.
+Build a table (Small or Long) from the Cards tab of the hammer. Press **E** on it to sit. The first player to use the table is its dealer and sets how many seats it uses with the − and + buttons: two for a duel, up to eight for a crowd. Your seat is remembered while you play. Lay cards in a spread (a row you can add to and pick cards up from, as in poker or rummy). The discard pile only gives up its top card. Breaking the table destroys the cards on it.
 
 ## Gallery
 

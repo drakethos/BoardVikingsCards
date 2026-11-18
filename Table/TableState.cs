@@ -49,11 +49,14 @@ internal sealed class TableState
     /// <summary>The discard pile, newest first.</summary>
     public List<int> discard = new List<int>();
 
-    /// <summary>Cards played onto the felt: which card, face up or down, and who played it (seat number, -1 = nobody).</summary>
+    /// <summary>Cards laid in spreads: which card, face up or down, who laid it (seat number, -1 = the deck), and which spread.</summary>
     public List<int> played = new List<int>();
 
     public List<bool> playedUp = new List<bool>();
     public List<int> playedBy = new List<int>();
+
+    /// <summary>Which spread each laid card belongs to. A spread is a row you can add to and pick up from (a poker board, a rummy meld).</summary>
+    public List<int> playedSpread = new List<int>();
 
     /// <summary>Chips in the middle of the table, per kind.</summary>
     public int[] pot = new int[Chips.Kinds];
@@ -73,10 +76,18 @@ internal sealed class TableState
     /// <summary>Every hand shown face up (the dealer's "show your cards").</summary>
     public bool reveal;
 
-    private const string Header = "BV2";
+    /// <summary>Player id of the dealer (0 = nobody yet). The first player to use the table takes it, until they leave.</summary>
+    public long dealer;
 
-    // The saved text: BV2|seats|mode|locked|turn|deckBack|reveal|pot|deck|discard|played|seat0|...|seat7
-    //   lists are comma separated card numbers; a played card is  u12@3  (u/d = face up/down, @seat who played it);
+    /// <summary>The dealer's name, shown on the panel and the hover text.</summary>
+    public string dealerName = "";
+
+    private const string Header = "BV3";
+    private const string HeaderOld = "BV2";
+
+    // The saved text: BV3|seats|mode|locked|turn|deckBack|reveal|dealer|dealerName|pot|deck|discard|played|seat0|...|seat7
+    //   BV2 is the older text (no dealer); it still loads, and the next save writes BV3.
+    //   lists are comma separated card numbers; a played card is  u12@3s0  (u/d = face up/down, @seat who played it, s = spread);
     //   chips are comma separated counts; a seat is  player ~ name ~ hand ~ chips  with a hand like  u12,d40  (u = face up).
     // Written by hand because Unity's JSON helper silently drops lists of non-public types.
 
@@ -100,7 +111,9 @@ internal sealed class TableState
     private void Read(string raw)
     {
         var p = raw.Split('|');
-        if (p.Length < 11 || p[0] != Header)
+        bool current = p.Length >= 13 && p[0] == Header;
+        bool older = p.Length >= 11 && p[0] == HeaderOld;
+        if (!current && !older)
             return;
         seatCount = int.Parse(p[1]);
         mode = Uri.UnescapeDataString(p[2]);
@@ -108,19 +121,21 @@ internal sealed class TableState
         turn = int.Parse(p[4]);
         deckBack = int.Parse(p[5]);
         reveal = p[6] == "1";
-        pot = ReadChips(p[7]);
-        deck = ReadList(p[8]);
-        discard = ReadList(p[9]);
-        foreach (var card in p[10].Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+        int potAt = 7;
+        if (current)
         {
-            var at = card.IndexOf('@');
-            played.Add(int.Parse(card.Substring(1, at - 1)));
-            playedUp.Add(card[0] == 'u');
-            playedBy.Add(int.Parse(card.Substring(at + 1)));
+            dealer = long.Parse(p[7]);
+            dealerName = Uri.UnescapeDataString(p[8]);
+            potAt = 9;
         }
 
+        pot = ReadChips(p[potAt]);
+        deck = ReadList(p[potAt + 1]);
+        discard = ReadList(p[potAt + 2]);
+        ReadPlayed(p[potAt + 3]);
+
         seats = new List<SeatState>();
-        for (int i = 11; i < p.Length && seats.Count < MaxSeats; i++)
+        for (int i = potAt + 4; i < p.Length && seats.Count < MaxSeats; i++)
         {
             var f = p[i].Split('~');
             var seat = new SeatState();
@@ -138,6 +153,29 @@ internal sealed class TableState
             }
 
             seats.Add(seat);
+        }
+    }
+
+    private void ReadPlayed(string text)
+    {
+        foreach (var token in text.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+        {
+            int spread = 0;
+            var card = token;
+            int at = card.IndexOf('@');
+            if (at <= 0)
+                continue;
+            int mark = card.IndexOf('s', at + 1);
+            if (mark > at)
+            {
+                int.TryParse(card.Substring(mark + 1), out spread);
+                card = card.Substring(0, mark);
+            }
+
+            played.Add(int.Parse(card.Substring(1, at - 1)));
+            playedUp.Add(card[0] == 'u');
+            playedBy.Add(int.Parse(card.Substring(at + 1)));
+            playedSpread.Add(spread);
         }
     }
 
@@ -163,6 +201,8 @@ internal sealed class TableState
             .Append('|').Append(turn)
             .Append('|').Append(deckBack)
             .Append('|').Append(reveal ? '1' : '0')
+            .Append('|').Append(dealer)
+            .Append('|').Append(Uri.EscapeDataString(dealerName ?? ""))
             .Append('|').Append(string.Join(",", pot))
             .Append('|').Append(string.Join(",", deck))
             .Append('|').Append(string.Join(",", discard))
@@ -171,7 +211,8 @@ internal sealed class TableState
         {
             if (i > 0)
                 sb.Append(',');
-            sb.Append(playedUp[i] ? 'u' : 'd').Append(played[i]).Append('@').Append(playedBy[i]);
+            int spread = i < playedSpread.Count ? playedSpread[i] : 0;
+            sb.Append(playedUp[i] ? 'u' : 'd').Append(played[i]).Append('@').Append(playedBy[i]).Append('s').Append(spread);
         }
 
         foreach (var seat in seats)
@@ -196,6 +237,8 @@ internal sealed class TableState
         seatCount = Mathf.Clamp(seatCount, MinSeats, MaxSeats);
         if (mode != Free && mode != Turns)
             mode = Free;
+        if (dealerName == null)
+            dealerName = "";
         deckBack = Util.CardBacks.Clamp(deckBack);
         turn = Mathf.Clamp(turn, 0, MaxSeats - 1);
         if (pot.Length != Chips.Kinds)
@@ -222,7 +265,24 @@ internal sealed class TableState
             playedUp.RemoveRange(played.Count, playedUp.Count - played.Count);
         if (playedBy.Count > played.Count)
             playedBy.RemoveRange(played.Count, playedBy.Count - played.Count);
+        while (playedSpread.Count < played.Count)
+            playedSpread.Add(0);
+        if (playedSpread.Count > played.Count)
+            playedSpread.RemoveRange(played.Count, playedSpread.Count - played.Count);
     }
+
+    /// <summary>The dealer is sitting in a seat that is switched on.</summary>
+    internal bool DealerIsSeated()
+    {
+        if (dealer == 0)
+            return false;
+        int seat = SeatOf(dealer);
+        return seat >= 0 && seat < seatCount;
+    }
+
+    /// <summary>This player may act as the dealer: they wear the visor, or they hold the deal and the rules are unlocked.</summary>
+    internal bool PlayerIsDealer(long player, bool visor) =>
+        player != 0 && (visor || (!locked && dealer == player));
 
     internal int SeatOf(long player)
     {
@@ -247,7 +307,7 @@ internal sealed class TableState
         return n;
     }
 
-    /// <summary>Every card on the table in one list (deck, discard, played, hands), for checking none is lost or doubled.</summary>
+    /// <summary>Every card on the table (deck, discard, spreads, hands), for checking none is lost or doubled.</summary>
     internal int CardTotal()
     {
         int n = deck.Count + discard.Count + played.Count;
